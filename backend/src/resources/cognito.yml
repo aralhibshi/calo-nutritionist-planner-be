@@ -1,0 +1,34 @@
+Resources:
+  CognitoUserPool: 
+    Type: AWS::Cognito::UserPool
+    Properties: 
+      UserPoolName: ${self:provider.stage}-user-pool
+      UsernameAttributes: 
+        - email
+      AutoVerifiedAttributes: 
+        - email
+  
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient 
+    Properties: 
+      ClientName: ${self:provider.stage}-user-pool-client
+      UserPoolId: 
+        Ref: CognitoUserPool
+      ExplicitAuthFlows: 
+        - ADMIN_NO_SRP_AUTH
+      GenerateSecret: false
+      AccessTokenValidity: 5
+      IdTokenValidity: 5
+
+  CognitoAuthorizer: 
+    Type: AWS::ApiGateway::Authorizer
+    Properties: 
+      RestApiId: 
+        Ref: ApiGatewayRestApi
+      Name: cognito-user-authenticate
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs: 
+        - Fn::GetAtt:
+          - CognitoUserPool
+          - Arn
