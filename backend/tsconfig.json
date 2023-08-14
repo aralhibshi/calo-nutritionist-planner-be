@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["./src/libs/*"],
+    },
+    "lib": [
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "target": "esnext",
+    "outDir": "./dist",
+    "module": "CommonJS",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "**/*.ts",
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    ".vscode/**/*",
+    "dist/**/*"
+  ]
+}
