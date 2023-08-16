@@ -25,6 +25,7 @@ export default ({ functions, resources, plugins, ...rest }: Params): AWS => merg
     ...new Set([
       'serverless-esbuild',
       'serverless-iam-roles-per-function',
+      'serverless-dotenv-plugin',
       ...(plugins ||[])
     ])
   ],
