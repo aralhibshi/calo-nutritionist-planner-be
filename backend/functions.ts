@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import yml from 'js-yaml';
 
 const files = [
-  readFileSync('./src/ingredients/serverless.yml')
+  // readFileSync('./src/ingredients/serverless.yml')
 ];
 
 export default files.reduce((res, row) => {
