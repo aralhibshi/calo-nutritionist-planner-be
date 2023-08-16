@@ -21,17 +21,18 @@ module.exports = serverless({
       restApi: true
     }
   },
-  custom: {
-    // package: {
-    //   patterns: [
-    //     '!node_modules/.prisma/client/libquery_engine-*',
-    //     'node_modules/.prisma/client/libquery_engine-rhel-*',
-    //     '!node_modules/prisma/libquery_engine-*',
-    //     '!node_modules/@prisma/engines/**',
-    //     'node_modules/.prisma/client/schema.prisma'
-    //   ]
-    // }
+  package: {
+    include: [
+      'node_modules/.prisma/**',
+    ],
+    patterns: [
+      '!node_modules/.prisma/client/libquery_engine-*',
+      'node_modules/.prisma/client/libquery_engine-rhel-*',
+      '!node_modules/prisma/libquery_engine-*',
+      '!node_modules/@prisma/engines/**'
+    ],
   },
+  custom: {},
   functions: f,
   resources: r,
 });
