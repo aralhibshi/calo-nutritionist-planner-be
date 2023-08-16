@@ -21,6 +21,7 @@
     "resolveJsonModule": true
   },
   "include": [
+    "./prisma/**/*.ts",
     "**/*.ts",
     "./src/**/*.ts"
   ],
