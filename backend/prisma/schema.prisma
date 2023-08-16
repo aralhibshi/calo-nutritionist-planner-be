@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ingredient {
+  id                  String                @id @default(uuid())
+  name                String                @unique @db.VarChar
+  description         String?
+  price               Decimal               @db.Decimal(5, 3)
+  calories            Decimal               @db.Decimal(5, 3)
+  protein             Decimal               @db.Decimal(5, 3)
+  fats                Decimal               @db.Decimal(5, 3)
+  carbs               Decimal               @db.Decimal(5, 3)
+  unit                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  ComponentIngredient ComponentIngredient[]
+
+  @@index([name])
+}
+
+model Component {
+  id                  String                @id @default(uuid())
+  name                String                @unique @db.VarChar
+  category            String?
+  description         String?
+  unit                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  ComponentIngredient ComponentIngredient[]
+  MealComponent       MealComponent[]
+
+  @@index([name])
+}
+
+model Meal {
+  id            String          @id @default(uuid())
+  name          String          @unique @db.VarChar
+  description   String?
+  size          String
+  unit          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  MealComponent MealComponent[]
+
+  @@index([name])
+}
+
+model ComponentIngredient {
+  id                  String     @id @default(uuid())
+  component           Component  @relation(fields: [component_id], references: [id])
+  ingredient          Ingredient @relation(fields: [ingredient_id], references: [id])
+  component_id        String
+  ingredient_id       String
+  ingredient_quantity Int
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+}
+
+model MealComponent {
+  id           String    @id @default(uuid())
+  meal         Meal      @relation(fields: [meal_id], references: [id])
+  component    Component @relation(fields: [component_id], references: [id])
+  meal_id      String
+  component_id String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
