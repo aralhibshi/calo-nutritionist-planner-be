@@ -1,6 +1,6 @@
 import serverless from './src/libs/baseServerless';
 
-// import f from './functions';
+import f from './functions';
 import r from './resources';
 
 module.exports = serverless({
@@ -22,6 +22,6 @@ module.exports = serverless({
     }
   },
   custom: { },
-  // functions: f,
+  functions: f,
   resources: r
 });

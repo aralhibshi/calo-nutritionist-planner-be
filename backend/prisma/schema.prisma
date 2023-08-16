@@ -10,6 +10,7 @@ datasource db {
 model Ingredient {
   id                  String                @id @default(uuid())
   name                String                @unique @db.VarChar
+  category            String?               @default("No Category")
   description         String?
   price               Decimal               @db.Decimal(5, 3)
   calories            Decimal               @db.Decimal(5, 3)

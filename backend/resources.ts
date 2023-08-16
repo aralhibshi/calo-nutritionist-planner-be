@@ -2,7 +2,9 @@ import { readFileSync } from 'fs';
 
 import yml from 'js-yaml';
 
-const files = [];
+const files = [
+  readFileSync('./src/resources/cognito.yml')
+];
 
 export default files.reduce((res, row) => {
   const data = yml.load(row);
