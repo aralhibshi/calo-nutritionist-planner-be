@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export default middyfy(async () => {
   try {
-    // await prisma.ingredient.deleteMany()
+    await prisma.ingredient.deleteMany()
 
     const ingredient = await prisma.ingredient.create({
       data: {
@@ -24,23 +24,23 @@ export default middyfy(async () => {
 
     return {
       statusCode: 201,
-      body: {
+      body: JSON.stringify({
         message: 'Ingredient Created',
         ingredient,
-      },
+      })
     };
   } catch (err) {
     console.log(err);
 
     return {
       statusCode: 500,
-      body: {
+      body: JSON.stringify({
         error: {
           title: 'Prisma Error',
           message: 'Error creating ingredient',
           details: err.message,
-        },
-      },
+        }
+      })
     };
   }
 });
