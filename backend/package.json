@@ -12,6 +12,7 @@
   "dependencies": {
     "@middy/core": "^4.5.5",
     "@middy/http-json-body-parser": "^4.5.5",
+    "@prisma/client": "^5.1.1",
     "serverless-iam-roles-per-function": "^3.2.0"
   },
   "devDependencies": {
@@ -22,6 +23,7 @@
     "js-yaml": "^4.1.0",
     "json-schema-to-ts": "^2.9.1",
     "lodash": "^4.17.21",
+    "prisma": "^5.1.1",
     "serverless": "^3.33.0",
     "serverless-esbuild": "^1.43.1",
     "ts-node": "^10.9.1",
