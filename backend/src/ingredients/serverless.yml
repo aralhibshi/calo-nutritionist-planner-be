@@ -4,3 +4,10 @@ createIngredient:
     - http:
         path: v1/ingredient/create
         method: post
+
+getIngredients:
+  handler: src/ingredients/getIngredients/handler.default
+  events:
+    - http:
+        path: v1/ingredients
+        method: get
