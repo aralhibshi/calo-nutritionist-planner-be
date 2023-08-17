@@ -4,3 +4,10 @@ createMeal:
     - http:
         path: v1/meals/create
         method: post
+
+getMeals:
+  handler: src/meals/getMeal/handler.default
+  events:
+    - http:
+        path: v1/meals
+        method: get
