@@ -11,3 +11,10 @@ getMeals:
     - http:
         path: v1/meals
         method: get
+
+searchMeal:
+  handler: src/meals/searchMeals/handler.default
+  events:
+    - http:
+        path: v1/meals/search
+        method: get
