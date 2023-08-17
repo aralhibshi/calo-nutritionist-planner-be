@@ -8,8 +8,8 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     // Prisma - Get Ingredients
-    const response = await getIngredients();
-    return response;
+    const result = await getIngredients();
+    return result;
   } catch (err) {
     console.log('Error', err)
     return {
@@ -17,7 +17,7 @@ export default middyfy(async (event) => {
       body: JSON.stringify({
         error: {
           title: 'Error',
-          message: 'Error getting ingredients',
+          message: 'Error fetching ingredients',
           details: err
         }
       }),
@@ -31,11 +31,11 @@ export default middyfy(async (event) => {
 // Prisma - Get Ingredients
 async function getIngredients() {
   try {
-    console.log('Getting ingredients');
+    console.log('Fetching ingredients');
 
-    const ingredients = await prisma.ingredient.findMany();
+    const result = await prisma.ingredient.findMany();
 
-    console.log('Ingredients fetched successfully', ingredients);
+    console.log('Ingredients fetched successfully', result);
 
     return {
       statusCode: 200,
@@ -44,7 +44,7 @@ async function getIngredients() {
           title: 'Success',
           message: 'Ingredient fetched successfully'
         },
-        data: ingredients
+        data: result
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ async function getIngredients() {
       body: JSON.stringify({
         error: {
           title: 'Prisma Error',
-          message: 'Error getting ingredients in Prisma',
+          message: 'Error fetching ingredients in Prisma',
           details: err
         }
       }),

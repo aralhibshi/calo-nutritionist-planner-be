@@ -22,8 +22,7 @@ export default middyfy(async (event) => {
 
       // Prisma - Create Ingredient
       const result = await createIngredient(ingredientData);
-      return result
-      
+      return result;
     } else {
       console.log('Validation Error:', 'Required fields missing in request body');
       return {
@@ -62,9 +61,9 @@ async function createIngredient(data) {
   try {
     console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 
-    const ingredient = await prisma.ingredient.create({ data });
+    const result = await prisma.ingredient.create({ data });
 
-    console.log('Ingredient created successfully');
+    console.log('Ingredient created successfully', result);
 
     return {
       statusCode: 201,
@@ -73,7 +72,7 @@ async function createIngredient(data) {
           title: 'Success',
           message: 'Ingredient created successfully'
         },
-        data: ingredient
+        data: result
       }),
       headers: {
         'Content-Type': 'application/json'
