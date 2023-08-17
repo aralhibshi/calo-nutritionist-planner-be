@@ -33,7 +33,7 @@ async function getMeals() {
   try {
     console.log('Fetching meals');
 
-    const result = await prisma.component.findMany();
+    const result = await prisma.meal.findMany();
 
     console.log('meals fetched successfully', result);
 
