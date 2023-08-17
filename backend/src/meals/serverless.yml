@@ -1,0 +1,6 @@
+createMeal:
+  handler: src/meals/createMeal/handler.default
+  events:
+    - http:
+        path: v1/meals/create
+        method: post
