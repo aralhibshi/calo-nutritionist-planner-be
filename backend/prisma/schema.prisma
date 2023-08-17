@@ -66,11 +66,12 @@ model ComponentIngredient {
 }
 
 model MealComponent {
-  id           String    @id @default(uuid())
-  meal         Meal      @relation(fields: [meal_id], references: [id])
-  component    Component @relation(fields: [component_id], references: [id])
-  meal_id      String
-  component_id String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  meal               Meal      @relation(fields: [meal_id], references: [id])
+  component          Component @relation(fields: [component_id], references: [id])
+  meal_id            String
+  component_id       String
+  component_quantity Int
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
