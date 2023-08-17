@@ -18,3 +18,7 @@ searchIngredients:
     - http:
         path: v1/ingredient/search
         method: get
+        request:
+            parameters:
+              querystrings:
+                name: true
