@@ -7,9 +7,9 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const searchName = event.queryStringParameters && event.queryStringParameters.name;
+    const ingredientName = event.queryStringParameters && event.queryStringParameters.name;
 
-    if (!searchName) {
+    if (!ingredientName) {
       console.log('Validation Error:', 'Missing or invalid query parameter "name"');
       return {
         statusCode: 400,
@@ -24,10 +24,10 @@ export default middyfy(async (event) => {
         },
       };
     } else {
-      const capitalizedSearchName = capitalizeFirstLetter(searchName)
+      const capitalizedIngredientName = capitalizeFirstLetter(ingredientName)
 
     // Prisma - Search Ingredients
-    const result = await searchIngredients(capitalizedSearchName);
+    const result = await searchIngredients(capitalizedIngredientName);
     return result;
     }
   } catch (err) {
@@ -57,14 +57,13 @@ async function searchIngredients(index) {
       where: {
         name: {
           contains: index,
-        },
+        }
       },
       orderBy: {
-        name: 'asc', // You can choose any field for the initial ordering
+        name: 'asc',
       },
     });
     
-     // Manually sort the results based on exact match priority
      const sortedResults = result.sort((a, b) => {
       if (a.name === index && b.name !== index) {
         return -1;
