@@ -2,7 +2,7 @@ createComponent:
   handler: src/components/createComponent/handler.default
   events:
     - http:
-        path: v1/component/create
+        path: v1/components/create
         method: post
 
 getComponents:
@@ -10,4 +10,11 @@ getComponents:
   events:
     - http:
         path: v1/components
+        method: get
+
+searchComponent:
+  handler: src/components/searchComponents/handler.default
+  events:
+    - http:
+        path: v1/components/search
         method: get
