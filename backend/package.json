@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "prisma": "^5.1.1",
     "serverless": "^3.33.0",
+    "serverless-dotenv-plugin": "^6.0.0",
     "serverless-esbuild": "^1.43.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",

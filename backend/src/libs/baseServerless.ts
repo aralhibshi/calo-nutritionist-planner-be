@@ -18,6 +18,7 @@ type Params = Omit<AWS, 'package' | 'provider' | 'functions' | 'resources' | 'pl
   functions?: AWS['functions'] | string[];
   resources?: AWS['resources'] | string[];
   plugins?: string[];
+  package;
 }
 
 export default ({ functions, resources, plugins, ...rest }: Params): AWS => merge<Partial<AWS>, Params>({
@@ -25,12 +26,10 @@ export default ({ functions, resources, plugins, ...rest }: Params): AWS => merg
     ...new Set([
       'serverless-esbuild',
       'serverless-iam-roles-per-function',
+      'serverless-dotenv-plugin',
       ...(plugins ||[])
     ])
   ],
-  package: {
-    individually: true
-  },
   custom: {
     defaultStage: 'dev',
     esbuild: {

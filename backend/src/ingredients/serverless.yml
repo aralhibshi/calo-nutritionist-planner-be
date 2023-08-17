@@ -1,0 +1,6 @@
+createIngredient:
+  handler: src/ingredients/createIngredient/handler.default
+  events:
+    - http:
+        path: v1/ingredient/create
+        method: post
