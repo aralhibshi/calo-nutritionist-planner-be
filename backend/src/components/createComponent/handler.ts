@@ -14,9 +14,10 @@ export default middyfy(async (event) => {
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
       const componentData = event.body;
+      const ingredientId = componentData.ingredientId
 
       // Prisma - Create Ingredient
-      const result = await createComponent(componentData);
+      const result = await createComponent(componentData,ingredientId);
 
       if (result.statusCode === 201) {
         const createdComponentUUID = result.component?.id;
@@ -71,29 +72,32 @@ export default middyfy(async (event) => {
     };
   }
 });
-
 // Prisma - Create Component
-async function createComponent(data) {
+async function createComponent(data, ingredientId) {
   try {
     console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
-    // Add the ingredient ID to the component data
-    // data.ingredientId = '67d3e029-687c-4d13-91b1-cd7c7aa816c0';
-
-    const createdComponent = await createComponent(data);
+    const createdComponent = await prisma.component.create({
+        data: {
+          name: data.name,
+          unit: data.unit,
+          // Add other fields if necessary
+        },
+      });
 
     console.log('Component created successfully');
-    
-    if (createdComponent.statusCode === 201) {
-      const componentId = createdComponent.component.id;
-      const ingredientId = '67d3e029-687c-4d13-91b1-cd7c7aa816c0'; // Replace with the actual ingredient ID
-    
+
+    if (createdComponent) {
+      const componentId = createdComponent.id;
+    //   const ingredientId = '67d3e029-687c-4d13-91b1-cd7c7aa816c0'; // Replace with the actual ingredient ID
+
       await createComponentIngredient(componentId, ingredientId);
     }
 
-    return { 
-        statusCode: 201,
-        component: createdComponent };
+    return {
+      statusCode: 201,
+      component: createdComponent
+    };
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       console.log('Conflict Error:', err);
@@ -107,7 +111,7 @@ async function createComponent(data) {
         error: {
           title: 'Prisma Error',
           message: 'Error creating component in Prisma',
-          details: err,
+          details: err
         }
       })
     };
