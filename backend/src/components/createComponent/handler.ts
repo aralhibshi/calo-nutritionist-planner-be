@@ -126,10 +126,10 @@ async function createComponentIngredient(componentId, ingredientId) {
   
       const createdComponentIngredient = await prisma.componentIngredient.create({
         data: {
-          component_id: componentId,
-          ingredient_id: ingredientId,
+          component: { connect: { id: componentId } },
+          ingredient: { connect: { id: ingredientId } },
           ingredient_quantity: 1, // Replace with the desired ingredient quantity
-        }
+        },
       });
   
       console.log('Component ingredient created successfully');
