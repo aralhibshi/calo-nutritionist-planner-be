@@ -1,0 +1,6 @@
+createComponent:
+  handler: src/components/createComponent/handler.default
+  events:
+    - http:
+        path: v1/component/create
+        method: post
