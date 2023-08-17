@@ -4,3 +4,10 @@ createComponent:
     - http:
         path: v1/component/create
         method: post
+
+getComponents:
+  handler: src/components/getComponents/handler.default
+  events:
+    - http:
+        path: v1/components
+        method: get
