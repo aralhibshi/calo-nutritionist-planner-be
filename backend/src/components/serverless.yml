@@ -2,5 +2,19 @@ createComponent:
   handler: src/components/createComponent/handler.default
   events:
     - http:
-        path: v1/component/create
+        path: v1/components/create
         method: post
+
+getComponents:
+  handler: src/components/getComponents/handler.default
+  events:
+    - http:
+        path: v1/components
+        method: get
+
+searchComponent:
+  handler: src/components/searchComponents/handler.default
+  events:
+    - http:
+        path: v1/components/search
+        method: get
