@@ -24,8 +24,10 @@ export default middyfy(async (event) => {
         },
       };
     } else {
+      const capitalizedSearchName = capitalizeFirstLetter(searchName)
+
     // Prisma - Search Ingredients
-    const result = await searchComponents(searchName);
+    const result = await searchComponents(capitalizedSearchName);
     return result;
     }
   } catch (err) {
@@ -54,12 +56,26 @@ async function searchComponents(index) {
     const result = await prisma.component.findMany({
       where: {
         name: {
-          search: index,
+          contains: index,
         },
       },
+      orderBy: {
+        name: 'asc', // You can choose any field for the initial ordering
+      },
+    });
+    
+     // Manually sort the results based on exact match priority
+     const sortedResults = result.sort((a, b) => {
+      if (a.name === index && b.name !== index) {
+        return -1;
+      } else if (a.name !== index && b.name === index) {
+        return 1;
+      } else {
+        return 0;
+      }
     });
 
-    console.log('Components fetched successfully', result);
+    console.log('Components fetched successfully', sortedResults);
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -67,7 +83,7 @@ async function searchComponents(index) {
           title: 'Success',
           message: 'Components fetched successfully',
         },
-        data: result,
+        data: sortedResults,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -88,4 +104,9 @@ async function searchComponents(index) {
       },
     };
   }
+}
+
+// Capitalize First Letter of String
+function capitalizeFirstLetter(string) {
+  return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
