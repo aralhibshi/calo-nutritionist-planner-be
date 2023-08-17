@@ -11,3 +11,10 @@ getIngredients:
     - http:
         path: v1/ingredients
         method: get
+        
+searchIngredients:
+  handler: src/ingredients/searchIngredients/handler.default
+  events:
+    - http:
+        path: v1/ingredient/search
+        method: get
