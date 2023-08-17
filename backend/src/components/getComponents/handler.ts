@@ -7,7 +7,7 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    // Prisma - Get Ingredients
+    // Prisma - Get Components
     const result = await getComponents();
     return result;
   } catch (err) {
@@ -28,7 +28,7 @@ export default middyfy(async (event) => {
   }
 })
 
-// Prisma - Get Ingredients
+// Prisma - Get Components
 async function getComponents() {
   try {
     console.log('Fetching components');

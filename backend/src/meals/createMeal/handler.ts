@@ -17,7 +17,7 @@ export default middyfy(async (event) => {
       const componentId = mealData.componentId
 
       // Prisma - Create Ingredient
-      const result = await createMeal(mealData,componentId);
+      const result = await createMeal(mealData, componentId);
 
       if (result.statusCode === 201) {
         const createdMealUUID = result.meal?.id;
@@ -120,7 +120,6 @@ async function createMeal(data, componentId) {
   }
 }
 
-
 // Prisma - Create Component Ingredient
 async function createMealComponent(mealId, componentId) {
     try {
@@ -130,12 +129,12 @@ async function createMealComponent(mealId, componentId) {
         data: {
           meal: { connect: { id: mealId } },
           component: { connect: { id: componentId } },
-          component_quantity:1
+          component_quantity: 1
          // Replace with the correct property name for the ingredient quantity
         },
       });
   
-      console.log('Component ingredient created successfully');
+      console.log('Meal component created successfully');
   
       return createdMealIngredient;
     } catch (err) {

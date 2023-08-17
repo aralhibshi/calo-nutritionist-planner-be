@@ -19,6 +19,17 @@ searchIngredients:
         path: v1/ingredient/search
         method: get
         request:
-            parameters:
-              querystrings:
-                name: true
+          parameters:
+            querystrings:
+              name: true
+
+deleteIngredient:
+  handler: src/ingredients/deleteIngredient/handler.default
+  events:
+    - http:
+        path: v1/ingredient/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true
