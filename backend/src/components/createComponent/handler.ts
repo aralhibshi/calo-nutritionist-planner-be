@@ -16,7 +16,7 @@ export default middyfy(async (event) => {
       const componentData = event.body;
       const ingredientId = componentData.ingredientId
 
-      // Prisma - Create Ingredient
+      // Prisma - Create Component
       const result = await createComponent(componentData,ingredientId);
 
       if (result.statusCode === 201) {
@@ -81,7 +81,6 @@ async function createComponent(data, ingredientId) {
         data: {
           name: data.name,
           unit: data.unit,
-          // Add other fields if necessary
         },
       });
 
@@ -119,7 +118,7 @@ async function createComponent(data, ingredientId) {
 }
 
 
-// Prisma - Create Component Ingredient
+// Prisma - Create Component
 async function createComponentIngredient(componentId, ingredientId) {
     try {
       console.log('Creating component ingredient with componentId:', componentId, 'and ingredientId:', ingredientId);

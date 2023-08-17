@@ -42,7 +42,7 @@ async function getMeals() {
       body: JSON.stringify({
         success: {
           title: 'Success',
-          message: 'meal fetched successfully'
+          message: 'Meals fetched successfully'
         },
         data: result
       }),

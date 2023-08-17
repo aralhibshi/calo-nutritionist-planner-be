@@ -26,7 +26,7 @@ export default middyfy(async (event) => {
     } else {
       const capitalizedSearchName = capitalizeFirstLetter(searchName)
 
-    // Prisma - Search Ingredients
+    // Prisma - Search Components
     const result = await searchComponents(capitalizedSearchName);
     return result;
     }
@@ -48,7 +48,7 @@ export default middyfy(async (event) => {
   }
 });
 
-// Prisma - Search Ingredients
+// Prisma - Search Components
 async function searchComponents(index) {
   try {
     console.log('Fetching components');
@@ -60,11 +60,10 @@ async function searchComponents(index) {
         },
       },
       orderBy: {
-        name: 'asc', // You can choose any field for the initial ordering
+        name: 'asc',
       },
     });
     
-     // Manually sort the results based on exact match priority
      const sortedResults = result.sort((a, b) => {
       if (a.name === index && b.name !== index) {
         return -1;
