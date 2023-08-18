@@ -8,8 +8,9 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     const requiredKeys = [
-    'name',
-    'unit'
+      'ingredientId',
+      'name',
+      'unit'
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
@@ -18,6 +19,7 @@ export default middyfy(async (event) => {
         name: capitalizeFirstLetter(event.body.name),
       };
       const ingredientId = componentData.ingredientId
+      delete componentData.ingredientId;
 
       // Prisma - Create Component
       const result = await createComponent(componentData,ingredientId);
@@ -75,23 +77,18 @@ export default middyfy(async (event) => {
     };
   }
 });
+
 // Prisma - Create Component
 async function createComponent(data, ingredientId) {
   try {
     console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
-    const createdComponent = await prisma.component.create({
-        data: {
-          name: data.name,
-          unit: data.unit,
-        },
-      });
+    const createdComponent = await prisma.component.create({ data });
 
     console.log('Component created successfully');
 
     if (createdComponent) {
       const componentId = createdComponent.id;
-    //   const ingredientId = '67d3e029-687c-4d13-91b1-cd7c7aa816c0'; // Replace with the actual ingredient ID
 
       await createComponentIngredient(componentId, ingredientId);
     }
@@ -119,7 +116,6 @@ async function createComponent(data, ingredientId) {
     };
   }
 }
-
 
 // Prisma - Create Component
 async function createComponentIngredient(componentId, ingredientId) {
