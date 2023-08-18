@@ -13,7 +13,10 @@ export default middyfy(async (event) => {
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
-      const mealData = event.body;
+      const mealData = {
+        ...event.body,
+        name: capitalizeFirstLetter(event.body.name),
+      };
       const componentId = mealData.componentId
 
       // Prisma - Create Ingredient
@@ -122,32 +125,37 @@ async function createMeal(data, componentId) {
 
 // Prisma - Create Component Ingredient
 async function createMealComponent(mealId, componentId) {
-    try {
-      console.log('Creating meal component with mealId:', mealId, 'and componentId:', componentId);
-  
-      const createdMealIngredient = await prisma.mealComponent.create({
-        data: {
-          meal: { connect: { id: mealId } },
-          component: { connect: { id: componentId } },
-          component_quantity: 1
-         // Replace with the correct property name for the ingredient quantity
-        },
-      });
-  
-      console.log('Meal component created successfully');
-  
-      return createdMealIngredient;
-    } catch (err) {
-      console.log('Error:', err);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: {
-            title: 'Prisma Error',
-            message: 'Error creating meal component in Prisma',
-            details: err,
-          }
-        })
-      };
-    }
+  try {
+    console.log('Creating meal component with mealId:', mealId, 'and componentId:', componentId);
+
+    const createdMealIngredient = await prisma.mealComponent.create({
+      data: {
+        meal: { connect: { id: mealId } },
+        component: { connect: { id: componentId } },
+        component_quantity: 1
+        // Replace with the correct property name for the ingredient quantity
+      },
+    });
+
+    console.log('Meal component created successfully');
+
+    return createdMealIngredient;
+  } catch (err) {
+    console.log('Error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: {
+          title: 'Prisma Error',
+          message: 'Error creating meal component in Prisma',
+          details: err,
+        }
+      })
+    };
   }
+}
+
+// Capitalize First Letter of String
+function capitalizeFirstLetter(string) {
+  return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}

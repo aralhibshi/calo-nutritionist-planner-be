@@ -152,7 +152,7 @@ async function createComponentIngredient(componentId, ingredientId) {
     }
   }
 
-  // Capitalize First Letter of String
+// Capitalize First Letter of String
 function capitalizeFirstLetter(string) {
   return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
