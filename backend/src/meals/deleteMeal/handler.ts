@@ -7,9 +7,9 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const componentId = event.queryStringParameters && event.queryStringParameters.id;
+    const mealId = event.queryStringParameters && event.queryStringParameters.id;
 
-    if (!componentId) {
+    if (!mealId) {
       console.log('Validation Error:', 'Missing or invalid query parameter "id"');
       return {
         statusCode: 400,
@@ -25,11 +25,11 @@ export default middyfy(async (event) => {
       };
     } else {
 
-    // Prisma - Remove Component from MealComponent
-    await removeComponentFomMealComponent(componentId);
+    // Prisma - Remove Meal from MealComponent
+    await removeMealFomMealComponent(mealId);
 
-    // Prisma - Delete Component
-    const result = await deleteComponent(componentId);
+    // Prisma - Delete Ingredient
+    const result = await deleteMeal(mealId);
     return result
     }
   } catch (err) {
@@ -39,7 +39,7 @@ export default middyfy(async (event) => {
       body: JSON.stringify({
         error: {
           title: 'Error',
-          message: 'Error deleting component',
+          message: 'Error deleting meal',
           details: err,
         },
       }),
@@ -50,26 +50,26 @@ export default middyfy(async (event) => {
   }
 });
 
-// Prisma - Remove Component From MealComponent
-async function removeComponentFomMealComponent(id) {
+// Prisma - Remove Meal From MealComponent
+async function removeMealFomMealComponent(id) {
   try {
-    console.log('Removing component from MealComponent');
+    console.log('Removing meal from MealComponent');
 
     await prisma.mealComponent.deleteMany({
       where: {
-        component_id: {
+        meal_id: {
           equals: id,
         }
       }
     });
 
-    console.log('Component removed from MealComponent successfully');
+    console.log('Meal removed from MealComponent successfully');
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: {
           title: 'Success',
-          message: 'Component removed from MealComponent successfully',
+          message: 'Meal removed from MealComponent successfully',
         }
       }),
       headers: {
@@ -82,7 +82,7 @@ async function removeComponentFomMealComponent(id) {
       body: JSON.stringify({
         error: {
           title: 'Prisma Error',
-          message: 'Error removing component from MealComponent with Prisma',
+          message: 'Error removing meal from MealComponent with Prisma',
           details: err,
         },
       }),
@@ -93,24 +93,24 @@ async function removeComponentFomMealComponent(id) {
   }
 }
 
-// Prisma - Delete Component
-async function deleteComponent(id) {
+// Prisma - Delete Ingredient
+async function deleteMeal(id) {
   try {
-    console.log('Deleting component');
+    console.log('Deleting Meal');
 
-    const result = await prisma.component.delete({
+    const result = await prisma.meal.delete({
       where: {
         id: id,
       },
     });
 
-    console.log('Component deleted successfully');
+    console.log('Meal deleted successfully');
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: {
           title: 'Success',
-          message: 'Component deleted successfully',
+          message: 'Meal deleted successfully',
         },
         data: result
       }),
@@ -124,7 +124,7 @@ async function deleteComponent(id) {
       body: JSON.stringify({
         error: {
           title: 'Prisma Error',
-          message: 'Error deleting component with Prisma',
+          message: 'Error deleting meal with Prisma',
           details: err,
         },
       }),

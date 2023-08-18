@@ -9,7 +9,8 @@ export default middyfy(async (event) => {
 
     const requiredKeys = [
     'name',
-    'unit'
+    'unit',
+    'componentId'
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
