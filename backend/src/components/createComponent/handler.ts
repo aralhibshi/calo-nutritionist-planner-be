@@ -13,7 +13,10 @@ export default middyfy(async (event) => {
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
-      const componentData = event.body;
+      const componentData = {
+        ...event.body,
+        name: capitalizeFirstLetter(event.body.name),
+      };
       const ingredientId = componentData.ingredientId
 
       // Prisma - Create Component
@@ -148,3 +151,8 @@ async function createComponentIngredient(componentId, ingredientId) {
       };
     }
   }
+
+  // Capitalize First Letter of String
+function capitalizeFirstLetter(string) {
+  return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
