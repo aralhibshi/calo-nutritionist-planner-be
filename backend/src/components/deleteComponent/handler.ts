@@ -7,9 +7,9 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const ingredientId = event.queryStringParameters && event.queryStringParameters.id;
+    const componentId = event.queryStringParameters && event.queryStringParameters.id;
 
-    if (!ingredientId) {
+    if (!componentId) {
       console.log('Validation Error:', 'Missing or invalid query parameter "id"');
       return {
         statusCode: 400,
@@ -26,10 +26,10 @@ export default middyfy(async (event) => {
     } else {
 
     // Prisma - Remove Ingredient from ComponentIngredient
-    await removeIngredientFomComponentIngredient(ingredientId);
+    await removeComponentFomMealComponent(componentId);
 
     // Prisma - Delete Ingredient
-    const result = await deleteIngredient(ingredientId);
+    const result = await deleteComponent(componentId);
     return result
     }
   } catch (err) {
@@ -39,7 +39,7 @@ export default middyfy(async (event) => {
       body: JSON.stringify({
         error: {
           title: 'Error',
-          message: 'Error deleting ingredient',
+          message: 'Error deleting component',
           details: err,
         },
       }),
@@ -51,13 +51,13 @@ export default middyfy(async (event) => {
 });
 
 // Prisma - Remove Ingredient From ComponentIngredient
-async function removeIngredientFomComponentIngredient(id) {
+async function removeComponentFomMealComponent(id) {
   try {
-    console.log('Removing ingredient from ComponentIngredient');
+    console.log('Removing component from MealComponent');
 
-    await prisma.componentIngredient.deleteMany({
+    await prisma.mealComponent.deleteMany({
       where: {
-        ingredient_id: {
+        component_id: {
           equals: id,
         }
       }
@@ -94,11 +94,11 @@ async function removeIngredientFomComponentIngredient(id) {
 }
 
 // Prisma - Delete Ingredient
-async function  deleteIngredient(id) {
+async function  deleteComponent(id) {
   try {
-    console.log('Deleting ingredient');
+    console.log('Deleting component');
 
-    const result = await prisma.ingredient.delete({
+    const result = await prisma.component.delete({
       where: {
         id: id,
       },
