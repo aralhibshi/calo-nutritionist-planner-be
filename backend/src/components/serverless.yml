@@ -22,3 +22,14 @@ searchComponent:
           parameters:
             querystrings:
               name: true
+
+deleteComponent:
+  handler: src/components/deleteComponent/handler.default
+  events:
+    - http:
+        path: v1/component/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true
