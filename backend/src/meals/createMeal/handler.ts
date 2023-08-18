@@ -8,9 +8,9 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     const requiredKeys = [
-    'name',
-    'unit',
-    'componentId'
+      'componentId',
+      'name',
+      'unit'
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
@@ -18,7 +18,8 @@ export default middyfy(async (event) => {
         ...event.body,
         name: capitalizeFirstLetter(event.body.name),
       };
-      const componentId = mealData.componentId
+      const componentId = mealData.componentId;
+      delete mealData.componentId;
 
       // Prisma - Create Ingredient
       const result = await createMeal(mealData, componentId);
@@ -33,8 +34,9 @@ export default middyfy(async (event) => {
                 message: 'Meal created successfully'
               },
               data: {
+                id: createdMealUUID,
+                componentId,
                 ...mealData,
-                id: createdMealUUID // Include the UUID in the response body
               }
             })
           };
@@ -81,21 +83,12 @@ async function createMeal(data, componentId) {
   try {
     console.log('Creating Meal with data:', JSON.stringify(data, null, 2));
 
-    const createdMeal = await prisma.meal.create({
-        data: {
-            name: data.name,
-            // description: data.description, // Add the description property if necessary
-            size: data.size, // Add the size property if necessary
-            unit: data.unit,
-            // Add other fields if necessary
-          },
-      });
+    const createdMeal = await prisma.meal.create({ data });
 
     console.log('Component created successfully');
 
     if (createdMeal) {
       const mealId = createdMeal.id;
-    //   const ingredientId = '67d3e029-687c-4d13-91b1-cd7c7aa816c0'; // Replace with the actual ingredient ID
 
       await createMealComponent(mealId, componentId);
     }
