@@ -94,7 +94,7 @@ async function removeIngredientFomComponentIngredient(id) {
 }
 
 // Prisma - Delete Ingredient
-async function  deleteIngredient(id) {
+async function deleteIngredient(id) {
   try {
     console.log('Deleting ingredient');
 

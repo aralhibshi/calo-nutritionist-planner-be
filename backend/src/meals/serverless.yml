@@ -22,3 +22,14 @@ searchMeal:
           parameters:
             querystrings:
               name: true
+
+deleteMeal:
+  handler: src/meals/deleteMeal/handler.default
+  events:
+    - http:
+        path: v1/meal/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true
