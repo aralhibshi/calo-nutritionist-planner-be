@@ -2,7 +2,7 @@ createMeal:
   handler: src/meals/createMeal/handler.default
   events:
     - http:
-        path: v1/meals/create
+        path: v1/meal/create
         method: post
 
 getMeals:
@@ -16,5 +16,9 @@ searchMeal:
   handler: src/meals/searchMeals/handler.default
   events:
     - http:
-        path: v1/meals/search
+        path: v1/meal/search
         method: get
+        request: 
+          parameters:
+            querystrings:
+              name: true
