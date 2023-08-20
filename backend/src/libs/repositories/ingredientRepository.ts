@@ -86,4 +86,48 @@ export default class IngredientRepository {
       });
     }
   }
+
+  async searchIngredients(index: string): Promise<any> {
+    try {
+      console.log('Fetching ingredients');
+
+      const result = await this.prisma.ingredient.findMany({
+        where: {
+          name: {
+            contains: index,
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      const sortedResults = result.sort((a, b) => {
+        if (a.name === index && b.name !== index) {
+          return -1;
+        } else if (a.name !== index && b.name === index) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      console.log('Ingredients fetched successfully', sortedResults);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Ingredients fetched successfully',
+          },
+          data: sortedResults,
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(500, 'Internal Server Error', {
+        details: 'An error occurred while fetching matching ingredients in Prisma',
+      });
+    }
+  }
 }
