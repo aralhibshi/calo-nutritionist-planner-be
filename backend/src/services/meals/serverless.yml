@@ -1,19 +1,19 @@
 createMeal:
-  handler: src/meals/createMeal/handler.default
+  handler: src/services/meals/createMeal/handler.default
   events:
     - http:
         path: v1/meal/create
         method: post
 
 getMeals:
-  handler: src/meals/getMeal/handler.default
+  handler: src/services/meals/getMeal/handler.default
   events:
     - http:
         path: v1/meals
         method: get
 
 searchMeal:
-  handler: src/meals/searchMeals/handler.default
+  handler: src/services/meals/searchMeals/handler.default
   events:
     - http:
         path: v1/meal/search
@@ -24,7 +24,7 @@ searchMeal:
               name: true
 
 deleteMeal:
-  handler: src/meals/deleteMeal/handler.default
+  handler: src/services/meals/deleteMeal/handler.default
   events:
     - http:
         path: v1/meal/delete

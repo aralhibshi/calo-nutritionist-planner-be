@@ -13,6 +13,8 @@
     "@middy/core": "^4.5.5",
     "@middy/http-json-body-parser": "^4.5.5",
     "@prisma/client": "^5.1.1",
+    "http-errors": "^2.0.0",
+    "joi": "^17.9.2",
     "serverless-iam-roles-per-function": "^3.2.0"
   },
   "devDependencies": {

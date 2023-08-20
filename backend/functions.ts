@@ -3,9 +3,9 @@ import { readFileSync } from 'fs';
 import yml from 'js-yaml';
 
 const files = [
-  readFileSync('./src/ingredients/serverless.yml'),
-  readFileSync('./src/components/serverless.yml'),
-  readFileSync('./src/meals/serverless.yml')
+  readFileSync('./src/services/ingredients/serverless.yml'),
+  readFileSync('./src/services/components/serverless.yml'),
+  readFileSync('./src/services/meals/serverless.yml')
 ];
 
 export default files.reduce((res, row) => {
