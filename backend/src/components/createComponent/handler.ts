@@ -8,9 +8,9 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     const requiredKeys = [
-      'ingredientId',
       'name',
-      'unit'
+      'unit',
+      'ingredients'
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
@@ -18,14 +18,14 @@ export default middyfy(async (event) => {
         ...event.body,
         name: capitalizeFirstLetter(event.body.name),
       };
-      const ingredientId = componentData.ingredientId
-      delete componentData.ingredientId;
+      const ingredients = componentData.ingredients;
+      delete componentData.ingredients;
 
       // Prisma - Create Component
-      const result = await createComponent(componentData,ingredientId);
+      const result: any = await createComponent(componentData, ingredients);
 
       if (result.statusCode === 201) {
-        const createdComponentUUID = result.component?.id;
+        const createdComponentUUID = result.body.data.id;
         return {
             statusCode: 201,
             body: JSON.stringify({
@@ -35,7 +35,7 @@ export default middyfy(async (event) => {
               },
               data: {
                 ...componentData,
-                id: createdComponentUUID // Include the UUID in the response body
+                id: createdComponentUUID
               }
             })
           };
@@ -79,7 +79,7 @@ export default middyfy(async (event) => {
 });
 
 // Prisma - Create Component
-async function createComponent(data, ingredientId) {
+async function createComponent(data, ingredients) {
   try {
     console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
@@ -90,12 +90,22 @@ async function createComponent(data, ingredientId) {
     if (createdComponent) {
       const componentId = createdComponent.id;
 
-      await createComponentIngredient(componentId, ingredientId);
+      for (const ingredient of ingredients) {
+        await createComponentIngredient(componentId, ingredient.ingredientId, ingredient.ingredient_quantity);
+      }
+      console.log('componentIngredient created successfully');
     }
 
     return {
       statusCode: 201,
-      component: createdComponent
+      body: {
+        success: {
+          title: 'Success',
+          message: 'Component created successfully'
+        },
+        data: createdComponent
+      }
+      // component: createdComponent,
     };
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -117,36 +127,36 @@ async function createComponent(data, ingredientId) {
   }
 }
 
-// Prisma - Create Component
-async function createComponentIngredient(componentId, ingredientId) {
-    try {
-      console.log('Creating component ingredient with componentId:', componentId, 'and ingredientId:', ingredientId);
-  
-      const createdComponentIngredient = await prisma.componentIngredient.create({
-        data: {
-          component: { connect: { id: componentId } },
-          ingredient: { connect: { id: ingredientId } },
-          ingredient_quantity: 1, // Replace with the desired ingredient quantity
-        },
-      });
-  
-      console.log('Component ingredient created successfully');
-  
-      return createdComponentIngredient;
-    } catch (err) {
-      console.log('Error:', err);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: {
-            title: 'Prisma Error',
-            message: 'Error creating component ingredient in Prisma',
-            details: err,
-          }
-        })
-      };
-    }
+// Prisma - Create Component Ingredient
+async function createComponentIngredient(componentId, ingredientId, ingredientQuantity) {
+  try {
+    console.log('Creating component ingredient with componentId:', componentId, 'and ingredientId:', ingredientId);
+
+    const createdComponentIngredient = await prisma.componentIngredient.create({
+      data: {
+        component: { connect: { id: componentId } },
+        ingredient: { connect: { id: ingredientId } },
+        ingredient_quantity: ingredientQuantity,
+      },
+    });
+
+    console.log('Component ingredient created successfully');
+
+    return createdComponentIngredient;
+  } catch (err) {
+    console.log('Error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: {
+          title: 'Prisma Error',
+          message: 'Error creating component ingredient in Prisma',
+          details: err,
+        }
+      })
+    };
   }
+}
 
 // Capitalize First Letter of String
 function capitalizeFirstLetter(string) {
