@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { middyfy } from '@lib/middleware';
+import { getIngredients } from './useCase';
+import createError from 'http-errors';
 
 const prisma = new PrismaClient();
 
@@ -8,62 +10,12 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     // Prisma - Get Ingredients
-    const result = await getIngredients();
+    const result = await getIngredients(prisma);
     return result;
   } catch (err) {
     console.log('Error', err)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Error',
-          message: 'Error fetching ingredients',
-          details: err
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
+    throw createError(500, 'Internal Server Error', {
+      details: 'An error occurred while creating the ingredient',
+    });
   }
 })
-
-// Prisma - Get Ingredients
-async function getIngredients() {
-  try {
-    console.log('Fetching ingredients');
-
-    const result = await prisma.ingredient.findMany();
-
-    console.log('Ingredients fetched successfully', result);
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Ingredient fetched successfully'
-        },
-        data: result
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error fetching ingredients in Prisma',
-          details: err
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  }
-}

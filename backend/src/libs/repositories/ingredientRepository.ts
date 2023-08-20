@@ -60,4 +60,30 @@ export default class IngredientRepository {
       });
     }
   }
+
+  async getIngredients(): Promise<any> {
+    try {
+      console.log('Fetching ingredients');
+
+      const ingredients = await this.prisma.ingredient.findMany();
+
+      console.log('Ingredients fetched successfully', ingredients);
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Ingredients fetched successfully',
+          },
+          data: ingredients,
+        }),
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(500, 'Prisma Error', {
+        details: 'Error fetching ingredients in Prisma',
+      });
+    }
+  }
 }
