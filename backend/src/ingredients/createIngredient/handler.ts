@@ -10,7 +10,7 @@ export default middyfy(async (event) => {
     const requiredKeys = [
       'name',
       'price',
-      'calories',
+      // 'calories',
       'protein',
       'fats',
       'carbs',
@@ -64,7 +64,18 @@ async function createIngredient(data) {
   try {
     console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 
-    const result = await prisma.ingredient.create({ data });
+    const protein = data.protein;
+    const carbs = data.carbs;
+    const fats = data.fats;
+    const calories = (protein * 4) + (carbs * 4) + (fats * 9);
+
+    // Merge the calculated calories into the ingredient data.
+    const ingredientData = {
+      ...data,
+      calories: calories.toFixed(3), // Round to 3 decimal places as per your schema.
+    };
+
+    const result = await prisma.ingredient.create({ data: ingredientData });
 
     console.log('Ingredient created successfully', result);
 
