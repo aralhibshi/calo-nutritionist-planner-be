@@ -1,5 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import Joi from 'joi';
 import { middyfy } from '@lib/middleware';
+import { deleteIngredient } from './useCase';
+import createError from 'http-errors';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -7,130 +10,168 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const ingredientId = event.queryStringParameters && event.queryStringParameters.id;
+    // Joi Validation Schema
+    const validationSchema = Joi.object({
+      id: Joi.string().required(),
+    });
 
-    if (!ingredientId) {
-      console.log('Validation Error:', 'Missing or invalid query parameter "id"');
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: {
-            title: 'Validation Error',
-            message: 'Missing or invalid query parameter "id"',
-          },
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-    } else {
-
-    // Prisma - Remove Ingredient from ComponentIngredient
-    await removeIngredientFomComponentIngredient(ingredientId);
-
-    // Prisma - Delete Ingredient
-    const result = await deleteIngredient(ingredientId);
-    return result
+    // Asynchronous Validation
+    try {
+      await validationSchema.validateAsync(event.queryStringParameters);
+    } catch (validationError) {
+      throw createError(400, 'Validation Error', {
+        details: validationError.details.map(detail => detail.message),
+      });
     }
+
+    const ingredientId = event.queryStringParameters.id;
+
+    // useCase - Delete Ingredient
+    const result = await deleteIngredient(prisma, ingredientId);
+    return result;
   } catch (err) {
     console.log('Error', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Error',
-          message: 'Error deleting ingredient',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+    throw createError(500, 'Internal Server Error', {
+      details: 'An error occurred while deleting the ingredient',
+    });
   }
 });
 
-// Prisma - Remove Ingredient From ComponentIngredient
-async function removeIngredientFomComponentIngredient(id) {
-  try {
-    console.log('Removing ingredient from ComponentIngredient');
 
-    await prisma.componentIngredient.deleteMany({
-      where: {
-        ingredient_id: {
-          equals: id,
-        }
-      }
-    });
 
-    console.log('Ingredient removed from ComponentIngredient successfully');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Ingredient removed from ComponentIngredient successfully',
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err);
-    return {
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error removing ingredient from ComponentIngredient with Prisma',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  }
-}
+// import { PrismaClient } from '@prisma/client';
+// import { middyfy } from '@lib/middleware';
 
-// Prisma - Delete Ingredient
-async function deleteIngredient(id) {
-  try {
-    console.log('Deleting ingredient');
+// const prisma = new PrismaClient();
 
-    const result = await prisma.ingredient.delete({
-      where: {
-        id: id,
-      },
-    });
+// export default middyfy(async (event) => {
+//   try {
+//     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    console.log('Ingredient deleted successfully');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Ingredient deleted successfully',
-        },
-        data: result
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err);
-    return {
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error deleting ingredient with Prisma',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  }
-}
+//     const ingredientId = event.queryStringParameters && event.queryStringParameters.id;
+
+//     if (!ingredientId) {
+//       console.log('Validation Error:', 'Missing or invalid query parameter "id"');
+//       return {
+//         statusCode: 400,
+//         body: JSON.stringify({
+//           error: { 
+//             title: 'Validation Error',
+//             message: 'Missing or invalid query parameter "id"',
+//           },
+//         }),
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       };
+//     } else {
+
+//     // Prisma - Remove Ingredient from ComponentIngredient
+//     await removeIngredientFomComponentIngredient(ingredientId);
+
+//     // Prisma - Delete Ingredient
+//     const result = await deleteIngredient(ingredientId);
+//     return result
+//     }
+//   } catch (err) {
+//     console.log('Error', err);
+//     return {
+//       statusCode: 500,
+//       body: JSON.stringify({
+//         error: {
+//           title: 'Error',
+//           message: 'Error deleting ingredient',
+//           details: err,
+//         },
+//       }),
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     };
+//   }
+// });
+
+// // Prisma - Remove Ingredient From ComponentIngredient
+// async function removeIngredientFomComponentIngredient(id) {
+//   try {
+//     console.log('Removing ingredient from ComponentIngredient');
+
+//     await prisma.componentIngredient.deleteMany({
+//       where: {
+//         ingredient_id: {
+//           equals: id,
+//         }
+//       }
+//     });
+
+//     console.log('Ingredient removed from ComponentIngredient successfully');
+//     return {
+//       statusCode: 200,
+//       body: JSON.stringify({
+//         success: {
+//           title: 'Success',
+//           message: 'Ingredient removed from ComponentIngredient successfully',
+//         }
+//       }),
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     };
+//   } catch (err) {
+//     console.log('Prisma Error:', err);
+//     return {
+//       body: JSON.stringify({
+//         error: {
+//           title: 'Prisma Error',
+//           message: 'Error removing ingredient from ComponentIngredient with Prisma',
+//           details: err,
+//         },
+//       }),
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     };
+//   }
+// }
+
+// // Prisma - Delete Ingredient
+// async function deleteIngredient(id) {
+//   try {
+//     console.log('Deleting ingredient');
+
+//     const result = await prisma.ingredient.delete({
+//       where: {
+//         id: id,
+//       },
+//     });
+
+//     console.log('Ingredient deleted successfully');
+//     return {
+//       statusCode: 200,
+//       body: JSON.stringify({
+//         success: {
+//           title: 'Success',
+//           message: 'Ingredient deleted successfully',
+//         },
+//         data: result
+//       }),
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     };
+//   } catch (err) {
+//     console.log('Prisma Error:', err);
+//     return {
+//       body: JSON.stringify({
+//         error: {
+//           title: 'Prisma Error',
+//           message: 'Error deleting ingredient with Prisma',
+//           details: err,
+//         },
+//       }),
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     };
+//   }
+// }

@@ -130,4 +130,57 @@ export default class IngredientRepository {
       });
     }
   }
+
+  async removeIngredientFromComponentIngredient(prisma: PrismaClient, id: string): Promise<void> {
+    try {
+      console.log('Removing ingredient from ComponentIngredient');
+  
+      await prisma.componentIngredient.deleteMany({
+        where: {
+          ingredient_id: {
+            equals: id,
+          }
+        }
+      });
+  
+      console.log('Ingredient removed from ComponentIngredient successfully');
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(500, 'Prisma Error', {
+        details: 'Error removing ingredient from ComponentIngredient with Prisma',
+      });
+    }
+  }
+
+  async deleteIngredient(prisma: PrismaClient, id: string): Promise<any> {
+    try {
+      console.log('Deleting ingredient');
+  
+      const result = await prisma.ingredient.delete({
+        where: {
+          id: id,
+        },
+      });
+  
+      console.log('Ingredient deleted successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Ingredient deleted successfully',
+          },
+          data: result
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(500, 'Prisma Error', {
+        details: 'Error deleting ingredient with Prisma',
+      });
+    }
+  }
 }
