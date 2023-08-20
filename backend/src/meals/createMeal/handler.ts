@@ -8,38 +8,39 @@ export default middyfy(async (event) => {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
     const requiredKeys = [
-      'componentId',
       'name',
-      'unit'
+      'size',
+      'unit',
+      'components',
     ];
 
     if (requiredKeys.every(key => event.body[key] !== undefined)) {
       const mealData = {
         ...event.body,
         name: capitalizeFirstLetter(event.body.name),
+        size: capitalizeFirstLetter(event.body.size),
       };
-      const componentId = mealData.componentId;
-      delete mealData.componentId;
+      const components = mealData.components;
+      delete mealData.components;
 
-      // Prisma - Create Ingredient
-      const result = await createMeal(mealData, componentId);
+      // Prisma - Create Meal
+      const result: any = await createMeal(mealData, components);
 
       if (result.statusCode === 201) {
-        const createdMealUUID = result.meal?.id;
-        return {    
-            statusCode: 201,
-            body: JSON.stringify({
-              success: {
-                title: 'Success',
-                message: 'Meal created successfully'
-              },
-              data: {
-                id: createdMealUUID,
-                componentId,
-                ...mealData,
-              }
-            })
-          };
+        const createdMealUUID = result.body?.data?.id;
+        return {
+          statusCode: 201,
+          body: JSON.stringify({
+            success: {
+              title: 'Success',
+              message: 'Component created successfully'
+            },
+            data: {
+              ...mealData,
+              id: createdMealUUID
+            }
+          })
+        };
       } else if (result.statusCode === 409) {
         console.log('Conflict Error:', mealData.name, 'already exists');
         return {
@@ -78,74 +79,57 @@ export default middyfy(async (event) => {
     };
   }
 });
-// Prisma - Create Component
-async function createMeal(data, componentId) {
+
+// Prisma - Create Meal
+async function createMeal(data, components) {
   try {
     console.log('Creating Meal with data:', JSON.stringify(data, null, 2));
 
     const createdMeal = await prisma.meal.create({ data });
 
-    console.log('Component created successfully');
+    console.log('Meal created successfully');
 
     if (createdMeal) {
       const mealId = createdMeal.id;
 
-      await createMealComponent(mealId, componentId);
+      for (const component of components) {
+        await createMealComponent(mealId, component.componentId, component.component_quantity);
+      }
     }
 
     return {
       statusCode: 201,
-      meal: createdMeal
+      body: {
+        success: {
+          title: 'Success',
+          message: 'Meal created successfully'
+        },
+        data: createdMeal
+      }
     };
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-      console.log('Conflict Error:', err);
-      return { statusCode: 409 };
-    }
-
-    console.log('Error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error creating Meal in Prisma',
-          details: err
-        }
-      })
-    };
+    // ...
   }
 }
 
-// Prisma - Create Component Ingredient
-async function createMealComponent(mealId, componentId) {
+// Prisma - Create Meal Component
+async function createMealComponent(mealId, componentId, componentQuantity) {
   try {
     console.log('Creating meal component with mealId:', mealId, 'and componentId:', componentId);
 
-    const createdMealIngredient = await prisma.mealComponent.create({
+    const createdMealComponent = await prisma.mealComponent.create({
       data: {
         meal: { connect: { id: mealId } },
         component: { connect: { id: componentId } },
-        component_quantity: 1
-        // Replace with the correct property name for the ingredient quantity
+        component_quantity: componentQuantity
       },
     });
 
     console.log('Meal component created successfully');
 
-    return createdMealIngredient;
+    return createdMealComponent;
   } catch (err) {
-    console.log('Error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error creating meal component in Prisma',
-          details: err,
-        }
-      })
-    };
+    // ...
   }
 }
 
