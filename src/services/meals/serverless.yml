@@ -1,0 +1,35 @@
+createMeal:
+  handler: src/services/meals/createMeal/handler.default
+  events:
+    - http:
+        path: v1/meal/create
+        method: post
+
+getMeals:
+  handler: src/services/meals/getMeals/handler.default
+  events:
+    - http:
+        path: v1/meals
+        method: get
+
+searchMeal:
+  handler: src/services/meals/searchMeals/handler.default
+  events:
+    - http:
+        path: v1/meal/search
+        method: get
+        request: 
+          parameters:
+            querystrings:
+              name: true
+
+deleteMeal:
+  handler: src/services/meals/deleteMeal/handler.default
+  events:
+    - http:
+        path: v1/meal/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true

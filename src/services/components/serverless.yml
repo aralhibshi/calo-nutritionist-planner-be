@@ -1,0 +1,35 @@
+createComponent:
+  handler: src/services/components/createComponent/handler.default
+  events:
+    - http:
+        path: v1/component/create
+        method: post
+
+getComponents:
+  handler: src/services/components/getComponents/handler.default
+  events:
+    - http:
+        path: v1/components
+        method: get
+
+searchComponent:
+  handler: src/services/components/searchComponents/handler.default
+  events:
+    - http:
+        path: v1/component/search
+        method: get
+        request:
+          parameters:
+            querystrings:
+              name: true
+
+deleteComponent:
+  handler: src/services/components/deleteComponent/handler.default
+  events:
+    - http:
+        path: v1/component/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true

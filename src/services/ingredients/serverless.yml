@@ -1,0 +1,35 @@
+createIngredient:
+  handler: src/services/ingredients/createIngredient/handler.default
+  events:
+    - http:
+        path: v1/ingredient/create
+        method: post
+
+getIngredients:
+  handler: src/services/ingredients/getIngredients/handler.default
+  events:
+    - http:
+        path: v1/ingredients
+        method: get
+        
+searchIngredients:
+  handler: src/services/ingredients/searchIngredients/handler.default
+  events:
+    - http:
+        path: v1/ingredient/search
+        method: get
+        request:
+          parameters:
+            querystrings:
+              name: true
+
+deleteIngredient:
+  handler: src/services/ingredients/deleteIngredient/handler.default
+  events:
+    - http:
+        path: v1/ingredient/delete
+        method: delete
+        request: 
+          parameters:
+            querystrings:
+              id: true
