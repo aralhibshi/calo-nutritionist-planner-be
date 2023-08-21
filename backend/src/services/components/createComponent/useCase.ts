@@ -12,7 +12,7 @@ export async function createComponent(
   try {
     // Repo - Create Component
     const result = await componentRepo.createComponent(componentData);
-    const createdComponentUUID = result.body.data.id;
+    const componentId = result.body.data.id;
     return {
       statusCode: 201,
       body: JSON.stringify({
@@ -21,7 +21,7 @@ export async function createComponent(
           message: 'Component created successfully'
         },
         data: {
-          id: createdComponentUUID,
+          id: componentId,
           ...componentData,
         }
       })
@@ -34,7 +34,11 @@ export async function createComponent(
   }
 }
 
-export async function createComponentIngredient(prisma: PrismaClient, componentId: string, ingredients: Array<Ingredients>) {
+export async function createComponentIngredient(
+  prisma: PrismaClient,
+  componentId: string,
+  ingredients: Array<Ingredients>
+  ):Promise<any> {
   const componentRepo = new ComponentRepository(prisma);
 
   try {

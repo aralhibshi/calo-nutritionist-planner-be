@@ -93,4 +93,95 @@ export default class ComponentRepository {
       });
     }
   }
+
+  async removeComponentFromComponentIngredient(id: string) {
+    try {
+      console.log('Removing component from ComponentIngredient');
+
+      const result = await this.prisma.componentIngredient.deleteMany({
+        where: {
+          component_id: {
+            equals: id
+          }
+        }
+      })
+
+      console.log('Component removed from ComponentIngredient successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Component removed from ComponentIngredient successfully',
+          },
+          data: result
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error removing component from ComponentIngredient in Prisma',
+      });
+    }
+  }
+
+  async removeComponentFomMealComponent(id: string) {
+    try {
+      console.log('Removing component from MealComponent');
+
+      const result = await this.prisma.mealComponent.deleteMany({
+        where: {
+          component_id: {
+            equals: id
+          }
+        }
+      });
+
+      console.log('Component removed from MealComponent successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Component removed from MealComponent successfully',
+          },
+          data: result
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error removing component from MealComponent in Prisma',
+      });
+    }
+  }
+
+  async deleteComponent(id: string) {
+    try {
+      console.log('Deleting component');
+  
+      const result = await this.prisma.component.delete({
+        where: {
+          id: id,
+        },
+      });
+  
+      console.log('Component deleted successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Component deleted successfully',
+          },
+          data: result
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error deleting component from component in Prisma',
+      });
+    }
+  }
 }
