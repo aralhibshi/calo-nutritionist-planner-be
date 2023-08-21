@@ -63,7 +63,7 @@ export default class ComponentRepository {
     }
   }
 
-  async createComponentIngredient(data: CreateComponentIngredientInput) {
+  async createComponentIngredient(data: CreateComponentIngredientInput): Promise<any> {
     try {
       console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
 
@@ -121,7 +121,7 @@ export default class ComponentRepository {
     }
   }
 
-  async searchComponents(index: string) {
+  async searchComponents(index: string): Promise<any> {
     try {
       console.log('Fetching components');
   
@@ -165,7 +165,7 @@ export default class ComponentRepository {
     }
   }
 
-  async removeComponentFromComponentIngredient(id: string) {
+  async removeComponentFromComponentIngredient(id: string): Promise<any> {
     try {
       console.log('Removing component from ComponentIngredient');
 
@@ -196,7 +196,7 @@ export default class ComponentRepository {
     }
   }
 
-  async removeComponentFomMealComponent(id: string) {
+  async removeComponentFomMealComponent(id: string): Promise<any> {
     try {
       console.log('Removing component from MealComponent');
 
@@ -227,7 +227,7 @@ export default class ComponentRepository {
     }
   }
 
-  async deleteComponent(id: string) {
+  async deleteComponent(id: string): Promise<any> {
     try {
       console.log('Deleting component');
   

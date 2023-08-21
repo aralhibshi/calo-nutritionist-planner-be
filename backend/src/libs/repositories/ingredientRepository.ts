@@ -131,11 +131,11 @@ export default class IngredientRepository {
     }
   }
 
-  async removeIngredientFromComponentIngredient(prisma: PrismaClient, id: string): Promise<void> {
+  async removeIngredientFromComponentIngredient(prisma: PrismaClient, id: string): Promise<any> {
     try {
       console.log('Removing ingredient from ComponentIngredient');
   
-      await prisma.componentIngredient.deleteMany({
+      const result = await prisma.componentIngredient.deleteMany({
         where: {
           ingredient_id: {
             equals: id,
@@ -144,6 +144,16 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient removed from ComponentIngredient successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Component removed from ComponentIngredient successfully',
+          },
+          data: result
+        })
+      };
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
