@@ -6,7 +6,7 @@ createMeal:
         method: post
 
 getMeals:
-  handler: src/services/meals/getMeal/handler.default
+  handler: src/services/meals/getMeals/handler.default
   events:
     - http:
         path: v1/meals

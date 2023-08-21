@@ -34,21 +34,11 @@ export default middyfy(async (event) => {
 
     // useCase - Delete Ingredient
     const result = await deleteMeal(prisma, mealId);
-    return result
+    return result;
   } catch (err) {
     console.log('Error', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Error',
-          message: 'Error deleting meal',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+    throw createError(500, 'Internal Server Error', {
+      details: 'An error occurred while deleting the meal',
+    });
   }
 });
