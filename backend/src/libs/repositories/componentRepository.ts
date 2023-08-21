@@ -94,6 +94,33 @@ export default class ComponentRepository {
     }
   }
 
+
+  async getComponents() {
+    try {
+      console.log('Fetching components');
+
+      const result = await this.prisma.component.findMany();
+
+      console.log('Components fetched successfully');
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Components fetched successfully'
+          },
+          data: result
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error fetching components in Prisma',
+      });
+    }
+  }
+
   async removeComponentFromComponentIngredient(id: string) {
     try {
       console.log('Removing component from ComponentIngredient');
