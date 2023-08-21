@@ -1,5 +1,9 @@
+import Joi from 'joi';
 import { PrismaClient } from '@prisma/client';
 import { middyfy } from '@lib/middleware';
+import { capitalizeFirstLetter } from 'src/utils/stringUtils';
+import { searchComponents } from './useCase';
+import createError from 'http-errors';
 
 const prisma = new PrismaClient();
 
@@ -7,105 +11,30 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const searchName = event.queryStringParameters && event.queryStringParameters.name;
+    // Joi Validation Schema
+    const validationSchema = Joi.object({
+      name: Joi.string().required()
+    })
 
-    if (!searchName) {
-      console.log('Validation Error:', 'Missing or invalid query parameter "name"');
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: {
-            title: 'Validation Error',
-            message: 'Missing or invalid query parameter "name"',
-          },
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-    } else {
-      const capitalizedSearchName = capitalizeFirstLetter(searchName)
-
-    // Prisma - Search Components
-    const result = await searchComponents(capitalizedSearchName);
-    return result;
+    // Asynchronous Validation
+    try {
+      await validationSchema.validateAsync(event.queryStringParameters);
+    } catch (validationError) {
+      throw createError(400, 'Validation Error', {
+        details: validationError.details.map(detail => detail.message),
+      });
     }
+
+    const searchName = event.queryStringParameters && event.queryStringParameters.name;
+    const capitalizedSearchName = capitalizeFirstLetter(searchName)
+
+    // useCase - Search Components
+    const result = await searchComponents(prisma, capitalizedSearchName);
+    return result;
   } catch (err) {
     console.log('Error', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Error',
-          message: 'Error fetching components',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+    throw createError(500, 'Internal Server Error', {
+      details: 'An error occurred while fetching matching components',
+    });
   }
 });
-
-// Prisma - Search Components
-async function searchComponents(index) {
-  try {
-    console.log('Fetching components');
-
-    const result = await prisma.component.findMany({
-      where: {
-        name: {
-          contains: index,
-        },
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
-    
-     const sortedResults = result.sort((a, b) => {
-      if (a.name === index && b.name !== index) {
-        return -1;
-      } else if (a.name !== index && b.name === index) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-
-    console.log('Components fetched successfully', sortedResults);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Components fetched successfully',
-        },
-        data: sortedResults,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err);
-    return {
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error fetching matching components in Prisma',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  }
-}
-
-// Capitalize First Letter of String
-function capitalizeFirstLetter(string) {
-  return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}

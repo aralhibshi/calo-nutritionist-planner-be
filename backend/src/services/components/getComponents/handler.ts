@@ -15,7 +15,7 @@ export default middyfy(async (event) => {
   } catch (err) {
     console.log('Error', err);
     throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while fetching the component',
+      details: 'An error occurred while fetching components',
     });
   }
 })

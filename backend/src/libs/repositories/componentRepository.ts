@@ -121,6 +121,50 @@ export default class ComponentRepository {
     }
   }
 
+  async searchComponents(index: string) {
+    try {
+      console.log('Fetching components');
+  
+      const result = await this.prisma.component.findMany({
+        where: {
+          name: {
+            contains: index,
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+      
+       const sortedResults = result.sort((a, b) => {
+        if (a.name === index && b.name !== index) {
+          return -1;
+        } else if (a.name !== index && b.name === index) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+  
+      console.log('Components fetched successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Components fetched successfully',
+          },
+          data: sortedResults,
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error feetching matcing components in Prisma',
+      });
+    }
+  }
+
   async removeComponentFromComponentIngredient(id: string) {
     try {
       console.log('Removing component from ComponentIngredient');
