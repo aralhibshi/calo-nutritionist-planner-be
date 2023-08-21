@@ -1,5 +1,10 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import Joi from 'joi';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { middyfy } from '@lib/middleware';
+import { capitalizeFirstLetter } from 'src/utils/stringUtils';
+import { createComponent } from './useCase';
+import { createComponentIngredient } from './useCase';
+import createError from 'http-errors';
 
 const prisma = new PrismaClient();
 
@@ -7,158 +12,48 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const requiredKeys = [
-      'name',
-      'unit',
-      'ingredients'
-    ];
+    // Joi Validation Schema
+    const validationSchema = Joi.object({
+      ingredients: Joi.array().required(),
+      name: Joi.string().required(),
+      unit: Joi.string().required()
+    })
 
-    if (requiredKeys.every(key => event.body[key] !== undefined)) {
-      const componentData = {
-        ...event.body,
-        name: capitalizeFirstLetter(event.body.name),
-      };
-      const ingredients = componentData.ingredients;
-      delete componentData.ingredients;
-
-      // Prisma - Create Component
-      const result: any = await createComponent(componentData, ingredients);
-
-      if (result.statusCode === 201) {
-        const createdComponentUUID = result.body.data.id;
-        return {
-            statusCode: 201,
-            body: JSON.stringify({
-              success: {
-                title: 'Success',
-                message: 'Component created successfully'
-              },
-              data: {
-                ...componentData,
-                id: createdComponentUUID
-              }
-            })
-          };
-      } else if (result.statusCode === 409) {
-        console.log('Conflict Error:', componentData.name, 'already exists');
-        return {
-          statusCode: 409,
-          body: JSON.stringify({
-            error: {
-              title: 'Conflict Error',
-              message: 'Component name already exists',
-            }
-          })
-        };
-      }
-    } else {
-      console.log('Validation Error:', 'Required fields missing in request body');
-      return {
-        statusCode: 422,
-        body: JSON.stringify({
-          error: {
-            title: 'Validation Error',
-            message: 'Required fields missing in request body'
-          }
-        })
-      };
-    }
-  } catch (err) {
-    console.log('Error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Error',
-          message: 'Error creating component',
-          details: err,
-        }
-      })
-    };
-  }
-});
-
-// Prisma - Create Component
-async function createComponent(data, ingredients) {
-  try {
-    console.log('Creating component with data:', JSON.stringify(data, null, 2));
-
-    const createdComponent = await prisma.component.create({ data });
-
-    console.log('Component created successfully');
-
-    if (createdComponent) {
-      const componentId = createdComponent.id;
-
-      for (const ingredient of ingredients) {
-        await createComponentIngredient(componentId, ingredient.ingredientId, ingredient.ingredient_quantity);
-      }
-      console.log('componentIngredient created successfully');
+    // Asynchronous Validation
+    try {
+      await validationSchema.validateAsync(event.body);
+    } catch (validationError) {
+      throw createError(400, 'Validation Error', {
+        details: validationError.details.map(detail => detail.message),
+      });
     }
 
-    return {
-      statusCode: 201,
-      body: {
-        success: {
-          title: 'Success',
-          message: 'Component created successfully'
-        },
-        data: createdComponent
-      }
-      // component: createdComponent,
+    const componentData = {
+      ...event.body,
+      name: capitalizeFirstLetter(event.body.name),
     };
+    const ingredients = componentData.ingredients;
+    delete componentData.ingredients;
+
+    // useCase - Create Component
+    const result = await createComponent(prisma, componentData);
+
+    // useCase - Create ComponentIngredient
+    const parsedResult = JSON.parse(result.body)
+    const componentId = parsedResult.data.id;
+
+    await createComponentIngredient(prisma, componentId, ingredients)
+
+    return result;
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       console.log('Conflict Error:', err);
-      return { statusCode: 409 };
+      throw createError(409, 'Conflict Error', {
+        details: err,
+      });
     }
-
-    console.log('Error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error creating component in Prisma',
-          details: err
-        }
-      })
-    };
-  }
-}
-
-// Prisma - Create Component Ingredient
-async function createComponentIngredient(componentId, ingredientId, ingredientQuantity) {
-  try {
-    console.log('Creating component ingredient with componentId:', componentId, 'and ingredientId:', ingredientId);
-
-    const createdComponentIngredient = await prisma.componentIngredient.create({
-      data: {
-        component: { connect: { id: componentId } },
-        ingredient: { connect: { id: ingredientId } },
-        ingredient_quantity: ingredientQuantity,
-      },
+    throw createError(500, 'Internal Server Error', {
+      details: 'An error occurred while creating the component',
     });
-
-    console.log('Component ingredient created successfully');
-
-    return createdComponentIngredient;
-  } catch (err) {
-    console.log('Error:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error creating component ingredient in Prisma',
-          details: err,
-        }
-      })
-    };
   }
-}
-
-// Capitalize First Letter of String
-function capitalizeFirstLetter(string) {
-  return string.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
+})
