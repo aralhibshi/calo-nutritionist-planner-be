@@ -1,5 +1,9 @@
+import Joi from 'joi';
 import { PrismaClient } from '@prisma/client';
 import { middyfy } from '@lib/middleware';
+import { removeMealFomMealComponent } from './useCase';
+import { deleteMeal } from './useCase';
+import createError from 'http-errors';
 
 const prisma = new PrismaClient();
 
@@ -7,31 +11,30 @@ export default middyfy(async (event) => {
   try {
     console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
+    // Joi Validation Schema
+    const validationSchema = Joi.object({
+      id: Joi.string()
+      .min(36)
+      .required()
+    })
+
+    // Asynchronous Validation
+    try {
+      await validationSchema.validateAsync(event.queryStringParameters);
+    } catch (validationError) {
+      throw createError(400, 'Validation Error', {
+        details: validationError.details.map(detail => detail.message),
+      });
+    }
+
     const mealId = event.queryStringParameters && event.queryStringParameters.id;
 
-    if (!mealId) {
-      console.log('Validation Error:', 'Missing or invalid query parameter "id"');
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: {
-            title: 'Validation Error',
-            message: 'Missing or invalid query parameter "id"',
-          },
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-    } else {
+    // useCase - Remove Meal from MealComponent
+    await removeMealFomMealComponent(prisma, mealId);
 
-    // Prisma - Remove Meal from MealComponent
-    await removeMealFomMealComponent(mealId);
-
-    // Prisma - Delete Ingredient
-    const result = await deleteMeal(mealId);
+    // useCase - Delete Ingredient
+    const result = await deleteMeal(prisma, mealId);
     return result
-    }
   } catch (err) {
     console.log('Error', err);
     return {
@@ -49,88 +52,3 @@ export default middyfy(async (event) => {
     };
   }
 });
-
-// Prisma - Remove Meal From MealComponent
-async function removeMealFomMealComponent(id) {
-  try {
-    console.log('Removing meal from MealComponent');
-
-    await prisma.mealComponent.deleteMany({
-      where: {
-        meal_id: {
-          equals: id,
-        }
-      }
-    });
-
-    console.log('Meal removed from MealComponent successfully');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Meal removed from MealComponent successfully',
-        }
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err);
-    return {
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error removing meal from MealComponent with Prisma',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  }
-}
-
-// Prisma - Delete Ingredient
-async function deleteMeal(id) {
-  try {
-    console.log('Deleting Meal');
-
-    const result = await prisma.meal.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    console.log('Meal deleted successfully');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Meal deleted successfully',
-        },
-        data: result
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  } catch (err) {
-    console.log('Prisma Error:', err);
-    return {
-      body: JSON.stringify({
-        error: {
-          title: 'Prisma Error',
-          message: 'Error deleting meal with Prisma',
-          details: err,
-        },
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-  }
-}

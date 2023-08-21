@@ -1,7 +1,7 @@
 import MealRepository from '@lib/repositories/mealRepository';
 import { Components } from '@lib/repositories/mealRepository';
 import { CreateMealInput } from '@lib/repositories/mealRepository';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import createError from 'http-errors';
 
 export async function createMeal(

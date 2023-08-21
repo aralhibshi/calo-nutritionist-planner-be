@@ -85,8 +85,69 @@ export default class MealRepository {
         })
       };
     } catch (err) {
+      console.log('Prisma Error', err)
       throw createError(400, 'Prisma Error', {
         details: 'Error creating ComponentIngredient in Prisma',
+      });
+    }
+  }
+
+  async removeMealFomMealComponent(id: string): Promise<any> {
+    try {
+      console.log('Removing meal from MealComponent');
+  
+      const result = await this.prisma.mealComponent.deleteMany({
+        where: {
+          meal_id: {
+            equals: id,
+          }
+        }
+      });
+  
+      console.log('Meal removed from MealComponent successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Meal removed from MealComponent successfully',
+          }
+        }),
+        data: result
+      };
+    } catch (err) {
+      console.log('Prisma Error', err)
+      throw createError(400, 'Prisma Error', {
+        details: 'Error removing meal from MealComponent in Prisma',
+      });
+    }
+  }
+
+  async deleteMeal(id: string): Promise<any> {
+    try {
+      console.log('Deleting Meal');
+  
+      const result = await this.prisma.meal.delete({
+        where: {
+          id: id,
+        },
+      });
+  
+      console.log('Meal deleted successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Meal deleted successfully',
+          },
+          data: result
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error', err)
+      throw createError(400, 'Prisma Error', {
+        details: 'Error deleting meal in Prisma',
       });
     }
   }
