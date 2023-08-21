@@ -86,6 +86,50 @@ export default class MealRepository {
     }
   }
 
+  async searchMeals(index: string): Promise<any> {
+    try {
+      console.log('Fetching meals');
+  
+      const result = await this.prisma.meal.findMany({
+        where: {
+          name: {
+            contains: index,
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+      
+      const sortedResults = result.sort((a, b) => {
+      if (a.name === index && b.name !== index) {
+        return -1;
+      } else if (a.name !== index && b.name === index) {
+        return 1;
+      } else {
+        return 0;
+      }
+      });
+  
+      console.log('Meals fetched successfully');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Meals fetched successfully',
+          },
+          data: sortedResults,
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error', err)
+      throw createError(400, 'Prisma Error', {
+        details: 'Error fetching matching meals in Prisma',
+      });
+    }
+  }
+
   async createMealComponent(data: CreateMealComponentInput): Promise<any> {
     try {
       console.log('Creating meal component with mealId:', data.mealId, 'and componentId:', data.componentId);
