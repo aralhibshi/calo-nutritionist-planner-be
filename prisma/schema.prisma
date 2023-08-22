@@ -12,19 +12,18 @@ datasource db {
 model Ingredient {
   id                  String                @id @default(uuid())
   name                String                @unique @db.VarChar
-  category            String?               @default("No Category")
+  category            String?
   description         String?
   price               Decimal               @db.Decimal(5, 3)
-  calories            Decimal               @db.Decimal(5, 3)
   protein             Decimal               @db.Decimal(5, 3)
   fats                Decimal               @db.Decimal(5, 3)
   carbs               Decimal               @db.Decimal(5, 3)
   unit                String
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  created_at          DateTime              @default(now()) @db.Timestamptz(3)
+  updated_at          DateTime              @updatedAt @db.Timestamptz(3)
   ComponentIngredient ComponentIngredient[]
 
-  @@index([name])
+  @@map("ingredients")
 }
 
 model Component {
@@ -33,12 +32,12 @@ model Component {
   category            String?
   description         String?
   unit                String
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  created_at          DateTime              @default(now()) @db.Timestamptz(3)
+  updated_at          DateTime              @updatedAt @db.Timestamptz(3)
   ComponentIngredient ComponentIngredient[]
   MealComponent       MealComponent[]
 
-  @@index([name])
+  @@map("components")
 }
 
 model Meal {
@@ -47,11 +46,11 @@ model Meal {
   description   String?
   size          String
   unit          String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  created_at    DateTime        @default(now()) @db.Timestamptz(3)
+  updated_at    DateTime        @updatedAt @db.Timestamptz(3)
   MealComponent MealComponent[]
 
-  @@index([name])
+  @@map("meals")
 }
 
 model ComponentIngredient {
@@ -61,8 +60,10 @@ model ComponentIngredient {
   component_id        String
   ingredient_id       String
   ingredient_quantity Int
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  created_at          DateTime   @default(now()) @db.Timestamptz(3)
+  updated_at          DateTime   @updatedAt @db.Timestamptz(3)
+
+  @@map("components_ingredients")
 }
 
 model MealComponent {
@@ -72,6 +73,8 @@ model MealComponent {
   meal_id            String
   component_id       String
   component_quantity Int
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  created_at         DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at         DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@map("meals_components")
 }

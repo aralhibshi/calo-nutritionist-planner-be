@@ -21,14 +21,8 @@ export default class IngredientRepository {
 
   async createIngredient(data: IngredientData): Promise<any> {
     try {
-      const protein = data.protein;
-      const carbs = data.carbs;
-      const fats = data.fats;
-      const calories = (protein * 4) + (carbs * 4) + (fats * 9);
-
       const ingredientData = {
-        ...data,
-        calories: calories.toFixed(3)
+        ...data
       };
 
       const result = await this.prisma.ingredient.create({ data: ingredientData });
@@ -149,8 +143,7 @@ export default class IngredientRepository {
           id: id
         },
         data: {
-          ...ingredientData,
-          calories: calories.toFixed(3)
+          ...ingredientData
         }
       })
 
