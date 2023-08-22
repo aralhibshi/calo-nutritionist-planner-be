@@ -1,12 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import createError from 'http-errors';
 
-interface CreateIngredientInput {
+interface IngredientData {
   name: string;
   category?: string;
   description?: string;
   price: number;
-  calories: number;
   protein: number;
   fats: number;
   carbs: number;
@@ -20,7 +19,7 @@ export default class IngredientRepository {
     this.prisma = prisma;
   }
 
-  async createIngredient(data: CreateIngredientInput): Promise<any> {
+  async createIngredient(data: IngredientData): Promise<any> {
     try {
       const protein = data.protein;
       const carbs = data.carbs;
@@ -29,7 +28,7 @@ export default class IngredientRepository {
 
       const ingredientData = {
         ...data,
-        calories: calories.toFixed(3),
+        calories: calories.toFixed(3)
       };
 
       const result = await this.prisma.ingredient.create({ data: ingredientData });
@@ -65,9 +64,9 @@ export default class IngredientRepository {
     try {
       console.log('Fetching ingredients');
 
-      const ingredients = await this.prisma.ingredient.findMany();
+      const result = await this.prisma.ingredient.findMany();
 
-      console.log('Ingredients fetched successfully', ingredients);
+      console.log('Ingredients fetched successfully');
 
       return {
         statusCode: 200,
@@ -76,8 +75,8 @@ export default class IngredientRepository {
             title: 'Success',
             message: 'Ingredients fetched successfully',
           },
-          data: ingredients,
-        }),
+          data: result,
+        })
       };
     } catch (err) {
       console.log('Prisma Error:', err);
@@ -112,7 +111,7 @@ export default class IngredientRepository {
         }
       });
 
-      console.log('Ingredients fetched successfully', sortedResults);
+      console.log('Ingredients fetched successfully');
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -131,11 +130,55 @@ export default class IngredientRepository {
     }
   }
 
-  async removeIngredientFromComponentIngredient(prisma: PrismaClient, id: string): Promise<any> {
+  async updateIngredient(id: string, data: IngredientData): Promise<any> {
+    try {
+      console.log('Updating ingredient');
+
+      const protein = data.protein;
+      const carbs = data.carbs;
+      const fats = data.fats;
+      const calories = (protein * 4) + (carbs * 4) + (fats * 9);
+
+      const ingredientData = {
+        ...data,
+        calories: calories.toFixed(3),
+      };
+
+      const result = await this.prisma.ingredient.update({
+        where: {
+          id: id
+        },
+        data: {
+          ...ingredientData,
+          calories: calories.toFixed(3)
+        }
+      })
+
+      console.log('Ingredient updated successfully');
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          success: {
+            title: 'Success',
+            message: 'Ingredient updated successfully',
+          },
+          data: result,
+        })
+      };
+    } catch (err) {
+      console.log('Prisma Error:', err)
+      throw createError(500, 'Prisma Error', {
+        details: 'Error removing ingredient from ComponentIngredient with Prisma',
+      });
+    }
+  }
+
+  async removeIngredientFromComponentIngredient(id: string): Promise<any> {
     try {
       console.log('Removing ingredient from ComponentIngredient');
   
-      const result = await prisma.componentIngredient.deleteMany({
+      const result = await this.prisma.componentIngredient.deleteMany({
         where: {
           ingredient_id: {
             equals: id,
@@ -162,11 +205,11 @@ export default class IngredientRepository {
     }
   }
 
-  async deleteIngredient(prisma: PrismaClient, id: string): Promise<any> {
+  async deleteIngredient(id: string): Promise<any> {
     try {
       console.log('Deleting ingredient');
   
-      const result = await prisma.ingredient.delete({
+      const result = await this.prisma.ingredient.delete({
         where: {
           id: id,
         },

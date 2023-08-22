@@ -23,6 +23,17 @@ searchIngredients:
             querystrings:
               name: true
 
+updateIngredient:
+  handler: src/services/ingredients/updateIngredient/handler.default
+  events:
+    - http:
+        path: v1/ingredient/update
+        method: put
+        request:
+          parameters:
+            querystrings:
+              id: true
+
 deleteIngredient:
   handler: src/services/ingredients/deleteIngredient/handler.default
   events:
