@@ -20,7 +20,10 @@ export default middyfy(async (event) => {
       protein: Joi.number().required(),
       fats: Joi.number().required(),
       carbs: Joi.number().required(),
-      unit: Joi.string().required(),
+      unit: Joi
+      .string()
+      .valid('g', 'ml')
+      .required(),
     });
 
     // Asynchronous Validation
