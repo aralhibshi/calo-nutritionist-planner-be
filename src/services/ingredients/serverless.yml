@@ -4,6 +4,7 @@ createIngredient:
     - http:
         path: v1/ingredient/create
         method: post
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 getIngredients:
   handler: src/services/ingredients/getIngredients/handler.default
@@ -11,6 +12,7 @@ getIngredients:
     - http:
         path: v1/ingredients
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         
 searchIngredients:
   handler: src/services/ingredients/searchIngredients/handler.default
@@ -18,6 +20,7 @@ searchIngredients:
     - http:
         path: v1/ingredient/search
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request:
           parameters:
             querystrings:
@@ -29,6 +32,7 @@ updateIngredient:
     - http:
         path: v1/ingredient/update
         method: put
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request:
           parameters:
             querystrings:
@@ -40,6 +44,7 @@ deleteIngredient:
     - http:
         path: v1/ingredient/delete
         method: delete
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request: 
           parameters:
             querystrings:

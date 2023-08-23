@@ -4,6 +4,7 @@ createMeal:
     - http:
         path: v1/meal/create
         method: post
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 getMeals:
   handler: src/services/meals/getMeals/handler.default
@@ -11,6 +12,7 @@ getMeals:
     - http:
         path: v1/meals
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 searchMeal:
   handler: src/services/meals/searchMeals/handler.default
@@ -18,6 +20,7 @@ searchMeal:
     - http:
         path: v1/meal/search
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request: 
           parameters:
             querystrings:
@@ -29,6 +32,7 @@ deleteMeal:
     - http:
         path: v1/meal/delete
         method: delete
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request: 
           parameters:
             querystrings:

@@ -4,6 +4,7 @@ createComponent:
     - http:
         path: v1/component/create
         method: post
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 getComponents:
   handler: src/services/components/getComponents/handler.default
@@ -11,6 +12,7 @@ getComponents:
     - http:
         path: v1/components
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 searchComponent:
   handler: src/services/components/searchComponents/handler.default
@@ -18,6 +20,7 @@ searchComponent:
     - http:
         path: v1/component/search
         method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request:
           parameters:
             querystrings:
@@ -29,6 +32,7 @@ deleteComponent:
     - http:
         path: v1/component/delete
         method: delete
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request: 
           parameters:
             querystrings:

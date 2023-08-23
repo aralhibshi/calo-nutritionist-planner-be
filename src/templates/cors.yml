@@ -1,0 +1,11 @@
+dev:
+  origins:
+    - http://localhost:3000
+    - http://localhost:3001
+  headers:
+    - Content-Type
+    - X-Amz-Date
+    - Authorization
+    - X-Api-Key
+    - X-Amz-Security-Token
+  allowCredentials: false
