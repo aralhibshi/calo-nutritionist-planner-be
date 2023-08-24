@@ -4,9 +4,17 @@ import createError from 'http-errors';
 
 export default class IngredientRepository {
   private prisma: PrismaClient;
+  private static instance: IngredientRepository | null = null
 
-  constructor(prisma: PrismaClient) {
+  private constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+  }
+
+  public static getInstance(prisma: PrismaClient): IngredientRepository {
+    if (!IngredientRepository.instance) {
+      IngredientRepository.instance = new IngredientRepository(prisma);
+    }
+    return IngredientRepository.instance;
   }
 
   async createIngredient(data: IIngredientData): Promise<any> {

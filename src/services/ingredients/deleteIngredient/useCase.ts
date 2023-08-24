@@ -6,7 +6,7 @@ export async function deleteIngredient(
   prisma: PrismaClient,
   event: IIngredientDeleteEvent
   ): Promise<any> {
-  const ingredientRepo = new IngredientRepository(prisma);
+  const ingredientRepo = IngredientRepository.getInstance(prisma);
 
   const id = event.queryStringParameters.id
   

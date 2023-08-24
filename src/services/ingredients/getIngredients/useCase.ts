@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 
 export async function getIngredients(prisma: PrismaClient): Promise<any> {
-  const ingredientRepo = new IngredientRepository(prisma);
+  const ingredientRepo = IngredientRepository.getInstance(prisma);
 
   // Repo - Get Ingredients
   const result = await ingredientRepo.getIngredients();

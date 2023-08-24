@@ -7,7 +7,7 @@ export async function createIngredient(
   prisma: PrismaClient,
   event: IIngredientCreateEvent
   ): Promise<any> {
-  const ingredientRepo = new IngredientRepository(prisma);
+  const ingredientRepo = IngredientRepository.getInstance(prisma);
 
   const ingredientData = {
     ...event.body,
