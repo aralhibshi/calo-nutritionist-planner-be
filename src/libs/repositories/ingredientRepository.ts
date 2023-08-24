@@ -20,7 +20,6 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.create({ data: ingredientData });
 
       console.log('Ingredient created successfully');
-
       return {
         statusCode: 201,
         body: JSON.stringify({
@@ -53,7 +52,6 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.findMany();
 
       console.log('Ingredients fetched successfully');
-
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -74,7 +72,7 @@ export default class IngredientRepository {
 
   async searchIngredients(index: string): Promise<any> {
     try {
-      console.log('Fetching matching ingredients:', JSON.stringify(index, null, 2));
+      console.log('Fetching matching ingredients with name:', index);
 
       const result = await this.prisma.ingredient.findMany({
         where: {
@@ -118,7 +116,7 @@ export default class IngredientRepository {
 
   async updateIngredient(id: string, data: IIngredientData): Promise<any> {
     try {
-      console.log('Updating ingredient with date:', JSON.stringify(data, null, 2));
+      console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));
 
       const ingredientData = {
         ...data,
@@ -134,7 +132,6 @@ export default class IngredientRepository {
       })
 
       console.log('Ingredient updated successfully');
-
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -195,6 +192,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient deleted successfully');
+
       return {
         statusCode: 200,
         body: JSON.stringify({

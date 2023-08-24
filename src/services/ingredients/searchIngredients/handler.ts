@@ -1,33 +1,27 @@
 import Joi from 'joi';
 import { PrismaClient } from '@prisma/client';
+import { IIngredientSearchEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
-import { capitalizeFirstLetter } from 'src/utils/stringUtils';
+import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
+import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { searchIngredients } from './useCase';
-import createError from 'http-errors';
 
 const prisma = new PrismaClient();
 
-export default middyfy(async (event) => {
-  try {
-    console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
+export default middyfy(async (event: IIngredientSearchEvent): Promise<any> => {
+  console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-    const ingredientName = event.queryStringParameters && event.queryStringParameters.name;
+  const validationSchema = Joi.object({
+    name: Joi
+      .string()
+      .required()
+  })
 
-    if (!ingredientName) {
-      throw createError(400, 'Validation Error', {
-        details: 'Missing or invalid query parameter "name"',
-      });
-    } else {
-      const capitalizedIngredientName = capitalizeFirstLetter(ingredientName);
+  // Validation before Processing
+  await queryValidationMiddleware(validationSchema)(event);
 
-      // useCase - Search Ingredients
-      const result = await searchIngredients(prisma, capitalizedIngredientName);
-      return result;
-    }
-  } catch (err) {
-    console.log('Error', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while fetching ingredients',
-    });
-  }
-});
+  // useCase - Search Ingredients
+  const result = await searchIngredients(prisma, event);
+  return result;
+})
+.use(readExceptionHandlerMiddleware());

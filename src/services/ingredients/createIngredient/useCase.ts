@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { IIngredientCreateEvent } from '@lib/interfaces';
+import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-export async function createIngredient(prisma: PrismaClient, event: IIngredientCreateEvent): Promise<any> {
+export async function createIngredient(
+  prisma: PrismaClient,
+  event: IIngredientCreateEvent
+  ): Promise<any> {
   const ingredientRepo = new IngredientRepository(prisma);
 
   const ingredientData = {
