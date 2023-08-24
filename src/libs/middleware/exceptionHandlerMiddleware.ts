@@ -23,6 +23,21 @@ export const createExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Erro
   };
 };
 
+// Read
+export const readExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
+  return {
+    onError: async (handler) => {
+      const { error } = handler;
+
+      console.error('Error:', error);
+
+      throw createError(500, 'Internal Server Error', {
+        details: 'An error occurred while processing the get request',
+      });
+    },
+  };
+};
+
 // Delete
 export const deleteExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
   return {
