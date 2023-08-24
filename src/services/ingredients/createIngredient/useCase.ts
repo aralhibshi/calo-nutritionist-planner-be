@@ -2,15 +2,16 @@ import { PrismaClient } from '@prisma/client';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import createError from 'http-errors';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
+import { IIngredientCreateEvent } from '@lib/interfaces';
 
-export async function createIngredient(prisma: PrismaClient, data: any): Promise<any> {
+export async function createIngredient(prisma: PrismaClient, event: IIngredientCreateEvent): Promise<any> {
   try {
-    const ingredientData = {
-      ...data,
-      name: capitalizeFirstLetter(data.name)
-    }
-
     const ingredientRepo = new IngredientRepository(prisma);
+
+    const ingredientData = {
+      ...event.body,
+      name: capitalizeFirstLetter(event.body.name)
+    }
 
     // Repo - Create Ingredient
     const result = await ingredientRepo.createIngredient(ingredientData);

@@ -1,6 +1,6 @@
+import { Prisma } from '@prisma/client';
 import { MiddlewareObj } from '@middy/core';
 import createError from 'http-errors';
-import { Prisma } from '@prisma/client';
 
 export const exceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
   return {
