@@ -116,7 +116,7 @@ export default class IngredientRepository {
 
   async updateIngredient(id: string, data: IIngredientData): Promise<any> {
     try {
-      console.log('Updating ingredient with data:', JSON.stringify(data, null, 2));
+      console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));
 
       const ingredientData = {
         ...data,
