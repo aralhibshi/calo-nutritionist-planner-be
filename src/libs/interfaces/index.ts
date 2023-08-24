@@ -1,11 +1,25 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
-// Types ---
+// General ---
+
+// Types -
 
 // Ingredient Get (All) - Event
-export type TIngredientGetEvent = APIGatewayProxyEvent;
+export type TGetEvent = APIGatewayProxyEvent;
 
-// Interfaces ---
+
+// Interfaces -
+
+// Ingredient Delete - Event
+export interface IIngredientDeleteEvent {
+  queryStringParameters: {
+    id: string;
+  };
+}
+
+// Specific ---
+
+// Interfaces -
 
 // Ingredient Create/Update - Event
 export interface IIngredientCreateEvent {
@@ -94,4 +108,11 @@ export interface IComponentIngredientData {
 export interface IComponentIngredientDataArray {
   ingredientId: string,
   ingredient_quantity: number
+}
+
+// Component Delete - Event
+export interface IComponentDeleteEvent {
+  queryStringParameters: {
+    id: string;
+  };
 }

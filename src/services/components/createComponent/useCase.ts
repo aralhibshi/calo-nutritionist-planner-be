@@ -1,13 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import { IComponentCreateEvent, IComponentData } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-export async function createComponent(
-  prisma: PrismaClient,
-  event: IComponentCreateEvent,
-  ): Promise<any> {
-  const componentRepo = ComponentRepository.getInstance(prisma);
+export async function createComponent(event: IComponentCreateEvent): Promise<any> {
+  const componentRepo = ComponentRepository.getInstance();
 
   const componentData: IComponentData = {
     ...event.body,
@@ -35,11 +31,10 @@ export async function createComponent(
 }
 
 export async function createComponentIngredient(
-  prisma: PrismaClient,
   component: any,
   event: IComponentCreateEvent,
   ):Promise<any> {
-  const componentRepo = ComponentRepository.getInstance(prisma);
+  const componentRepo = ComponentRepository.getInstance();
 
   const ingredients = event.body.ingredients
   const parsedResult = JSON.parse(component.body)

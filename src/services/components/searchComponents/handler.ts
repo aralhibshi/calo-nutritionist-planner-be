@@ -1,11 +1,9 @@
 import Joi from 'joi';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@lib/prismaClient';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { searchComponents } from './useCase';
 import createError from 'http-errors';
-
-const prisma = new PrismaClient();
 
 export default middyfy(async (event) => {
   try {

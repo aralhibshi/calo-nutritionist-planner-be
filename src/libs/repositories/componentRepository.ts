@@ -1,21 +1,22 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from '@lib/prismaClient';
 import { IComponentData } from '@lib/interfaces';
 import { IComponentIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
-  private prisma: PrismaClient;
+  private prisma= prisma;
   private static instance: ComponentRepository | null = null
 
-  public static getInstance(prisma: PrismaClient): ComponentRepository {
+  private constructor(prisma: PrismaClient) {
+    this.prisma = prisma;
+  }
+
+  public static getInstance(): ComponentRepository {
     if (!ComponentRepository.instance) {
       ComponentRepository.instance = new ComponentRepository(prisma);
     }
     return ComponentRepository.instance;
-  }
-
-  private constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
   }
 
   async createComponent(data: IComponentData): Promise<any> {
@@ -218,7 +219,7 @@ export default class ComponentRepository {
 
   async deleteComponent(id: string): Promise<any> {
     try {
-      console.log('Deleting component');
+      console.log(`Deleting component with id: ${id}`);
   
       const result = await this.prisma.component.delete({
         where: {

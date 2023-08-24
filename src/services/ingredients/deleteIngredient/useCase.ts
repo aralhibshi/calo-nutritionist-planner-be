@@ -1,12 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { IIngredientDeleteEvent } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 
-export async function deleteIngredient(
-  prisma: PrismaClient,
-  event: IIngredientDeleteEvent
-  ): Promise<any> {
-  const ingredientRepo = IngredientRepository.getInstance(prisma);
+export async function deleteIngredient(event: IIngredientDeleteEvent): Promise<any> {
+  const ingredientRepo = IngredientRepository.getInstance();
 
   const id = event.queryStringParameters.id
   
