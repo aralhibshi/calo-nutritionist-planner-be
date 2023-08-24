@@ -1,21 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import { IIngredientSearchEvent } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
-import createError from 'http-errors';
+import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-export async function searchIngredients(prisma: PrismaClient, index: any): Promise<any> {
-  try {
-    const ingredientRepo = new IngredientRepository(prisma);
+export async function searchIngredients(prisma: PrismaClient, event: IIngredientSearchEvent): Promise<any> {
+  const ingredientRepo = new IngredientRepository(prisma);
 
-    // Repo - Search Ingredients
-    const result = await ingredientRepo.searchIngredients(index);
+  const index = capitalizeFirstLetter(event.queryStringParameters.name);
 
-    console.log('Ingredients fetched successfully');
-
-    return result;
-  } catch (err) {
-    console.log('Error', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while processing the request',
-    });
-  }
+  // Repo - Search Ingredients
+  const result = await ingredientRepo.searchIngredients(index);
+  return result;
 }

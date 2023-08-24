@@ -1,3 +1,7 @@
+import { APIGatewayProxyEvent } from 'aws-lambda';
+
+// Interfaces ---
+
 // Ingredient Create - Event
 export interface IIngredientCreateEvent {
   body: {
@@ -24,9 +28,20 @@ export interface IIngredientData {
   unit: string;
 }
 
+export interface IIngredientSearchEvent {
+  queryStringParameters: {
+    name: string;
+  };
+}
+
 // Ingredient Delete - Event
 export interface IIngredientDeleteEvent {
   queryStringParameters: {
     id: string;
   };
 }
+
+// Types ---
+
+// Ingredient Get All - Event
+export type MyLambdaEvent = APIGatewayProxyEvent;
