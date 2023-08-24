@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { PrismaClient } from '@prisma/client';
-import { middyfy } from '@lib/middleware';
+import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { removeMealFomMealComponent } from './useCase';
 import { deleteMeal } from './useCase';
 import createError from 'http-errors';

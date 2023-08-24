@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { middyfy } from '@lib/middleware';
+import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { createComponent } from './useCase';
 import { createComponentIngredient } from './useCase';

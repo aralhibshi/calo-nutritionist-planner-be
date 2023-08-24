@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { middyfy } from '@lib/middleware';
+import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { getIngredients } from './useCase';
 import createError from 'http-errors';
 
