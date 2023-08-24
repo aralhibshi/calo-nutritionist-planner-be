@@ -1,16 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import { IIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
-
-interface IIngredientData {
-  name: string;
-  category?: string;
-  description?: string;
-  price: number;
-  protein: number;
-  fats: number;
-  carbs: number;
-  unit: string;
-}
 
 export default class IngredientRepository {
   private prisma: PrismaClient;
@@ -21,13 +11,15 @@ export default class IngredientRepository {
 
   async createIngredient(data: IIngredientData): Promise<any> {
     try {
+      console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
+
       const ingredientData = {
         ...data
       };
 
       const result = await this.prisma.ingredient.create({ data: ingredientData });
 
-      console.log('Ingredient created successfully', result);
+      console.log('Ingredient created successfully');
 
       return {
         statusCode: 201,
@@ -82,7 +74,7 @@ export default class IngredientRepository {
 
   async searchIngredients(index: string): Promise<any> {
     try {
-      console.log('Fetching ingredients');
+      console.log('Fetching matching ingredients:', JSON.stringify(index, null, 2));
 
       const result = await this.prisma.ingredient.findMany({
         where: {
@@ -126,16 +118,10 @@ export default class IngredientRepository {
 
   async updateIngredient(id: string, data: IIngredientData): Promise<any> {
     try {
-      console.log('Updating ingredient');
-
-      const protein = data.protein;
-      const carbs = data.carbs;
-      const fats = data.fats;
-      const calories = (protein * 4) + (carbs * 4) + (fats * 9);
+      console.log('Updating ingredient with date:', JSON.stringify(data, null, 2));
 
       const ingredientData = {
         ...data,
-        calories: calories.toFixed(3),
       };
 
       const result = await this.prisma.ingredient.update({
@@ -200,7 +186,7 @@ export default class IngredientRepository {
 
   async deleteIngredient(id: string): Promise<any> {
     try {
-      console.log('Deleting ingredient');
+      console.log('Deleting ingredient with Id:', id);
   
       const result = await this.prisma.ingredient.delete({
         where: {
@@ -217,10 +203,7 @@ export default class IngredientRepository {
             message: 'Ingredient deleted successfully',
           },
           data: result
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        })
       };
     } catch (err) {
       console.log('Prisma Error:', err);

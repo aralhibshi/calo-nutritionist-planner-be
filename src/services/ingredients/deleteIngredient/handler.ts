@@ -1,13 +1,14 @@
 import Joi from 'joi';
 import { PrismaClient } from '@prisma/client';
+import { IIngredientDeleteEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
-import { exceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
+import { deleteExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { deleteIngredient } from './useCase';
 
 const prisma = new PrismaClient();
 
-export default middyfy(async (event) => {
+export default middyfy(async (event: IIngredientDeleteEvent): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
   const validationSchema = Joi.object({
@@ -24,4 +25,4 @@ export default middyfy(async (event) => {
   const result = await deleteIngredient(prisma, event);
   return result;
 })
-.use(exceptionHandlerMiddleware());
+.use(deleteExceptionHandlerMiddleware());

@@ -14,8 +14,8 @@ export default middyfy(async (event) => {
     const validationSchema = Joi.object({
       id: Joi.string().min(36).required(),
       name: Joi.string().required(),
-      category: Joi.string(),
       description: Joi.string(),
+      category: Joi.string(),
       price: Joi.number().required(),
       protein: Joi.number().required(),
       fats: Joi.number().required(),
