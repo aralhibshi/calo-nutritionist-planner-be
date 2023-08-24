@@ -14,10 +14,10 @@ model Ingredient {
   name                String                @unique @db.VarChar
   category            String?
   description         String?
-  price               Decimal               @db.Decimal(5, 3)
-  protein             Decimal               @db.Decimal(5, 3)
-  fats                Decimal               @db.Decimal(5, 3)
-  carbs               Decimal               @db.Decimal(5, 3)
+  price               Decimal               @db.Decimal(6, 3)
+  protein             Decimal               @db.Decimal(4, 3)
+  fats                Decimal               @db.Decimal(4, 3)
+  carbs               Decimal               @db.Decimal(4, 3)
   unit                String
   created_at          DateTime              @default(now()) @db.Timestamptz(3)
   updated_at          DateTime              @updatedAt @db.Timestamptz(3)

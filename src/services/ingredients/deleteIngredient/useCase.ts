@@ -2,15 +2,17 @@ import { PrismaClient } from '@prisma/client';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import createError from 'http-errors';
 
-export async function deleteIngredient(prisma: PrismaClient, id: string): Promise<any> {
+export async function deleteIngredient(prisma: PrismaClient, event: any): Promise<any> {
   try {
     const ingredientRepo = new IngredientRepository(prisma);
 
+    const id = event.queryStringParameters.id
+    
     // Repo - Remove Ingredient from ComponentIngredient
-    await ingredientRepo.removeIngredientFromComponentIngredient(prisma, id);
+    await ingredientRepo.removeIngredientFromComponentIngredient(id);
 
     // Repo - Delete Ingredient
-    const result = await ingredientRepo.deleteIngredient(prisma, id);
+    const result = await ingredientRepo.deleteIngredient(id);
     return result;
   } catch (err) {
     console.log('Error', err);
