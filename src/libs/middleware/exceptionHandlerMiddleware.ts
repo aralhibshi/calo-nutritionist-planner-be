@@ -2,7 +2,8 @@ import { Prisma } from '@prisma/client';
 import { MiddlewareObj } from '@middy/core';
 import createError from 'http-errors';
 
-export const exceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
+// Create
+export const createExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
   return {
     onError: async (handler) => {
       const { error } = handler;
@@ -16,7 +17,22 @@ export const exceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any
       }
 
       throw createError(500, 'Internal Server Error', {
-        details: 'An error occurred while processing the request',
+        details: 'An error occurred while processing the create request',
+      });
+    },
+  };
+};
+
+// Delete
+export const deleteExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error, any> => {
+  return {
+    onError: async (handler) => {
+      const { error } = handler;
+
+      console.error('Error:', error);
+
+      throw createError(500, 'Internal Server Error', {
+        details: 'An error occurred while processing the delete request',
       });
     },
   };
