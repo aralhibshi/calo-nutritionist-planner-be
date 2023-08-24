@@ -2,7 +2,7 @@ createComponent:
   handler: src/services/components/createComponent/handler.default
   events:
     - http:
-        path: v1/component/create
+        path: v1/component
         method: post
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 

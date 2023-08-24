@@ -1,12 +1,9 @@
 import Joi from 'joi';
-import { PrismaClient } from '@prisma/client';
 import { IIngredientCreateEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { createExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { createIngredient } from './useCase';
-
-const prisma = new PrismaClient();
 
 export default middyfy(async (event: IIngredientCreateEvent): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
@@ -14,6 +11,7 @@ export default middyfy(async (event: IIngredientCreateEvent): Promise<any> => {
   const validationSchema = Joi.object({
     name: Joi
       .string()
+      .min(3)
       .required(),
     category: Joi
       .string(),
@@ -46,7 +44,7 @@ export default middyfy(async (event: IIngredientCreateEvent): Promise<any> => {
   await bodyValidationMiddleware(validationSchema)(event);
 
   // useCase - Create Ingredient
-  const result = await createIngredient(prisma, event);
+  const result = await createIngredient(event);
   return result;
 })
 .use(createExceptionHandlerMiddleware());

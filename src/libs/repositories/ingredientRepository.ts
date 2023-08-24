@@ -1,12 +1,21 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from '@lib/prismaClient';
 import { IIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class IngredientRepository {
-  private prisma: PrismaClient;
+  private prisma = prisma;
+  private static instance: IngredientRepository | null = null;
 
-  constructor(prisma: PrismaClient) {
+  private constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+  }
+
+  public static getInstance(): IngredientRepository {
+    if (!IngredientRepository.instance) {
+      IngredientRepository.instance = new IngredientRepository(prisma);
+    }
+    return IngredientRepository.instance;
   }
 
   async createIngredient(data: IIngredientData): Promise<any> {

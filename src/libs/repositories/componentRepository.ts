@@ -1,40 +1,32 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from '@lib/prismaClient';
+import { IComponentData } from '@lib/interfaces';
+import { IComponentIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
-interface CreateComponentInput {
-  name: string;
-  category?: string;
-  description?: string;
-  unit: string;
-}
-
-export interface Ingredients {
-  ingredientId: string,
-  ingredient_quantity: number
-}
-
-interface CreateComponentIngredientInput {
-  componentId: string,
-  ingredientId: string,
-  ingredientQuantity: number
-}
-
 export default class ComponentRepository {
-  private prisma: PrismaClient;
+  private prisma= prisma;
+  private static instance: ComponentRepository | null = null
 
-  constructor(prisma: PrismaClient) {
+  private constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  async createComponent(data: CreateComponentInput): Promise<any> {
+  public static getInstance(): ComponentRepository {
+    if (!ComponentRepository.instance) {
+      ComponentRepository.instance = new ComponentRepository(prisma);
+    }
+    return ComponentRepository.instance;
+  }
+
+  async createComponent(data: IComponentData): Promise<any> {
     try {
       console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
       const result = await this.prisma.component.create({ data });
       const componentId = result.id;
 
-      console.log('Component created successfully', result);
-
+      console.log('Component created successfully');
       return {
         statusCode: 201,
         body: {
@@ -63,7 +55,7 @@ export default class ComponentRepository {
     }
   }
 
-  async createComponentIngredient(data: CreateComponentIngredientInput): Promise<any> {
+  async createComponentIngredient(data: IComponentIngredientData): Promise<any> {
     try {
       console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
 
@@ -76,7 +68,6 @@ export default class ComponentRepository {
       });
 
       console.log('Component ingredient created successfully');
-
       return {
         statusCode: 201,
         body: JSON.stringify({
@@ -102,7 +93,6 @@ export default class ComponentRepository {
       const result = await this.prisma.component.findMany();
 
       console.log('Components fetched successfully');
-
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -229,7 +219,7 @@ export default class ComponentRepository {
 
   async deleteComponent(id: string): Promise<any> {
     try {
-      console.log('Deleting component');
+      console.log(`Deleting component with id: ${id}`);
   
       const result = await this.prisma.component.delete({
         where: {

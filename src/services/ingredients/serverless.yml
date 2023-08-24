@@ -2,7 +2,7 @@ createIngredient:
   handler: src/services/ingredients/createIngredient/handler.default
   events:
     - http:
-        path: v1/ingredient/create
+        path: v1/ingredient
         method: post
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 

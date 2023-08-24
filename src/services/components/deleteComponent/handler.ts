@@ -1,47 +1,29 @@
 import Joi from 'joi';
-import { PrismaClient } from '@prisma/client';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
-import { removeComponentFomMealComponent, removeComponentFromComponentIngredient } from './useCase';
-import { deleteComponent } from './useCase';
-import createError from 'http-errors';
+import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
+import { deleteExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
+import { removeComponentFomMealComponent, removeComponentFromComponentIngredient, deleteComponent } from './useCase';
 
-const prisma = new PrismaClient();
+export default middyfy(async (event): Promise<any> => {
+  console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
-export default middyfy(async (event) => {
-  try {
-    console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
+  const validationSchema = Joi.object({
+    id: Joi.string()
+    .min(36)
+    .required()
+  });
 
-    // Joi Validation Schema
-    const validationSchema = Joi.object({
-      id: Joi.string()
-      .min(36)
-      .required()
-    });
+  // Validation before Processing
+  await queryValidationMiddleware(validationSchema)(event);
 
-     // Asynchronous Validation
-     try {
-      await validationSchema.validateAsync(event.queryStringParameters);
-    } catch (validationError) {
-      throw createError(400, 'Validation Error', {
-        details: validationError.details.map(detail => detail.message),
-      });
-    }
+  // useCase - Remove Component from ComponentIngredient
+  await removeComponentFromComponentIngredient(event);
 
-    const componentId = event.queryStringParameters && event.queryStringParameters.id;
+  // useCase - Remove Component from MealComponent
+  await removeComponentFomMealComponent(event);
 
-    // useCase - Remove Component from ComponentIngredient
-    await removeComponentFromComponentIngredient(prisma, componentId);
-
-    // useCase - Remove Component from MealComponent
-    await removeComponentFomMealComponent(prisma, componentId);
-
-    // useCase - Delete Component
-    const result = await deleteComponent(prisma, componentId);
-    return result;
-  } catch (err) {
-    console.log('Error', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while deleting the component',
-    });
-  }
-});
+  // useCase - Delete Component
+  const result = await deleteComponent(event);
+  return result;
+})
+.use(deleteExceptionHandlerMiddleware());
