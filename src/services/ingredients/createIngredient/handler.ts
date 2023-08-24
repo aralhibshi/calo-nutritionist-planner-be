@@ -14,6 +14,7 @@ export default middyfy(async (event: IIngredientCreateEvent): Promise<any> => {
   const validationSchema = Joi.object({
     name: Joi
       .string()
+      .min(3)
       .required(),
     category: Joi
       .string(),

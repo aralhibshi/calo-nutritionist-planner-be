@@ -64,3 +64,34 @@ export interface IIngredientDeleteEvent {
     id: string;
   };
 }
+
+// Component Create - Event
+export interface IComponentCreateEvent {
+  body: {
+    ingredients: Array<IComponentIngredientDataArray>;
+    name: string;
+    unit: string;
+  }
+}
+
+// Component Create/Update - Data
+export interface IComponentData {
+  name: string;
+  category?: string;
+  description?: string;
+  ingredients?: Array<IComponentIngredientDataArray>
+  unit: string;
+}
+
+// ComponentIngredient Create - Data
+export interface IComponentIngredientData {
+  componentId: string,
+  ingredientId: string,
+  ingredientQuantity: number
+}
+
+// ComponentIngredient Create (Ingredient Array) - Data
+export interface IComponentIngredientDataArray {
+  ingredientId: string,
+  ingredient_quantity: number
+}

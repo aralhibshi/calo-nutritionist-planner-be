@@ -1,60 +1,57 @@
-import ComponentRepository from '@lib/repositories/componentRepository';
 import { PrismaClient } from '@prisma/client';
-import { Ingredients } from '@lib/repositories/componentRepository';
-import createError from 'http-errors';
+import { IComponentCreateEvent, IComponentData } from '@lib/interfaces';
+import ComponentRepository from '@lib/repositories/componentRepository';
+import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createComponent(
   prisma: PrismaClient,
-  componentData: any,
-): Promise<any> {
-  const componentRepo = new ComponentRepository(prisma);
+  event: IComponentCreateEvent,
+  ): Promise<any> {
+  const componentRepo = ComponentRepository.getInstance(prisma);
 
-  try {
-    // Repo - Create Component
-    const result = await componentRepo.createComponent(componentData);
-    const componentId = result.body.data.id;
-    return {
-      statusCode: 201,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: 'Component created successfully'
-        },
-        data: {
-          id: componentId,
-          ...componentData,
-        }
-      })
-    }
-  } catch (err) {
-    console.log('Error:', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while creating the component.',
-    });
+  const componentData: IComponentData = {
+    ...event.body,
+    name: capitalizeFirstLetter(event.body.name)
+  };
+
+  delete componentData.ingredients;
+
+  // Repo - Create Component
+  const result = await componentRepo.createComponent(componentData);
+  const componentId = result.body.data.id;
+  return {
+    statusCode: 201,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Component created successfully'
+      },
+      data: {
+        id: componentId,
+        ...componentData,
+      }
+    })
   }
 }
 
 export async function createComponentIngredient(
   prisma: PrismaClient,
-  componentId: string,
-  ingredients: Array<Ingredients>
+  component: any,
+  event: IComponentCreateEvent,
   ):Promise<any> {
-  const componentRepo = new ComponentRepository(prisma);
+  const componentRepo = ComponentRepository.getInstance(prisma);
 
-  try {
-     // Repo - Create ComponentIngredient
-    for (const ingredient of ingredients) {
-      let data = {
-        componentId: componentId,
-        ingredientId: ingredient.ingredientId,
-        ingredientQuantity: ingredient.ingredient_quantity 
-      }
-      await componentRepo.createComponentIngredient(data);
+  const ingredients = event.body.ingredients
+  const parsedResult = JSON.parse(component.body)
+  const componentId = parsedResult.data.id;
+
+  // Repo - Create ComponentIngredient
+  for (const ingredient of ingredients) {
+    let data = {
+      componentId: componentId,
+      ingredientId: ingredient.ingredientId,
+      ingredientQuantity: ingredient.ingredient_quantity 
     }
-  } catch (err) {
-    console.log('Error:', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while creating the ComponentIngredient.',
-    });
+    await componentRepo.createComponentIngredient(data);
   }
 }
