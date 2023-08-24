@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { middyfy } from '@lib/middleware';
+import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { deleteIngredient } from './useCase';
 import createError from 'http-errors';
 import { PrismaClient } from '@prisma/client';

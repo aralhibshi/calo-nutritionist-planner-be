@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import createError from 'http-errors';
 
-interface IngredientData {
+interface IIngredientData {
   name: string;
   category?: string;
   description?: string;
@@ -19,7 +19,7 @@ export default class IngredientRepository {
     this.prisma = prisma;
   }
 
-  async createIngredient(data: IngredientData): Promise<any> {
+  async createIngredient(data: IIngredientData): Promise<any> {
     try {
       const ingredientData = {
         ...data
@@ -124,7 +124,7 @@ export default class IngredientRepository {
     }
   }
 
-  async updateIngredient(id: string, data: IngredientData): Promise<any> {
+  async updateIngredient(id: string, data: IIngredientData): Promise<any> {
     try {
       console.log('Updating ingredient');
 
