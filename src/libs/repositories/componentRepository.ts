@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponentData } from '@lib/interfaces';
-import { IComponentIngredientData } from '@lib/interfaces';
+import { IComponentData, IComponentIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -86,7 +85,7 @@ export default class ComponentRepository {
   }
 
 
-  async getComponents() {
+  async getComponents(): Promise<any> {
     try {
       console.log('Fetching components');
 
@@ -113,7 +112,7 @@ export default class ComponentRepository {
 
   async searchComponents(index: string): Promise<any> {
     try {
-      console.log('Fetching components');
+      console.log('Fetching matching components with name:', index);
   
       const result = await this.prisma.component.findMany({
         where: {

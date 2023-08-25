@@ -116,3 +116,36 @@ export interface IComponentDeleteEvent {
     id: string;
   };
 }
+
+// Component Create - Event
+export interface IMealCreateEvent {
+  body: {
+    components: Array<IMealComponentDataArray>;
+    name: string;
+    unit: string;
+    size: string;
+  }
+}
+
+// Meal Create/Update - Data
+export interface IMealData {
+  name: string;
+  category?: string;
+  description?: string;
+  components?: Array<IMealComponentDataArray>;
+  unit: string;
+  size: string;
+}
+
+// MealComponent Create - Data
+export interface IMealComponentData {
+  mealId: string;
+  componentId: string;
+  componentQuantity: number;
+}
+
+// MealComponent Create (Component Array) - Data
+export interface IMealComponentDataArray {
+  componentId: string,
+  component_quantity: number
+}

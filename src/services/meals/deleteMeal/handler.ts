@@ -13,9 +13,10 @@ export default middyfy(async (event) => {
 
     // Joi Validation Schema
     const validationSchema = Joi.object({
-      id: Joi.string()
-      .min(36)
-      .required()
+      id: Joi
+        .string()
+        .min(36)
+        .required()
     })
 
     // Asynchronous Validation

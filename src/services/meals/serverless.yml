@@ -2,7 +2,7 @@ createMeal:
   handler: src/services/meals/createMeal/handler.default
   events:
     - http:
-        path: v1/meal/create
+        path: v1/meal
         method: post
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 

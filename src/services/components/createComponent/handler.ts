@@ -19,6 +19,7 @@ export default middyfy(async (event: IComponentCreateEvent): Promise<any> => {
       .required(),
     unit: Joi
       .string()
+      .min(1)
       .max(2)
       .valid('g', 'ml')
       .required()

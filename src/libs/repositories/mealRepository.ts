@@ -1,33 +1,24 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from '@lib/prismaClient';
+import { IMealData,  IMealComponentData } from '@lib/interfaces';
 import createError from 'http-errors';
 
-export interface CreateMealInput {
-  name: string;
-  category?: string;
-  description?: string;
-  unit: string;
-  size: string;
-}
-
-export interface Components {
-  componentId: string,
-  component_quantity: number
-}
-
-interface CreateMealComponentInput {
-  mealId: string;
-  componentId: string;
-  componentQuantity: number;
-}
-
 export default class MealRepository {
-  private prisma: PrismaClient;
+  private prisma= prisma;
+  private static instance: MealRepository | null = null
 
-  constructor(prisma: PrismaClient) {
+  private constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  async createMeal(data: CreateMealInput): Promise<any> {
+  public static getInstance(): MealRepository {
+    if (!MealRepository.instance) {
+      MealRepository.instance = new MealRepository(prisma);
+    }
+    return MealRepository.instance;
+  }
+
+  async createMeal(data: IMealData): Promise<any> {
     try {
       console.log('Creating Meal with data:', JSON.stringify(data, null, 2));
 
@@ -130,7 +121,7 @@ export default class MealRepository {
     }
   }
 
-  async createMealComponent(data: CreateMealComponentInput): Promise<any> {
+  async createMealComponent(data: IMealComponentData): Promise<any> {
     try {
       console.log('Creating meal component with mealId:', data.mealId, 'and componentId:', data.componentId);
   
