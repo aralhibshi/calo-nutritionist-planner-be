@@ -86,7 +86,7 @@ export default class ComponentRepository {
   }
 
 
-  async getComponents() {
+  async getComponents(): Promise<any> {
     try {
       console.log('Fetching components');
 
