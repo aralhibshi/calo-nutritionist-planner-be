@@ -1,6 +1,7 @@
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 
-export async function getIngredients(): Promise<any> {
+export async function getIngredients(
+): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
   // Repo - Get Ingredients

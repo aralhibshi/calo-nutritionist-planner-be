@@ -2,7 +2,9 @@ import { IIngredientCreateEvent } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-export async function createIngredient(event: IIngredientCreateEvent): Promise<any> {
+export async function createIngredient(
+  event: IIngredientCreateEvent
+): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
   const ingredientData = {

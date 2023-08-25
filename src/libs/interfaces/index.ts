@@ -4,7 +4,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 
 // Types -
 
-// Ingredient Get (All) - Event
+// Get (All) - Event
 export type TGetEvent = APIGatewayProxyEvent;
 
 
@@ -47,6 +47,13 @@ export interface IIngredientData {
   unit: string;
 }
 
+// Ingredient Get (Search) - Event
+export interface IIngredientSearchEvent {
+  queryStringParameters: {
+    name: string;
+  };
+}
+
 // Ingredient Update - Event
 export interface IIngredientUpdateEvent {
   queryStringParameters: {
@@ -62,13 +69,6 @@ export interface IIngredientUpdateEvent {
     fats: number;
     carbs: number;
     unit: string;
-  };
-}
-
-// Ingredient Get (Search) - Event
-export interface IIngredientSearchEvent {
-  queryStringParameters: {
-    name: string;
   };
 }
 
@@ -110,6 +110,13 @@ export interface IComponentIngredientDataArray {
   ingredient_quantity: number
 }
 
+// Component Get (Search) - Event
+export interface IComponentSearchEvent {
+  queryStringParameters: {
+    name: string;
+  };
+}
+
 // Component Delete - Event
 export interface IComponentDeleteEvent {
   queryStringParameters: {
@@ -148,4 +155,18 @@ export interface IMealComponentData {
 export interface IMealComponentDataArray {
   componentId: string,
   component_quantity: number
+}
+
+// Meal Get (Search) - Event
+export interface IMealSearchEvent {
+  queryStringParameters: {
+    name: string;
+  };
+}
+
+// Meal Delete - Event
+export interface IMealDeleteEvent {
+  queryStringParameters: {
+    id: string;
+  };
 }

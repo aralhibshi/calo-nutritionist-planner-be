@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
 import { IComponentData, IComponentIngredientData } from '@lib/interfaces';
+import { pascalToSnake, convertKeys } from 'src/utils/keyUtils';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -11,14 +12,17 @@ export default class ComponentRepository {
     this.prisma = prisma;
   }
 
-  public static getInstance(): ComponentRepository {
+  public static getInstance(
+  ): ComponentRepository {
     if (!ComponentRepository.instance) {
       ComponentRepository.instance = new ComponentRepository(prisma);
     }
     return ComponentRepository.instance;
   }
 
-  async createComponent(data: IComponentData): Promise<any> {
+  async createComponent(
+    data: IComponentData
+  ): Promise<any> {
     try {
       console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
@@ -54,7 +58,9 @@ export default class ComponentRepository {
     }
   }
 
-  async createComponentIngredient(data: IComponentIngredientData): Promise<any> {
+  async createComponentIngredient(
+    data: IComponentIngredientData
+  ): Promise<any> {
     try {
       console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
 
@@ -84,23 +90,33 @@ export default class ComponentRepository {
     }
   }
 
-
-  async getComponents(): Promise<any> {
+  async getComponents(
+  ): Promise<any> {
     try {
       console.log('Fetching components');
-
-      const result = await this.prisma.component.findMany();
-
+  
+      const result = await this.prisma.component.findMany({
+        include: {
+          ComponentIngredient: {
+            include: {
+              ingredient: true,
+            },
+          },
+        },
+      });
+  
+      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
+  
       console.log('Components fetched successfully');
       return {
         statusCode: 200,
         body: JSON.stringify({
           success: {
             title: 'Success',
-            message: 'Components fetched successfully'
+            message: 'Components fetched successfully',
           },
-          data: result
-        })
+          data: snakeCaseResults,
+        }),
       };
     } catch (err) {
       console.log('Prisma Error:', err);
@@ -108,9 +124,11 @@ export default class ComponentRepository {
         details: 'Error fetching components in Prisma',
       });
     }
-  }
+  }  
 
-  async searchComponents(index: string): Promise<any> {
+  async searchComponents(
+    index: string
+  ): Promise<any> {
     try {
       console.log('Fetching matching components with name:', index);
   
@@ -123,6 +141,13 @@ export default class ComponentRepository {
         orderBy: {
           name: 'asc',
         },
+        include: {
+          ComponentIngredient: {
+            include: {
+              ingredient: true
+            }
+          }
+        }
       });
       
        const sortedResults = result.sort((a, b) => {
@@ -134,6 +159,8 @@ export default class ComponentRepository {
           return 0;
         }
       });
+
+      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Components fetched successfully');
       return {
@@ -143,7 +170,7 @@ export default class ComponentRepository {
             title: 'Success',
             message: 'Components fetched successfully',
           },
-          data: sortedResults,
+          data: snakeCaseResults,
         })
       };
     } catch (err) {
@@ -154,7 +181,9 @@ export default class ComponentRepository {
     }
   }
 
-  async removeComponentFromComponentIngredient(id: string): Promise<any> {
+  async removeComponentFromComponentIngredient(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Removing component from ComponentIngredient');
 
@@ -185,7 +214,9 @@ export default class ComponentRepository {
     }
   }
 
-  async removeComponentFomMealComponent(id: string): Promise<any> {
+  async removeComponentFomMealComponent(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Removing component from MealComponent');
 
@@ -216,9 +247,11 @@ export default class ComponentRepository {
     }
   }
 
-  async deleteComponent(id: string): Promise<any> {
+  async deleteComponent(
+    id: string
+  ): Promise<any> {
     try {
-      console.log(`Deleting component with id: ${id}`);
+      console.log('Deleting component with Id:', id);
   
       const result = await this.prisma.component.delete({
         where: {

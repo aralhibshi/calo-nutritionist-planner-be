@@ -2,7 +2,9 @@ import { IComponentCreateEvent, IComponentData } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-export async function createComponent(event: IComponentCreateEvent): Promise<any> {
+export async function createComponent(
+  event: IComponentCreateEvent
+): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
   const componentData: IComponentData = {
@@ -33,7 +35,7 @@ export async function createComponent(event: IComponentCreateEvent): Promise<any
 export async function createComponentIngredient(
   component: any,
   event: IComponentCreateEvent,
-  ):Promise<any> {
+):Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
   const ingredients = event.body.ingredients
