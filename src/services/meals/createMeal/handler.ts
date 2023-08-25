@@ -1,10 +1,13 @@
 import Joi from 'joi';
+import { IMealCreateEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { createMeal, createMealComponent } from './useCase';
 
-export default middyfy(async (event) => {
+export default middyfy(async (
+  event: IMealCreateEvent
+): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
   const validationSchema = Joi.object({

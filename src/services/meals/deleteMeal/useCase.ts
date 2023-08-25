@@ -1,7 +1,9 @@
 import MealRepository from '@lib/repositories/mealRepository';
 import { IMealDeleteEvent } from '@lib/interfaces';
 
-export async function removeMealFomMealComponent(event: IMealDeleteEvent): Promise<any> {
+export async function removeMealFomMealComponent(
+  event: IMealDeleteEvent
+): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
   const id = event.queryStringParameters.id;
@@ -11,7 +13,9 @@ export async function removeMealFomMealComponent(event: IMealDeleteEvent): Promi
   return result;
 }
 
-export async function deleteMeal(event: IMealDeleteEvent): Promise<any> {
+export async function deleteMeal(
+  event: IMealDeleteEvent
+): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
   const id = event.queryStringParameters.id;

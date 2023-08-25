@@ -1,7 +1,8 @@
 import { IComponentDeleteEvent } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 
-export async function removeComponentFromComponentIngredient(event: IComponentDeleteEvent
+export async function removeComponentFromComponentIngredient(
+  event: IComponentDeleteEvent
 ): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
@@ -22,8 +23,9 @@ export async function removeComponentFomMealComponent(event: IComponentDeleteEve
   return result;
 }
 
-export async function deleteComponent(event: IComponentDeleteEvent
-  ): Promise<any> {
+export async function deleteComponent(
+  event: IComponentDeleteEvent
+): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
   const id = event.queryStringParameters.id;

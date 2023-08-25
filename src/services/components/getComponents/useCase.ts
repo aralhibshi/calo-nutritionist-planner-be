@@ -1,6 +1,7 @@
 import ComponentRepository from '@lib/repositories/componentRepository';
 
-export async function getComponents(): Promise<any> {
+export async function getComponents(
+): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
   // Repo - Get Components

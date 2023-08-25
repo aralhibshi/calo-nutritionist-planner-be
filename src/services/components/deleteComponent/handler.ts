@@ -1,10 +1,13 @@
 import Joi from 'joi';
+import { IComponentDeleteEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { deleteExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { removeComponentFomMealComponent, removeComponentFromComponentIngredient, deleteComponent } from './useCase';
 
-export default middyfy(async (event): Promise<any> => {
+export default middyfy(async (
+  event: IComponentDeleteEvent
+): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
   const validationSchema = Joi.object({

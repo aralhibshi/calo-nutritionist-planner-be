@@ -6,7 +6,9 @@ import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { updateExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { updateIngredient } from './useCase';
 
-export default middyfy(async (event: IIngredientUpdateEvent): Promise<any> => {
+export default middyfy(async (
+  event: IIngredientUpdateEvent
+): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
   const queryValidationSchema = Joi.object({
