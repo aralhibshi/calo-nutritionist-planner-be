@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
 import { IMealData,  IMealComponentData } from '@lib/interfaces';
+import { convertKeys, pascalToSnake } from 'src/utils/keyUtils';
 import createError from 'http-errors';
 
 export default class MealRepository {
@@ -11,14 +12,17 @@ export default class MealRepository {
     this.prisma = prisma;
   }
 
-  public static getInstance(): MealRepository {
+  public static getInstance(
+  ): MealRepository {
     if (!MealRepository.instance) {
       MealRepository.instance = new MealRepository(prisma);
     }
     return MealRepository.instance;
   }
 
-  async createMeal(data: IMealData): Promise<any> {
+  async createMeal(
+    data: IMealData
+  ): Promise<any> {
     try {
       console.log('Creating Meal with data:', JSON.stringify(data, null, 2));
 
@@ -51,11 +55,22 @@ export default class MealRepository {
     }
   }
 
-  async getMeals(): Promise<any> {
+  async getMeals(
+  ): Promise<any> {
     try {
       console.log('Fetching meals');
   
-      const result = await this.prisma.meal.findMany();
+      const result = await this.prisma.meal.findMany({
+        include: {
+          MealComponent: {
+            include: {
+              component: true
+            }
+          }
+        }
+      });
+
+      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Meals fetched successfully');
   
@@ -66,7 +81,7 @@ export default class MealRepository {
             title: 'Success',
             message: 'Meals fetched successfully'
           },
-          data: result
+          data: snakeCaseResults
         }),
       };
     } catch (err) {
@@ -77,7 +92,9 @@ export default class MealRepository {
     }
   }
 
-  async searchMeals(index: string): Promise<any> {
+  async searchMeals(
+    index: string
+  ): Promise<any> {
     try {
       console.log('Fetching meals with name:', index);
   
@@ -90,6 +107,13 @@ export default class MealRepository {
         orderBy: {
           name: 'asc',
         },
+        include: {
+          MealComponent: {
+            include: {
+              component: true
+            }
+          }
+        }
       });
       
       const sortedResults = result.sort((a, b) => {
@@ -101,6 +125,8 @@ export default class MealRepository {
         return 0;
       }
       });
+
+      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Meals fetched successfully');
       return {
@@ -110,7 +136,7 @@ export default class MealRepository {
             title: 'Success',
             message: 'Meals fetched successfully',
           },
-          data: sortedResults,
+          data: snakeCaseResults,
         })
       };
     } catch (err) {
@@ -121,7 +147,9 @@ export default class MealRepository {
     }
   }
 
-  async createMealComponent(data: IMealComponentData): Promise<any> {
+  async createMealComponent(
+    data: IMealComponentData
+  ): Promise<any> {
     try {
       console.log('Creating meal component with mealId:', data.mealId, 'and componentId:', data.componentId);
   
@@ -153,7 +181,9 @@ export default class MealRepository {
     }
   }
 
-  async removeMealFomMealComponent(id: string): Promise<any> {
+  async removeMealFomMealComponent(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Removing meal from MealComponent');
   
@@ -184,7 +214,9 @@ export default class MealRepository {
     }
   }
 
-  async deleteMeal(id: string): Promise<any> {
+  async deleteMeal(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Deleting meal with Id:', id);
   

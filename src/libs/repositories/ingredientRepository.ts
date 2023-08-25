@@ -11,14 +11,17 @@ export default class IngredientRepository {
     this.prisma = prisma;
   }
 
-  public static getInstance(): IngredientRepository {
+  public static getInstance(
+  ): IngredientRepository {
     if (!IngredientRepository.instance) {
       IngredientRepository.instance = new IngredientRepository(prisma);
     }
     return IngredientRepository.instance;
   }
 
-  async createIngredient(data: IIngredientData): Promise<any> {
+  async createIngredient(
+    data: IIngredientData
+  ): Promise<any> {
     try {
       console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 
@@ -54,7 +57,8 @@ export default class IngredientRepository {
     }
   }
 
-  async getIngredients(): Promise<any> {
+  async getIngredients(
+  ): Promise<any> {
     try {
       console.log('Fetching ingredients');
 
@@ -79,7 +83,9 @@ export default class IngredientRepository {
     }
   }
 
-  async searchIngredients(index: string): Promise<any> {
+  async searchIngredients(
+    index: string
+  ): Promise<any> {
     try {
       console.log('Fetching matching ingredients with name:', index);
 
@@ -123,7 +129,10 @@ export default class IngredientRepository {
     }
   }
 
-  async updateIngredient(id: string, data: IIngredientData): Promise<any> {
+  async updateIngredient(
+    id: string,
+    data: IIngredientData
+  ): Promise<any> {
     try {
       console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));
 
@@ -159,7 +168,9 @@ export default class IngredientRepository {
     }
   }
 
-  async removeIngredientFromComponentIngredient(id: string): Promise<any> {
+  async removeIngredientFromComponentIngredient(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Removing ingredient from ComponentIngredient');
   
@@ -190,7 +201,9 @@ export default class IngredientRepository {
     }
   }
 
-  async deleteIngredient(id: string): Promise<any> {
+  async deleteIngredient(
+    id: string
+  ): Promise<any> {
     try {
       console.log('Deleting ingredient with Id:', id);
   
