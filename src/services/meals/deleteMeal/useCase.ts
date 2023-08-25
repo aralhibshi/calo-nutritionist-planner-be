@@ -1,5 +1,5 @@
-import MealRepository from '@lib/repositories/mealRepository';
 import { IMealDeleteEvent } from '@lib/interfaces';
+import MealRepository from '@lib/repositories/mealRepository';
 
 export async function removeMealFomMealComponent(
   event: IMealDeleteEvent

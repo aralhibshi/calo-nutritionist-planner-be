@@ -1,21 +1,15 @@
+import { IMealSearchEvent } from "@lib/interfaces";
 import MealRepository from "@lib/repositories/mealRepository";
-import { PrismaClient } from "@prisma/client";
-import createError from 'http-errors';
+import { capitalizeFirstLetter } from "src/utils/stringUtils";
 
 export async function searchMeals(
-  prisma: PrismaClient,
-  index: string
+  event: IMealSearchEvent
 ): Promise<any> {
-  const mealRepo = new MealRepository(prisma);
+  const mealRepo = MealRepository.getInstance();
 
-  try {
-    // Repo - Search Meals
-    const result = await mealRepo.searchMeals(index);
-    return result;
-  } catch (err) {
-    console.log('Error:', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while fetching matching meals.',
-    });
-  }
+  const index = capitalizeFirstLetter(event.queryStringParameters.name);
+
+  // Repo - Search Meals
+  const result = await mealRepo.searchMeals(index);
+  return result;
 }

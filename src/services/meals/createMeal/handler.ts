@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { IMealCreateEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
-import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
+import { createExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { createMeal, createMealComponent } from './useCase';
 
 export default middyfy(async (
@@ -42,4 +42,4 @@ export default middyfy(async (
   await createMealComponent(meal, event)
   return meal;
 })
-.use(readExceptionHandlerMiddleware());
+.use(createExceptionHandlerMiddleware());

@@ -157,6 +157,13 @@ export interface IMealComponentDataArray {
   component_quantity: number
 }
 
+// Meal Get (Search) - Event
+export interface IMealSearchEvent {
+  queryStringParameters: {
+    name: string;
+  };
+}
+
 // Meal Delete - Event
 export interface IMealDeleteEvent {
   queryStringParameters: {

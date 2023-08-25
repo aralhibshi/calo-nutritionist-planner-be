@@ -1,5 +1,5 @@
-import MealRepository from '@lib/repositories/mealRepository';
 import { IMealCreateEvent, IMealData } from '@lib/interfaces';
+import MealRepository from '@lib/repositories/mealRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createMeal(

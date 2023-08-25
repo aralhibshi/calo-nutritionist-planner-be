@@ -1,5 +1,6 @@
 import { TGetEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
+import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { getMeals } from './useCase';
 
 export default middyfy(async (
@@ -11,3 +12,4 @@ export default middyfy(async (
   const result = await getMeals();
   return result;
 })
+.use(readExceptionHandlerMiddleware())

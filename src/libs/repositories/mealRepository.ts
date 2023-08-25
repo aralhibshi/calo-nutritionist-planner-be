@@ -79,7 +79,7 @@ export default class MealRepository {
 
   async searchMeals(index: string): Promise<any> {
     try {
-      console.log('Fetching meals');
+      console.log('Fetching meals with name:', index);
   
       const result = await this.prisma.meal.findMany({
         where: {

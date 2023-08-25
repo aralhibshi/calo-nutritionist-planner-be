@@ -1,5 +1,5 @@
-import ComponentRepository from '@lib/repositories/componentRepository';
 import { IComponentSearchEvent } from '@lib/interfaces';
+import ComponentRepository from '@lib/repositories/componentRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function searchComponents(
