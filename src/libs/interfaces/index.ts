@@ -149,3 +149,10 @@ export interface IMealComponentDataArray {
   componentId: string,
   component_quantity: number
 }
+
+// Meal Delete - Event
+export interface IMealDeleteEvent {
+  queryStringParameters: {
+    id: string;
+  };
+}

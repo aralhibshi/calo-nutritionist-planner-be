@@ -1,41 +1,22 @@
 import MealRepository from '@lib/repositories/mealRepository';
-import { PrismaClient } from '@prisma/client';
-import { removeComponentFomMealComponent } from 'src/services/components/deleteComponent/useCase';
-import createError from 'http-errors';
+import { IMealDeleteEvent } from '@lib/interfaces';
 
-export async function removeMealFomMealComponent(
-  prisma: PrismaClient,
-  id: string
-): Promise<any> {
-  const mealRepo = new MealRepository(prisma);
+export async function removeMealFomMealComponent(event: IMealDeleteEvent): Promise<any> {
+  const mealRepo = MealRepository.getInstance();
 
-  try {
-    // Repo - Remove Meal From Meal Component
+  const id = event.queryStringParameters.id;
 
-    const result = mealRepo.removeMealFomMealComponent(id);
-    return result;
-  } catch (err) {
-    console.log('Error:', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while removing the meal from MealComponent.',
-    });
-  }
+  // Repo - Remove Meal From Meal Component
+  const result = mealRepo.removeMealFomMealComponent(id);
+  return result;
 }
 
-export async function deleteMeal(
-  prisma: PrismaClient,
-  id: string
-): Promise<any> {
-  const mealRepo = new MealRepository(prisma);
+export async function deleteMeal(event: IMealDeleteEvent): Promise<any> {
+  const mealRepo = MealRepository.getInstance();
 
-  try {
-    // Repo - Delete Meal
-    const result = mealRepo.deleteMeal(id);
-    return result;
-  } catch (err) {
-    console.log('Error:', err);
-    throw createError(500, 'Internal Server Error', {
-      details: 'An error occurred while deleting meal.',
-    });
-  }
+  const id = event.queryStringParameters.id;
+
+  // Repo - Delete Meal
+  const result = mealRepo.deleteMeal(id);
+  return result;
 }

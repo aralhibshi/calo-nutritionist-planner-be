@@ -186,7 +186,7 @@ export default class MealRepository {
 
   async deleteMeal(id: string): Promise<any> {
     try {
-      console.log('Deleting Meal');
+      console.log('Deleting meal with Id:', id);
   
       const result = await this.prisma.meal.delete({
         where: {

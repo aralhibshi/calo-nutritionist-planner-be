@@ -218,7 +218,7 @@ export default class ComponentRepository {
 
   async deleteComponent(id: string): Promise<any> {
     try {
-      console.log(`Deleting component with id: ${id}`);
+      console.log('Deleting component with Id:', id);
   
       const result = await this.prisma.component.delete({
         where: {

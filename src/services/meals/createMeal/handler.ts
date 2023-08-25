@@ -30,7 +30,7 @@ export default middyfy(async (event) => {
   })
 
   // Validation before Processing
-  bodyValidationMiddleware(validationSchema)(event);
+  await bodyValidationMiddleware(validationSchema)(event);
 
   // useCase - Create Meal
   const meal = await createMeal(event);

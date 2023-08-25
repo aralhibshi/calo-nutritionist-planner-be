@@ -15,7 +15,7 @@ export default middyfy(async (event) => {
   })
 
   // Validation before Processing
-  queryValidationMiddleware(validationSchema)(event)
+  await queryValidationMiddleware(validationSchema)(event)
 
   // useCase - Search Components
   const result = await searchComponents(event);
