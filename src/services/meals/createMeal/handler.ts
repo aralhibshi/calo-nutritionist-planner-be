@@ -8,12 +8,25 @@ export default middyfy(async (event) => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
   const validationSchema = Joi.object({
-    name: Joi.string().required(),
-    size: Joi.string().required(),
-    unit: Joi.string().required(),
-    components: Joi.array()
-    .min(1)
-    .required()
+    name: Joi
+      .string()
+      .min(3)
+      .required(),
+    size: Joi
+      .string()
+      .min(1)
+      .max(1)
+      .required(),
+    unit: Joi
+      .string()
+      .min(1)
+      .max(2)
+      .valid('g', 'ml')
+      .required(),
+    components: Joi
+      .array()
+      .min(1)
+      .required()
   })
 
   // Validation before Processing
