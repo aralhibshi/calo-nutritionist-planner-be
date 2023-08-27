@@ -12,7 +12,7 @@ export async function updateIngredient(
     name: capitalizeFirstLetter(event.body.name),
   };
 
-  const id = capitalizeFirstLetter(event.queryStringParameters.id);
+  const id = event.queryStringParameters.id;
 
   // Repo - Update Ingredient
   const result = await ingredientRepo.updateIngredient(id, ingredientData);
