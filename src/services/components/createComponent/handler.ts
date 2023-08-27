@@ -19,6 +19,10 @@ export default middyfy(async (
       .string()
       .min(3)
       .required(),
+    category: Joi
+      .string(),
+    description: Joi
+      .string(),
     unit: Joi
       .string()
       .min(1)
