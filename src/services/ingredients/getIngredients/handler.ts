@@ -13,8 +13,7 @@ export default middyfy(async (
   const validationSchema = Joi.object({
     skip: Joi
       .number()
-      .min(15)
-      .max(15)
+      .min(0)
       .required()
   })
 
