@@ -47,6 +47,13 @@ export interface IIngredientData {
   unit: string;
 }
 
+// Ingredient Get - Event
+export interface IIngredientGetEvent {
+  queryStringParameters: {
+    skip: number
+  }
+}
+
 // Ingredient Get (Search) - Event
 export interface IIngredientSearchEvent {
   queryStringParameters: {

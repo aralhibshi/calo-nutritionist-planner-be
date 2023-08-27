@@ -58,11 +58,20 @@ export default class IngredientRepository {
   }
 
   async getIngredients(
+    skip: number
   ): Promise<any> {
     try {
       console.log('Fetching ingredients');
 
-      const result = await this.prisma.ingredient.findMany();
+      const result = await this.prisma.ingredient.findMany({
+        skip: skip,
+        take: 15,
+        orderBy: [
+          {
+            name: 'asc',
+          }
+        ],
+      });
 
       console.log('Ingredients fetched successfully');
       return {
