@@ -31,6 +31,10 @@ export default class ComponentRepository {
 
       console.log('Component created successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"POST",
+        },
         statusCode: 201,
         body: {
           success: {
@@ -74,6 +78,10 @@ export default class ComponentRepository {
 
       console.log('Component ingredient created successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"POST",
+        },
         statusCode: 201,
         body: JSON.stringify({
           success: {
@@ -109,6 +117,10 @@ export default class ComponentRepository {
   
       console.log('Components fetched successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -164,6 +176,10 @@ export default class ComponentRepository {
   
       console.log('Components fetched successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -197,6 +213,10 @@ export default class ComponentRepository {
 
       console.log('Component removed from ComponentIngredient successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -230,6 +250,10 @@ export default class ComponentRepository {
 
       console.log('Component removed from MealComponent successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -261,6 +285,10 @@ export default class ComponentRepository {
   
       console.log('Component deleted successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
