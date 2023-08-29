@@ -33,6 +33,10 @@ export default class IngredientRepository {
 
       console.log('Ingredient created successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"POST",
+        },
         statusCode: 201,
         body: JSON.stringify({
           success: {
@@ -77,6 +81,10 @@ export default class IngredientRepository {
 
       console.log('Ingredients fetched successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -124,6 +132,10 @@ export default class IngredientRepository {
 
       console.log('Ingredients fetched successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -163,6 +175,10 @@ export default class IngredientRepository {
 
       console.log('Ingredient updated successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -196,6 +212,10 @@ export default class IngredientRepository {
   
       console.log('Ingredient removed from ComponentIngredient successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -228,6 +248,10 @@ export default class IngredientRepository {
       console.log('Ingredient deleted successfully');
 
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
