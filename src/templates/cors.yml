@@ -1,8 +1,9 @@
 dev:
   origins:
-    - http://localhost:3000
-    - http://localhost:3001
-    - https://dev.d7zo4dnz523ct.amplifyapp.com 
+    # - http://localhost:3000
+    # - http://localhost:3001
+    # - https://dev.d7zo4dnz523ct.amplifyapp.com 
+    - "*"
   headers:
     - Content-Type
     - X-Amz-Date
