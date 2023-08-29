@@ -31,6 +31,10 @@ export default class MealRepository {
       console.log('Meal created successfully');
 
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"POST",
+        },
         statusCode: 201,
         body: {
           success: {
@@ -75,6 +79,10 @@ export default class MealRepository {
       console.log('Meals fetched successfully');
   
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -130,6 +138,10 @@ export default class MealRepository {
   
       console.log('Meals fetched successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"GET",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -164,6 +176,10 @@ export default class MealRepository {
       console.log('Meal component created successfully');
   
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"POST",
+        },
         statusCode: 201,
         body: JSON.stringify({
           success: {
@@ -197,6 +213,10 @@ export default class MealRepository {
   
       console.log('Meal removed from MealComponent successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
@@ -228,6 +248,10 @@ export default class MealRepository {
   
       console.log('Meal deleted successfully');
       return {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-control-Allow-Methods":"DELETE",
+        },
         statusCode: 200,
         body: JSON.stringify({
           success: {
