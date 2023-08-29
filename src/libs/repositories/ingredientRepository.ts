@@ -67,7 +67,7 @@ export default class IngredientRepository {
 
       const result = await this.prisma.ingredient.findMany({
         skip: skip,
-        take: 12,
+        take: 9,
         orderBy: [
           {
             name: 'asc',
