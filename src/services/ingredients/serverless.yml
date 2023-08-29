@@ -12,7 +12,8 @@ getIngredients:
     - http:
         path: v1/ingredients
         method: get
-        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        # cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        cors: true
         
 searchIngredients:
   handler: src/services/ingredients/searchIngredients/handler.default
@@ -20,7 +21,8 @@ searchIngredients:
     - http:
         path: v1/ingredient/search
         method: get
-        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        # cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        cors: true
         request:
           parameters:
             querystrings:
