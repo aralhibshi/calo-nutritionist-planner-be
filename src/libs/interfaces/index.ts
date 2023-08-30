@@ -51,6 +51,7 @@ export interface IIngredientData {
 export interface IIngredientGetEvent {
   queryStringParameters: {
     skip: number
+    take: number
   }
 }
 
