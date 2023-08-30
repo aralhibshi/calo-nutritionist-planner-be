@@ -7,9 +7,10 @@ export async function getIngredients(
   const ingredientRepo = IngredientRepository.getInstance();
 
   const skip = Number(event.queryStringParameters.skip);
+  const take = Number(event.queryStringParameters.take);
 
   // Repo - Get Ingredients
-  const result = await ingredientRepo.getIngredients(skip);
+  const result = await ingredientRepo.getIngredients(skip, take);
 
   console.log('Ingredients fetched successfully');
   return result;
