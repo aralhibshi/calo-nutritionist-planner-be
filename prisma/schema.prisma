@@ -55,8 +55,8 @@ model Meal {
 
 model ComponentIngredient {
   id                  String     @id @default(uuid())
-  components          Component  @relation(fields: [component_id], references: [id])
-  ingredients         Ingredient @relation(fields: [ingredient_id], references: [id])
+  component           Component  @relation(fields: [component_id], references: [id])
+  ingredient          Ingredient @relation(fields: [ingredient_id], references: [id])
   component_id        String
   ingredient_id       String
   ingredient_quantity Int
@@ -68,8 +68,8 @@ model ComponentIngredient {
 
 model MealComponent {
   id                 String    @id @default(uuid())
-  meals              Meal      @relation(fields: [meal_id], references: [id])
-  components         Component @relation(fields: [component_id], references: [id])
+  meal               Meal      @relation(fields: [meal_id], references: [id])
+  component          Component @relation(fields: [component_id], references: [id])
   meal_id            String
   component_id       String
   component_quantity Int
