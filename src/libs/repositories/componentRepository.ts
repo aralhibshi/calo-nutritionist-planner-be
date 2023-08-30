@@ -69,8 +69,8 @@ export default class ComponentRepository {
 
       const result = await this.prisma.componentIngredient.create({
         data: {
-          components: { connect: { id: data.componentId } },
-          ingredients: { connect: { id: data.ingredientId } },
+          component: { connect: { id: data.componentId } },
+          ingredient: { connect: { id: data.ingredientId } },
           ingredient_quantity: data.ingredientQuantity,
         },
       });
@@ -111,7 +111,7 @@ export default class ComponentRepository {
         include: {
           components_ingredients: {
             include: {
-              ingredients: true,
+              ingredient: true,
             },
           },
         },
@@ -171,7 +171,7 @@ export default class ComponentRepository {
         include: {
           components_ingredients: {
             include: {
-              ingredients: true
+              ingredient: true
             }
           }
         }

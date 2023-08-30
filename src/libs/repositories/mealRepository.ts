@@ -76,11 +76,11 @@ export default class MealRepository {
         include: {
           meals_components: {
             include: {
-              components: {
+              component: {
                 include: {
                   components_ingredients: {
                     include: {
-                      ingredients: true
+                      ingredient: true
                     }
                   }
                 }
@@ -133,7 +133,7 @@ export default class MealRepository {
         include: {
           meals_components: {
             include: {
-              components: true
+              component: true
             }
           }
         }
@@ -180,8 +180,8 @@ export default class MealRepository {
   
       const result = await this.prisma.mealComponent.create({
         data: {
-          meals: { connect: { id: data.mealId } },
-          components: { connect: { id: data.componentId } },
+          meal: { connect: { id: data.mealId } },
+          component: { connect: { id: data.componentId } },
           component_quantity: data.componentQuantity
         },
       });
