@@ -60,11 +60,17 @@ export default class MealRepository {
   }
 
   async getMeals(
+    skip: number,
+    take: number
   ): Promise<any> {
     try {
       console.log('Fetching meals');
+
+      const count = await this.prisma.meal.count();
   
       const result = await this.prisma.meal.findMany({
+        skip: skip,
+        take: take,
         include: {
           MealComponent: {
             include: {
@@ -89,6 +95,7 @@ export default class MealRepository {
             title: 'Success',
             message: 'Meals fetched successfully'
           },
+          count: count,
           data: snakeCaseResults
         }),
       };
