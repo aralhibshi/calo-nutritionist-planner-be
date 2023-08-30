@@ -64,17 +64,28 @@ export default class MealRepository {
     take: number
   ): Promise<any> {
     try {
-      console.log('Fetching meals');
+      console.log(`Fetching meals with skip: ${skip}, take: ${take}`);
 
       const count = await this.prisma.meal.count();
   
       const result = await this.prisma.meal.findMany({
         skip: skip,
         take: take,
+        orderBy: {
+          name: 'asc',
+        },
         include: {
           MealComponent: {
             include: {
-              component: true
+              component: {
+                include: {
+                  ComponentIngredient: {
+                    include: {
+                      ingredient: true
+                    }
+                  }
+                }
+              }
             }
           }
         }
