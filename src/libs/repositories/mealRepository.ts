@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
 import { IMealData,  IMealComponentData } from '@lib/interfaces';
-import { convertKeys, pascalToSnake } from 'src/utils/keyUtils';
 import createError from 'http-errors';
 
 export default class MealRepository {
@@ -75,13 +74,13 @@ export default class MealRepository {
           name: 'asc',
         },
         include: {
-          MealComponent: {
+          meals_components: {
             include: {
-              component: {
+              components: {
                 include: {
-                  ComponentIngredient: {
+                  components_ingredients: {
                     include: {
-                      ingredient: true
+                      ingredients: true
                     }
                   }
                 }
@@ -90,8 +89,6 @@ export default class MealRepository {
           }
         }
       });
-
-      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Meals fetched successfully');
   
@@ -107,7 +104,7 @@ export default class MealRepository {
             message: 'Meals fetched successfully'
           },
           count: count,
-          data: snakeCaseResults
+          data: result
         }),
       };
     } catch (err) {
@@ -134,9 +131,9 @@ export default class MealRepository {
           name: 'asc',
         },
         include: {
-          MealComponent: {
+          meals_components: {
             include: {
-              component: true
+              components: true
             }
           }
         }
@@ -151,8 +148,6 @@ export default class MealRepository {
         return 0;
       }
       });
-
-      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Meals fetched successfully');
       return {
@@ -166,7 +161,7 @@ export default class MealRepository {
             title: 'Success',
             message: 'Meals fetched successfully',
           },
-          data: snakeCaseResults,
+          data: result,
         })
       };
     } catch (err) {
@@ -185,8 +180,8 @@ export default class MealRepository {
   
       const result = await this.prisma.mealComponent.create({
         data: {
-          meal: { connect: { id: data.mealId } },
-          component: { connect: { id: data.componentId } },
+          meals: { connect: { id: data.mealId } },
+          components: { connect: { id: data.componentId } },
           component_quantity: data.componentQuantity
         },
       });
