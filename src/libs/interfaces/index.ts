@@ -58,6 +58,7 @@ export interface IIngredientGetEvent {
 export interface IIngredientSearchEvent {
   queryStringParameters: {
     name: string;
+    skip: number;
   };
 }
 
@@ -117,10 +118,18 @@ export interface IComponentIngredientDataArray {
   ingredient_quantity: number
 }
 
+// Compnent Get - Event
+export interface IComponentGetEvent {
+  queryStringParameters: {
+    skip: number;
+  };
+}
+
 // Component Get (Search) - Event
 export interface IComponentSearchEvent {
   queryStringParameters: {
     name: string;
+    skip: number
   };
 }
 

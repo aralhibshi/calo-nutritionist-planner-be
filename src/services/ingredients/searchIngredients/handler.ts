@@ -13,6 +13,10 @@ export default middyfy(async (
   const validationSchema = Joi.object({
     name: Joi
       .string()
+      .required(),
+    skip: Joi
+      .number()
+      .min(0)
       .required()
   })
 

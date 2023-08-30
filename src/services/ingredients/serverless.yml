@@ -26,6 +26,7 @@ searchIngredients:
           parameters:
             querystrings:
               name: true
+              skip: true
 
 updateIngredient:
   handler: src/services/ingredients/updateIngredient/handler.default
