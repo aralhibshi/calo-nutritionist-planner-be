@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
 import { IComponentData, IComponentIngredientData } from '@lib/interfaces';
-import { pascalToSnake, convertKeys } from 'src/utils/keyUtils';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -70,8 +69,8 @@ export default class ComponentRepository {
 
       const result = await this.prisma.componentIngredient.create({
         data: {
-          component: { connect: { id: data.componentId } },
-          ingredient: { connect: { id: data.ingredientId } },
+          components: { connect: { id: data.componentId } },
+          ingredients: { connect: { id: data.ingredientId } },
           ingredient_quantity: data.ingredientQuantity,
         },
       });
@@ -110,15 +109,14 @@ export default class ComponentRepository {
         skip: skip,
         take: 9,
         include: {
-          ComponentIngredient: {
+          components_ingredients: {
             include: {
-              ingredient: true,
+              ingredients: true,
             },
           },
         },
       });
-  
-      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
+
   
       console.log('Components fetched successfully');
       return {
@@ -133,7 +131,7 @@ export default class ComponentRepository {
             message: 'Components fetched successfully',
           },
           count: count,
-          data: snakeCaseResults,
+          data: result,
         }),
       };
     } catch (err) {
@@ -171,9 +169,9 @@ export default class ComponentRepository {
           name: 'asc',
         },
         include: {
-          ComponentIngredient: {
+          components_ingredients: {
             include: {
-              ingredient: true
+              ingredients: true
             }
           }
         }
@@ -188,8 +186,6 @@ export default class ComponentRepository {
           return 0;
         }
       });
-
-      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
   
       console.log('Components fetched successfully');
       return {
@@ -204,7 +200,7 @@ export default class ComponentRepository {
             message: 'Components fetched successfully',
           },
           count: count,
-          data: snakeCaseResults,
+          data: result,
         })
       };
     } catch (err) {
