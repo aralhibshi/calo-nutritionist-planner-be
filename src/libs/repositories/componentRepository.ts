@@ -99,11 +99,16 @@ export default class ComponentRepository {
   }
 
   async getComponents(
+    skip: number
   ): Promise<any> {
     try {
       console.log('Fetching components');
+
+      const count = await this.prisma.component.count()
   
       const result = await this.prisma.component.findMany({
+        skip: skip,
+        take: 9,
         include: {
           ComponentIngredient: {
             include: {
@@ -127,6 +132,7 @@ export default class ComponentRepository {
             title: 'Success',
             message: 'Components fetched successfully',
           },
+          count: count,
           data: snakeCaseResults,
         }),
       };
@@ -139,12 +145,23 @@ export default class ComponentRepository {
   }  
 
   async searchComponents(
-    index: string
+    index: string,
+    skip: number
   ): Promise<any> {
     try {
       console.log('Fetching matching components with name:', index);
+
+      const count = await this.prisma.component.count({
+        where: {
+          name: {
+            contains: index
+          }
+        }
+      })
   
       const result = await this.prisma.component.findMany({
+        skip: skip,
+        take: 9,
         where: {
           name: {
             contains: index,
@@ -186,6 +203,7 @@ export default class ComponentRepository {
             title: 'Success',
             message: 'Components fetched successfully',
           },
+          count: count,
           data: snakeCaseResults,
         })
       };

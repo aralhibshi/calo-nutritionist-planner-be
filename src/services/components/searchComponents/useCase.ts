@@ -8,8 +8,9 @@ export async function searchComponents(
   const componentRepo = ComponentRepository.getInstance();
 
   const index = capitalizeFirstLetter(event.queryStringParameters.name);
+  const skip = Number(event.queryStringParameters.skip);
 
   // Repo - Search Components
-  const result = await componentRepo.searchComponents(index);
+  const result = await componentRepo.searchComponents(index, skip);
   return result;
 }

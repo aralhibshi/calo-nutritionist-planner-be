@@ -8,8 +8,9 @@ export async function searchIngredients(
   const ingredientRepo = IngredientRepository.getInstance();
 
   const index = capitalizeFirstLetter(event.queryStringParameters.name);
+  const skip = Number(event.queryStringParameters.skip);
 
   // Repo - Search Ingredients
-  const result = await ingredientRepo.searchIngredients(index);
+  const result = await ingredientRepo.searchIngredients(index, skip);
   return result;
 }

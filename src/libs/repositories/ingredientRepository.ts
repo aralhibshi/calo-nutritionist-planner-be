@@ -104,16 +104,27 @@ export default class IngredientRepository {
   }
 
   async searchIngredients(
-    index: string
+    index: string,
+    skip: number
   ): Promise<any> {
     try {
       console.log('Fetching matching ingredients with name:', index);
 
-      const result = await this.prisma.ingredient.findMany({
+      const count = await this.prisma.ingredient.count({
         where: {
           name: {
-            contains: index,
-          },
+            contains: index
+          }
+        }
+      })
+
+      const result = await this.prisma.ingredient.findMany({
+        skip: skip,
+        take: 9,
+        where: {
+          name: {
+            contains: index
+          }
         },
         orderBy: {
           name: 'asc',
@@ -142,6 +153,7 @@ export default class IngredientRepository {
             title: 'Success',
             message: 'Ingredients fetched successfully',
           },
+          count: count,
           data: sortedResults,
         })
       };
