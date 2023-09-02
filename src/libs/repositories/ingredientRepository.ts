@@ -171,20 +171,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient removed from ComponentIngredient successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from ComponentIngredient successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
@@ -206,21 +193,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient deleted successfully');
-
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {

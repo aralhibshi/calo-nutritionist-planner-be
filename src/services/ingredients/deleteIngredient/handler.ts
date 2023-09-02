@@ -20,8 +20,24 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event);
 
+  const { ...data } = event.queryStringParameters
+ 
   // useCase - Delete Ingredient
-  const result = await deleteIngredient(event);
-  return result;
+  const result = await deleteIngredient(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'DELETE',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Ingredient deleted successfully',
+      },
+      data: result
+    })
+  };
 })
 .use(deleteExceptionHandlerMiddleware());

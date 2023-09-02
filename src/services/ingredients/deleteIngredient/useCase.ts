@@ -1,12 +1,12 @@
-import { IIngredientDeleteEvent } from '@lib/interfaces';
+import { IIngredientDeleteData } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 
 export async function deleteIngredient(
-  event: IIngredientDeleteEvent
+  data: IIngredientDeleteData
 ): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
-  const id = event.queryStringParameters.id
+  const id = data.id
   
   // Repo - Remove Ingredient from ComponentIngredient
   await ingredientRepo.removeIngredientFromComponentIngredient(id);

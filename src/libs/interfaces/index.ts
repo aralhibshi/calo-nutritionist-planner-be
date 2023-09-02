@@ -10,13 +10,6 @@ export type TGetEvent = APIGatewayProxyEvent;
 
 // Interfaces -
 
-// Ingredient Delete - Event
-export interface IIngredientDeleteEvent {
-  queryStringParameters: {
-    id: string;
-  };
-}
-
 // Specific ---
 
 // Interfaces -
@@ -110,6 +103,11 @@ export interface IIngredientDeleteEvent {
   queryStringParameters: {
     id: string;
   };
+}
+
+// Ingredient Delete - Data
+export interface IIngredientDeleteData {
+  id: string;
 }
 
 // Component
