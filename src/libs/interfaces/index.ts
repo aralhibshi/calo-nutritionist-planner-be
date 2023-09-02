@@ -50,9 +50,15 @@ export interface IIngredientData {
 // Ingredient Get - Event
 export interface IIngredientGetEvent {
   queryStringParameters: {
-    skip: number
-    take: number
+    skip: number;
+    take: number;
   }
+}
+
+// Ingredient Get - Data
+export interface IIngredientGetData {
+  skip: number;
+  take: number;
 }
 
 // Ingredient Get (Search) - Event
