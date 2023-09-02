@@ -12,8 +12,6 @@ export async function createComponent(
     name: capitalizeFirstLetter(componentData.name)
   };
 
-  // delete componentData.ingredients;
-
   // Repo - Create Component
   const result = await componentRepo.createComponent(data);
 

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IComponentSearchEvent } from '@lib/interfaces';
+import { IComponentSearchEvent, IComponentSearchData } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
@@ -24,8 +24,26 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event)
 
+  const data: IComponentSearchData = {
+    ...event.queryStringParameters
+  }
+ 
   // useCase - Search Components
-  const result = await searchComponents(event);
-  return result;
+  const result = await searchComponents(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'GET',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Components fetched successfully',
+      },
+      data: result
+    })
+  };
 })
 .use(readExceptionHandlerMiddleware());

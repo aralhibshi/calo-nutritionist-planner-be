@@ -34,13 +34,14 @@ export default middyfy(async (
   // Validation before Processing
   await bodyValidationMiddleware(validationSchema)(event);
 
-  const { ingredients: componentIngredientData, ...componentData } = event.body;
+  // Data Separation
+  const { ingredients, ...componentData } = event.body;
 
   // useCase - Create Component
   const component = await createComponent(componentData);
 
   // useCase - Create ComponentIngredient
-  await createComponentIngredient(component, componentIngredientData)
+  await createComponentIngredient(component, ingredients)
 
   return {
     headers: {

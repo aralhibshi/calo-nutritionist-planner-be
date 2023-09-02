@@ -149,7 +149,7 @@ export interface IComponentGetEvent {
 }
 
 // Component Get
-export interface IComponentGet {
+export interface IComponentGetData {
   skip: number
 }
 
@@ -159,6 +159,12 @@ export interface IComponentSearchEvent {
     name: string;
     skip: number
   };
+}
+
+// Component Get (Search)
+export interface IComponentSearchData {
+  name: string;
+  skip: number
 }
 
 // Component Delete - Event

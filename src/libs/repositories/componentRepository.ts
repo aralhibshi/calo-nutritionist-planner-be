@@ -106,7 +106,7 @@ export default class ComponentRepository {
     skip: number
   ): Promise<any> {
     try {
-      console.log('Fetching matching components with name:', index);
+      console.log(`Fetching matching components with name: ${index}, skip: ${skip}`);
 
       const count = await this.prisma.component.count({
         where: {
@@ -135,32 +135,11 @@ export default class ComponentRepository {
           }
         }
       });
-      
-       const sortedResults = result.sort((a, b) => {
-        if (a.name === index && b.name !== index) {
-          return -1;
-        } else if (a.name !== index && b.name === index) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
   
       console.log('Components fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Components fetched successfully',
-          },
-          count: count,
-          data: result,
-        })
+        count,
+        components: result
       };
     } catch (err) {
       console.log('Prisma Error:', err);

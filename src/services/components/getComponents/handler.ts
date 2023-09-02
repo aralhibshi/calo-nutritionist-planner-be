@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IComponentGetEvent } from '@lib/interfaces';
+import { IComponentGetData, IComponentGetEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
@@ -20,10 +20,10 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event)
 
-  const skip = Number(event.queryStringParameters.skip);
+  const { ...data } = event.queryStringParameters;
 
   // UseCase - Get Components
-  const result = await getComponents(skip);
+  const result = await getComponents(data);
   
   return {
     headers: {
@@ -37,7 +37,7 @@ export default middyfy(async (
         message: 'Components fetched successfully',
       },
       data: result
-    }),
+    })
   };
 })
 .use(readExceptionHandlerMiddleware());
