@@ -1,18 +1,18 @@
-import { IIngredientUpdateEvent } from '@lib/interfaces';
+import { IIngredient, IIngredientUpdateEvent } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function updateIngredient(
-  event: IIngredientUpdateEvent
+  data: IIngredient
 ): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
   const ingredientData = {
-    ...event.body,
-    name: capitalizeFirstLetter(event.body.name),
+    ...data,
+    name: capitalizeFirstLetter(data.name),
   };
 
-  const id = event.queryStringParameters.id;
+  const id = data.id;
 
   // Repo - Update Ingredient
   const result = await ingredientRepo.updateIngredient(id, ingredientData);

@@ -53,8 +53,27 @@ export default middyfy(async (
   await queryValidationMiddleware(queryValidationSchema)(event);
   await bodyValidationMiddleware(bodyValidationSchema)(event);
 
+  const data = {
+    ...event.body,
+    ...event.queryStringParameters
+  }
+
   // useCase - Update Ingredient
-  const result = await updateIngredient(event);
-  return result;
+  const result = await updateIngredient(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'GET',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Ingredient updated successfully',
+      },
+      data: result,
+    })
+  };
 })
 .use(updateExceptionHandlerMiddleware());

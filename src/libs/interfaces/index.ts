@@ -21,6 +21,19 @@ export interface IIngredientDeleteEvent {
 
 // Interfaces -
 
+// Ingredient
+export interface IIngredient {
+  id: string;
+  name: string;
+  category?: string;
+  description?: string;
+  price: number;
+  protein: number;
+  fats: number;
+  carbs: number;
+  unit: string;
+}
+
 // Ingredient Create/Update - Event
 export interface IIngredientCreateEvent {
   body: {
