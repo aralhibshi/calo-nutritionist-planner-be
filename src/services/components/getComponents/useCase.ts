@@ -1,13 +1,11 @@
 
-import { IComponentGetEvent } from '@lib/interfaces';
+import { IComponentGet } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 
 export async function getComponents(
-  event: IComponentGetEvent
+  skip: number
 ): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
-
-  const skip = Number(event.queryStringParameters.skip);
 
   // Repo - Get Components
   const result = await componentRepo.getComponents(skip);

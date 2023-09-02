@@ -71,7 +71,7 @@ export default class ComponentRepository {
     skip: number
   ): Promise<any> {
     try {
-      console.log('Fetching components');
+      console.log(`Fetching components with skip: ${skip}`);
 
       const count = await this.prisma.component.count()
   
@@ -90,19 +90,8 @@ export default class ComponentRepository {
   
       console.log('Components fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Components fetched successfully',
-          },
-          count: count,
-          data: result,
-        }),
+        count,
+        components: result
       };
     } catch (err) {
       console.log('Prisma Error:', err);

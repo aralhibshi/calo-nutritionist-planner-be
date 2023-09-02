@@ -148,6 +148,11 @@ export interface IComponentGetEvent {
   };
 }
 
+// Component Get
+export interface IComponentGet {
+  skip: number
+}
+
 // Component Get (Search) - Event
 export interface IComponentSearchEvent {
   queryStringParameters: {

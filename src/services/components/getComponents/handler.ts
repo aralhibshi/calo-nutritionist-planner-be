@@ -20,8 +20,24 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event)
 
+  const skip = Number(event.queryStringParameters.skip);
+
   // UseCase - Get Components
-  const result = await getComponents(event);
-  return result;
+  const result = await getComponents(skip);
+  
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'GET',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Components fetched successfully',
+      },
+      data: result
+    }),
+  };
 })
 .use(readExceptionHandlerMiddleware());
