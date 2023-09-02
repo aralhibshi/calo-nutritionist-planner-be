@@ -78,6 +78,9 @@ export default class ComponentRepository {
       const result = await this.prisma.component.findMany({
         skip: skip,
         take: 9,
+        orderBy: {
+          name: 'asc',
+        },
         include: {
           components_ingredients: {
             include: {
@@ -125,7 +128,11 @@ export default class ComponentRepository {
           },
         },
         orderBy: {
-          name: 'asc',
+          _relevance: {
+            fields: ['name'],
+            search: index,
+            sort: 'asc'
+          }
         },
         include: {
           components_ingredients: {

@@ -128,7 +128,11 @@ export default class MealRepository {
           },
         },
         orderBy: {
-          name: 'asc',
+          _relevance: {
+            fields: ['name'],
+            search: index,
+            sort: 'asc'
+          }
         },
         include: {
           meals_components: {

@@ -1,14 +1,14 @@
-import { IIngredientSearchEvent } from '@lib/interfaces';
+import { IIngredientSearchData } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function searchIngredients(
-  event: IIngredientSearchEvent
+  data: IIngredientSearchData
 ): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
-  const index = capitalizeFirstLetter(event.queryStringParameters.name);
-  const skip = Number(event.queryStringParameters.skip);
+  const index = capitalizeFirstLetter(data.name);
+  const skip = Number(data.skip);
 
   // Repo - Search Ingredients
   const result = await ingredientRepo.searchIngredients(index, skip);

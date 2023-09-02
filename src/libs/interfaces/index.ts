@@ -68,6 +68,11 @@ export interface IIngredientSearchEvent {
     skip: number;
   };
 }
+// Ingredient Get (Search) - Data
+export interface IIngredientSearchData {
+  name: string;
+  skip: number;
+}
 
 // Ingredient Update - Event
 export interface IIngredientUpdateEvent {

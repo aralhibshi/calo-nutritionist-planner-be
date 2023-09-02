@@ -23,8 +23,24 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event);
 
+  const { ...data } = event.queryStringParameters
+
   // useCase - Search Ingredients
-  const result = await searchIngredients(event);
-  return result;
+  const result = await searchIngredients(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'GET',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Ingredients fetched successfully',
+      },
+      data: result
+    })
+  };
 })
 .use(readExceptionHandlerMiddleware());

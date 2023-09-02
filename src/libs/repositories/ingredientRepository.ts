@@ -98,42 +98,26 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.findMany({
         skip: skip,
         take: 9,
+        orderBy: {
+          _relevance: {
+            fields: ['name'],
+            search: index,
+            sort: 'asc'
+          }
+        },
         where: {
           name: {
             contains: index
           }
-        },
-        orderBy: {
-          name: 'asc',
-        },
-      });
-
-      const sortedResults = result.sort((a, b) => {
-        if (a.name === index && b.name !== index) {
-          return -1;
-        } else if (a.name !== index && b.name === index) {
-          return 1;
-        } else {
-          return 0;
         }
       });
 
+
       console.log('Ingredients fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredients fetched successfully',
-          },
-          count: count,
-          data: sortedResults,
-        })
-      };
+        count,
+        ingredients: result
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Internal Server Error', {
