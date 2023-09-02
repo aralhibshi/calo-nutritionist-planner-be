@@ -32,20 +32,7 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.create({ data: ingredientData });
 
       console.log('Ingredient created successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"POST",
-        },
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient created successfully'
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);

@@ -45,8 +45,24 @@ export default middyfy(async (
   // Validation before Processing
   await bodyValidationMiddleware(validationSchema)(event);
 
+  const { ...data } = event.body;
+
   // useCase - Create Ingredient
-  const result = await createIngredient(event);
-  return result;
+  const result = await createIngredient(data);
+
+  return {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-control-Allow-Methods":"POST",
+    },
+    statusCode: 201,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Ingredient created successfully'
+      },
+      data: result
+    })
+  };
 })
 .use(createExceptionHandlerMiddleware());
