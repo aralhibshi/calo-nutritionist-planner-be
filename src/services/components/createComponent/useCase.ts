@@ -1,46 +1,33 @@
-import { IComponentCreateEvent, IComponentData } from '@lib/interfaces';
+import { IComponent, IComponentData, IComponentIngredientDataArray } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createComponent(
-  event: IComponentCreateEvent
-): Promise<any> {
+  componentData: IComponentData
+): Promise<IComponent> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const componentData: IComponentData = {
-    ...event.body,
-    name: capitalizeFirstLetter(event.body.name)
+  const data: IComponentData = {
+    ...componentData,
+    name: capitalizeFirstLetter(componentData.name)
   };
 
-  delete componentData.ingredients;
+  // delete componentData.ingredients;
 
   // Repo - Create Component
-  const result = await componentRepo.createComponent(componentData);
-  const componentId = result.body.data.id;
-  return {
-    statusCode: 201,
-    body: JSON.stringify({
-      success: {
-        title: 'Success',
-        message: 'Component created successfully'
-      },
-      data: {
-        id: componentId,
-        ...componentData,
-      }
-    })
-  }
+  const result = await componentRepo.createComponent(data);
+
+  return result;
 }
 
 export async function createComponentIngredient(
-  component: any,
-  event: IComponentCreateEvent,
+  component: IComponent,
+  componentIngredientData: IComponentIngredientDataArray[],
 ):Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const ingredients = event.body.ingredients
-  const parsedResult = JSON.parse(component.body)
-  const componentId = parsedResult.data.id;
+  const ingredients = componentIngredientData
+  const componentId = component.id;
 
   // Repo - Create ComponentIngredient
   for (const ingredient of ingredients) {

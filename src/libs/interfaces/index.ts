@@ -88,11 +88,24 @@ export interface IIngredientDeleteEvent {
   };
 }
 
+// Component
+export interface IComponent {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  unit: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 // Component Create - Event
 export interface IComponentCreateEvent {
   body: {
     ingredients: Array<IComponentIngredientDataArray>;
     name: string;
+    category?: string;
+    description?: string;
     unit: string;
   }
 }
@@ -102,8 +115,17 @@ export interface IComponentData {
   name: string;
   category?: string;
   description?: string;
-  ingredients?: Array<IComponentIngredientDataArray>
   unit: string;
+}
+
+// IComponentIngredient
+export interface IComponentIngredient {
+  id: string;
+  component_id: string;
+  ingredient_id: string;
+  ingredient_quantity: number;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // ComponentIngredient Create - Data

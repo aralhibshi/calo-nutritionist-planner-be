@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponentData, IComponentIngredientData } from '@lib/interfaces';
+import { IComponentData, IComponentIngredient, IComponentIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -26,26 +26,9 @@ export default class ComponentRepository {
       console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
       const result = await this.prisma.component.create({ data });
-      const componentId = result.id;
 
       console.log('Component created successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"POST",
-        },
-        statusCode: 201,
-        body: {
-          success: {
-            title: 'Success',
-            message: 'Component created successfully'
-          },
-          data: {
-            componentId,
-            ...result,
-          }
-        }
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);
@@ -63,7 +46,7 @@ export default class ComponentRepository {
 
   async createComponentIngredient(
     data: IComponentIngredientData
-  ): Promise<any> {
+  ): Promise<IComponentIngredient> {
     try {
       console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
 
@@ -76,20 +59,7 @@ export default class ComponentRepository {
       });
 
       console.log('Component ingredient created successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"POST",
-        },
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'ComponentIngredient created successfully'
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       throw createError(400, 'Prisma Error', {
         details: 'Error creating ComponentIngredient in Prisma',
