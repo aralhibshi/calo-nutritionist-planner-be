@@ -164,20 +164,7 @@ export default class ComponentRepository {
       })
 
       console.log('Component removed from ComponentIngredient successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from ComponentIngredient successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
@@ -201,20 +188,7 @@ export default class ComponentRepository {
       });
 
       console.log('Component removed from MealComponent successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from MealComponent successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
@@ -236,20 +210,7 @@ export default class ComponentRepository {
       });
   
       console.log('Component deleted successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {

@@ -19,14 +19,30 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event);
 
+  const { ...data } = event.queryStringParameters;
+
   // useCase - Remove Component from ComponentIngredient
-  await removeComponentFromComponentIngredient(event);
+  await removeComponentFromComponentIngredient(data);
 
   // useCase - Remove Component from MealComponent
-  await removeComponentFomMealComponent(event);
+  await removeComponentFomMealComponent(data);
 
   // useCase - Delete Component
-  const result = await deleteComponent(event);
-  return result;
+  const result = await deleteComponent(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'DELETE',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Component deleted successfully',
+      },
+      data: result
+    })
+  };
 })
 .use(deleteExceptionHandlerMiddleware());

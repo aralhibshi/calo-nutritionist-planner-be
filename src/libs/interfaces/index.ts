@@ -174,6 +174,11 @@ export interface IComponentDeleteEvent {
   };
 }
 
+// Component Delete - Data
+export interface IComponentDeleteData {
+  id: string;
+}
+
 // Component Create - Event
 export interface IMealCreateEvent {
   body: {

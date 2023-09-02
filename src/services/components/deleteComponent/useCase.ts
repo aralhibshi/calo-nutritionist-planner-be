@@ -1,22 +1,24 @@
-import { IComponentDeleteEvent } from '@lib/interfaces';
+import { IComponentDeleteData, IComponentDeleteEvent } from '@lib/interfaces';
 import ComponentRepository from '@lib/repositories/componentRepository';
 
 export async function removeComponentFromComponentIngredient(
-  event: IComponentDeleteEvent
+  data: IComponentDeleteData
 ): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const id = event.queryStringParameters.id;
+  const id = data.id;
 
   // Repo - Remove Component from Component Ingredient
   const result = await componentRepo.removeComponentFromComponentIngredient(id);
   return result;
 }
 
-export async function removeComponentFomMealComponent(event: IComponentDeleteEvent): Promise<any> {
+export async function removeComponentFomMealComponent(
+  data: IComponentDeleteData
+): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const id = event.queryStringParameters.id;
+  const id = data.id;
 
   // Repo - Remove Component from Meal Component
   const result = await componentRepo.removeComponentFomMealComponent(id);
@@ -24,11 +26,11 @@ export async function removeComponentFomMealComponent(event: IComponentDeleteEve
 }
 
 export async function deleteComponent(
-  event: IComponentDeleteEvent
+  data: IComponentDeleteData
 ): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const id = event.queryStringParameters.id;
+  const id = data.id;
 
   // Repo - Delete Component
   const result = await componentRepo.deleteComponent(id);
