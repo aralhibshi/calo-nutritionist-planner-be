@@ -70,16 +70,15 @@ export default class MealRepository {
 
   async getMeals(
     skip: number,
-    take: number
   ): Promise<any> {
     try {
-      console.log(`Fetching meals with skip: ${skip}, take: ${take}`);
+      console.log(`Fetching meals with skip: ${skip}`);
 
       const count = await this.prisma.meal.count();
   
       const result = await this.prisma.meal.findMany({
         skip: skip,
-        take: take,
+        take: 9,
         orderBy: {
           name: 'asc',
         },
@@ -114,10 +113,11 @@ export default class MealRepository {
   }
 
   async searchMeals(
-    index: string
+    index: string,
+    skip: number
   ): Promise<any> {
     try {
-      console.log('Fetching meals with name:', index);
+      console.log(`Fetching matching meals with name: ${index}, skip: ${skip}`);
 
       const count = await this.prisma.meal.count({
         where: {
@@ -128,6 +128,8 @@ export default class MealRepository {
       })
   
       const result = await this.prisma.meal.findMany({
+        skip: skip,
+        take: 9,
         where: {
           name: {
             contains: index,

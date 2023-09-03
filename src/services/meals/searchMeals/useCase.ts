@@ -7,9 +7,10 @@ export async function searchMeals(
 ): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
-  const index = capitalizeFirstLetter(data.name);
+  const capitalizedIndex = capitalizeFirstLetter(data.name);
+  const skip = Number(data.skip)
 
   // Repo - Search Meals
-  const result = await mealRepo.searchMeals(index);
+  const result = await mealRepo.searchMeals(capitalizedIndex, skip);
   return result;
 }

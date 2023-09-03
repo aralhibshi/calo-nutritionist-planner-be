@@ -14,6 +14,10 @@ export default middyfy(async (
     name: Joi
       .string()
       .min(1)
+      .required(),
+    skip: Joi
+      .number()
+      .min(0)
       .required()
   })
 

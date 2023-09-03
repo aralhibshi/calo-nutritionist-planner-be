@@ -14,11 +14,6 @@ export default middyfy(async (
     skip: Joi
       .number()
       .min(0)
-      .required(),
-    take: Joi
-      .number()
-      .min(9)
-      .max(500)
       .required()
   })
 
