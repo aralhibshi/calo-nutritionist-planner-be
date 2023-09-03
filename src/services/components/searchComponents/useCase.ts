@@ -8,7 +8,7 @@ export async function searchComponents(
   const componentRepo = ComponentRepository.getInstance();
 
   const capitalizedIndex = capitalizeFirstLetter(data.name);
-  const skip = data.skip
+  const skip = Number(data.skip)
 
   // Repo - Search Components
   const result = await componentRepo.searchComponents(capitalizedIndex, skip);
