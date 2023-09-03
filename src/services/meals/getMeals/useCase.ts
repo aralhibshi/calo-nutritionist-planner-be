@@ -1,13 +1,13 @@
-import { IMealGetEvent } from "@lib/interfaces";
+import { IMealGetData } from "@lib/interfaces";
 import MealRepository from "@lib/repositories/mealRepository";
 
 export async function getMeals(
-  event: IMealGetEvent
+  data: IMealGetData
 ): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
-  const skip = Number(event.queryStringParameters.skip);
-  const take = Number(event.queryStringParameters.take);
+  const skip = Number(data.skip);
+  const take = Number(data.take);
 
   // Repo - Get Meals
   const result = await mealRepo.getMeals(skip, take);

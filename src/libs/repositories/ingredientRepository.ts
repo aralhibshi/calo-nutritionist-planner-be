@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IIngredientData } from '@lib/interfaces';
+import { IIngredient, IIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class IngredientRepository {
@@ -21,7 +21,7 @@ export default class IngredientRepository {
 
   async createIngredient(
     data: IIngredientData
-  ): Promise<any> {
+  ): Promise<IIngredient> {
     try {
       console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 
@@ -32,20 +32,7 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.create({ data: ingredientData });
 
       console.log('Ingredient created successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"POST",
-        },
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient created successfully'
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);
@@ -82,20 +69,9 @@ export default class IngredientRepository {
 
       console.log('Ingredients fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredients fetched successfully',
-          },
-          count: count,
-          data: result
-        })
-      };
+        count,
+        ingredients: result
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
@@ -122,42 +98,26 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.findMany({
         skip: skip,
         take: 9,
+        orderBy: {
+          _relevance: {
+            fields: ['name'],
+            search: index,
+            sort: 'asc'
+          }
+        },
         where: {
           name: {
             contains: index
           }
-        },
-        orderBy: {
-          name: 'asc',
-        },
-      });
-
-      const sortedResults = result.sort((a, b) => {
-        if (a.name === index && b.name !== index) {
-          return -1;
-        } else if (a.name !== index && b.name === index) {
-          return 1;
-        } else {
-          return 0;
         }
       });
 
+
       console.log('Ingredients fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredients fetched successfully',
-          },
-          count: count,
-          data: sortedResults,
-        })
-      };
+        count,
+        ingredients: result
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Internal Server Error', {
@@ -187,20 +147,7 @@ export default class IngredientRepository {
       })
 
       console.log('Ingredient updated successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient updated successfully',
-          },
-          data: result,
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err)
       throw createError(500, 'Prisma Error', {
@@ -224,20 +171,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient removed from ComponentIngredient successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from ComponentIngredient successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
@@ -259,21 +193,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient deleted successfully');
-
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {

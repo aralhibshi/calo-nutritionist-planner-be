@@ -1,3 +1,4 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
 // General ---
@@ -10,16 +11,22 @@ export type TGetEvent = APIGatewayProxyEvent;
 
 // Interfaces -
 
-// Ingredient Delete - Event
-export interface IIngredientDeleteEvent {
-  queryStringParameters: {
-    id: string;
-  };
-}
-
 // Specific ---
 
 // Interfaces -
+
+// Ingredient
+export interface IIngredient {
+  id: string;
+  name: string;
+  category: string | null;
+  description: string | null;
+  price: Decimal;
+  protein: Decimal;
+  fats: Decimal;
+  carbs: Decimal;
+  unit: string;
+}
 
 // Ingredient Create/Update - Event
 export interface IIngredientCreateEvent {
@@ -50,9 +57,15 @@ export interface IIngredientData {
 // Ingredient Get - Event
 export interface IIngredientGetEvent {
   queryStringParameters: {
-    skip: number
-    take: number
+    skip: number;
+    take: number;
   }
+}
+
+// Ingredient Get - Data
+export interface IIngredientGetData {
+  skip: number;
+  take: number;
 }
 
 // Ingredient Get (Search) - Event
@@ -61,6 +74,11 @@ export interface IIngredientSearchEvent {
     name: string;
     skip: number;
   };
+}
+// Ingredient Get (Search) - Data
+export interface IIngredientSearchData {
+  name: string;
+  skip: number;
 }
 
 // Ingredient Update - Event
@@ -88,11 +106,29 @@ export interface IIngredientDeleteEvent {
   };
 }
 
+// Ingredient Delete - Data
+export interface IIngredientDeleteData {
+  id: string;
+}
+
+// Component
+export interface IComponent {
+  id: string;
+  name: string;
+  category: string | null;
+  description: string | null;
+  unit: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 // Component Create - Event
 export interface IComponentCreateEvent {
   body: {
     ingredients: Array<IComponentIngredientDataArray>;
     name: string;
+    category?: string;
+    description?: string;
     unit: string;
   }
 }
@@ -102,20 +138,29 @@ export interface IComponentData {
   name: string;
   category?: string;
   description?: string;
-  ingredients?: Array<IComponentIngredientDataArray>
   unit: string;
+}
+
+// IComponentIngredient
+export interface IComponentIngredient {
+  id: string;
+  component_id: string;
+  ingredient_id: string;
+  ingredient_quantity: number;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // ComponentIngredient Create - Data
 export interface IComponentIngredientData {
-  componentId: string,
-  ingredientId: string,
-  ingredientQuantity: number
+  component_id: string,
+  ingredient_id: string,
+  ingredient_quantity: number
 }
 
 // ComponentIngredient Create (Ingredient Array) - Data
 export interface IComponentIngredientDataArray {
-  ingredientId: string,
+  ingredient_id: string,
   ingredient_quantity: number
 }
 
@@ -126,6 +171,11 @@ export interface IComponentGetEvent {
   };
 }
 
+// Component Get
+export interface IComponentGetData {
+  skip: number
+}
+
 // Component Get (Search) - Event
 export interface IComponentSearchEvent {
   queryStringParameters: {
@@ -134,11 +184,22 @@ export interface IComponentSearchEvent {
   };
 }
 
+// Component Get (Search)
+export interface IComponentSearchData {
+  name: string;
+  skip: number
+}
+
 // Component Delete - Event
 export interface IComponentDeleteEvent {
   queryStringParameters: {
     id: string;
   };
+}
+
+// Component Delete - Data
+export interface IComponentDeleteData {
+  id: string;
 }
 
 // Component Create - Event
@@ -151,26 +212,36 @@ export interface IMealCreateEvent {
   }
 }
 
+// Meal
+export interface IMeal {
+  id: string;
+  name: string;
+  description: string | null;
+  size: string;
+  unit: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 // Meal Create/Update - Data
 export interface IMealData {
   name: string;
   category?: string;
   description?: string;
-  components?: Array<IMealComponentDataArray>;
   unit: string;
   size: string;
 }
 
 // MealComponent Create - Data
 export interface IMealComponentData {
-  mealId: string;
-  componentId: string;
-  componentQuantity: number;
+  meal_id: string;
+  component_id: string;
+  component_quantity: number;
 }
 
 // MealComponent Create (Component Array) - Data
 export interface IMealComponentDataArray {
-  componentId: string,
+  component_id: string,
   component_quantity: number
 }
 
@@ -182,6 +253,12 @@ export interface IMealGetEvent {
   }
 }
 
+// Meal Get - Data
+export interface IMealGetData {
+  skip: number;
+  take: number
+}
+
 // Meal Get (Search) - Event
 export interface IMealSearchEvent {
   queryStringParameters: {
@@ -189,9 +266,19 @@ export interface IMealSearchEvent {
   };
 }
 
+// Meal Get (Search) - Data
+export interface IMealSearchData {
+  name: string;
+}
+
 // Meal Delete - Event
 export interface IMealDeleteEvent {
   queryStringParameters: {
     id: string;
   };
+}
+
+// Meal Delete - Data
+export interface IMealDeleteData {
+  id: string;
 }
