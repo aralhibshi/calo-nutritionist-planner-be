@@ -103,7 +103,7 @@ export default class MealRepository {
       console.log('Meals fetched successfully');
       return {
         count,
-        result
+        meals: result
       };
     } catch (err) {
       console.log('Prisma Error:', err)
@@ -152,7 +152,7 @@ export default class MealRepository {
       console.log('Meals fetched successfully');
       return {
         count,
-        result
+        meals: result
       };
     } catch (err) {
       console.log('Prisma Error', err)
