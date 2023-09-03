@@ -94,6 +94,14 @@ export default class MealRepository {
   ): Promise<any> {
     try {
       console.log('Fetching meals with name:', index);
+
+      const count = await this.prisma.meal.count({
+        where: {
+          name: {
+            contains: index
+          }
+        }
+      })
   
       const result = await this.prisma.meal.findMany({
         where: {
@@ -116,31 +124,11 @@ export default class MealRepository {
           }
         }
       });
-      
-      const sortedResults = result.sort((a, b) => {
-      if (a.name === index && b.name !== index) {
-        return -1;
-      } else if (a.name !== index && b.name === index) {
-        return 1;
-      } else {
-        return 0;
-      }
-      });
   
       console.log('Meals fetched successfully');
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meals fetched successfully',
-          },
-          data: result,
-        })
+        count,
+        result
       };
     } catch (err) {
       console.log('Prisma Error', err)

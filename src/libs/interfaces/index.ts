@@ -266,6 +266,11 @@ export interface IMealSearchEvent {
   };
 }
 
+// Meal Get (Search) - Data
+export interface IMealSearchData {
+  name: string;
+}
+
 // Meal Delete - Event
 export interface IMealDeleteEvent {
   queryStringParameters: {
