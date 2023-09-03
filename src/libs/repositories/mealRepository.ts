@@ -44,6 +44,30 @@ export default class MealRepository {
     }
   }
 
+  async createMealComponent(
+    data: IMealComponentData
+  ): Promise<any> {
+    try {
+      console.log('Creating meal component with mealId:', data.meal_id, 'and componentId:', data.component_id);
+  
+      const result = await this.prisma.mealComponent.create({
+        data: {
+          meal: { connect: { id: data.meal_id } },
+          component: { connect: { id: data.component_id } },
+          component_quantity: data.component_quantity
+        },
+      });
+  
+      console.log('Meal component created successfully');
+      return result;
+    } catch (err) {
+      console.log('Prisma Error', err)
+      throw createError(400, 'Prisma Error', {
+        details: 'Error creating ComponentIngredient in Prisma',
+      });
+    }
+  }
+
   async getMeals(
     skip: number,
     take: number
@@ -138,30 +162,6 @@ export default class MealRepository {
     }
   }
 
-  async createMealComponent(
-    data: IMealComponentData
-  ): Promise<any> {
-    try {
-      console.log('Creating meal component with mealId:', data.meal_id, 'and componentId:', data.component_id);
-  
-      const result = await this.prisma.mealComponent.create({
-        data: {
-          meal: { connect: { id: data.meal_id } },
-          component: { connect: { id: data.component_id } },
-          component_quantity: data.component_quantity
-        },
-      });
-  
-      console.log('Meal component created successfully');
-      return result;
-    } catch (err) {
-      console.log('Prisma Error', err)
-      throw createError(400, 'Prisma Error', {
-        details: 'Error creating ComponentIngredient in Prisma',
-      });
-    }
-  }
-
   async removeMealFomMealComponent(
     id: string
   ): Promise<any> {
@@ -177,20 +177,7 @@ export default class MealRepository {
       });
   
       console.log('Meal removed from MealComponent successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meal removed from MealComponent successfully',
-          }
-        }),
-        data: result
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error', err)
       throw createError(400, 'Prisma Error', {
@@ -212,20 +199,7 @@ export default class MealRepository {
       });
   
       console.log('Meal deleted successfully');
-      return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"DELETE",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meal deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error', err)
       throw createError(400, 'Prisma Error', {

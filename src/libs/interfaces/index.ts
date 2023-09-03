@@ -277,3 +277,8 @@ export interface IMealDeleteEvent {
     id: string;
   };
 }
+
+// Meal Delete - Data
+export interface IMealDeleteData {
+  id: string;
+}
