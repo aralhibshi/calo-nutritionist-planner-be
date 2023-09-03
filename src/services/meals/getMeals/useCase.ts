@@ -7,9 +7,8 @@ export async function getMeals(
   const mealRepo = MealRepository.getInstance();
 
   const skip = Number(data.skip);
-  const take = Number(data.take);
 
   // Repo - Get Meals
-  const result = await mealRepo.getMeals(skip, take);
+  const result = await mealRepo.getMeals(skip);
   return result;
 }

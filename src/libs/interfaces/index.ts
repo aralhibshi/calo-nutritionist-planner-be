@@ -249,26 +249,26 @@ export interface IMealComponentDataArray {
 export interface IMealGetEvent {
   queryStringParameters: {
     skip: number
-    take: number
   }
 }
 
 // Meal Get - Data
 export interface IMealGetData {
   skip: number;
-  take: number
 }
 
 // Meal Get (Search) - Event
 export interface IMealSearchEvent {
   queryStringParameters: {
     name: string;
+    skip: number
   };
 }
 
 // Meal Get (Search) - Data
 export interface IMealSearchData {
   name: string;
+  skip: number
 }
 
 // Meal Delete - Event

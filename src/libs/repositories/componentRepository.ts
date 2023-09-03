@@ -151,7 +151,7 @@ export default class ComponentRepository {
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
-        details: 'Error feetching matcing components in Prisma',
+        details: 'Error fetching matching components in Prisma',
       });
     }
   }
