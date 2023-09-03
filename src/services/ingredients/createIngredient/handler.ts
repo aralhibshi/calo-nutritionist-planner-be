@@ -52,8 +52,8 @@ export default middyfy(async (
 
   return {
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-control-Allow-Methods":"POST",
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'POST',
     },
     statusCode: 201,
     body: JSON.stringify({

@@ -20,19 +20,18 @@ export async function createComponent(
 
 export async function createComponentIngredient(
   component: IComponent,
-  componentIngredientData: IComponentIngredientDataArray[],
+  ingredients: IComponentIngredientDataArray[],
 ):Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const ingredients = componentIngredientData
   const componentId = component.id;
 
   // Repo - Create ComponentIngredient
   for (const ingredient of ingredients) {
     let data = {
-      componentId: componentId,
-      ingredientId: ingredient.ingredientId,
-      ingredientQuantity: ingredient.ingredient_quantity 
+      component_id: componentId,
+      ingredient_id: ingredient.ingredient_id,
+      ingredient_quantity: ingredient.ingredient_quantity 
     }
     await componentRepo.createComponentIngredient(data);
   }

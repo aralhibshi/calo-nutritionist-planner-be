@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IIngredientData } from '@lib/interfaces';
+import { IIngredient, IIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class IngredientRepository {
@@ -21,7 +21,7 @@ export default class IngredientRepository {
 
   async createIngredient(
     data: IIngredientData
-  ): Promise<any> {
+  ): Promise<IIngredient> {
     try {
       console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 

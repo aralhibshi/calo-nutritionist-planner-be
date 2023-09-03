@@ -38,11 +38,27 @@ export default middyfy(async (
   // Validation before Processing
   await bodyValidationMiddleware(validationSchema)(event);
 
+  const { components, ...mealData } = event.body
+
   // useCase - Create Meal
-  const meal = await createMeal(event);
+  const meal = await createMeal(mealData);
 
   // useCase - Create Meal Component
-  await createMealComponent(meal, event)
-  return meal;
+  await createMealComponent(meal, components)
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'POST',
+    },
+    statusCode: 201,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Meal created successfully'
+      },
+      data: meal
+    })
+  };
 })
 .use(createExceptionHandlerMiddleware());

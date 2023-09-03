@@ -1,3 +1,4 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
 // General ---
@@ -18,12 +19,12 @@ export type TGetEvent = APIGatewayProxyEvent;
 export interface IIngredient {
   id: string;
   name: string;
-  category?: string;
-  description?: string;
-  price: number;
-  protein: number;
-  fats: number;
-  carbs: number;
+  category: string | null;
+  description: string | null;
+  price: Decimal;
+  protein: Decimal;
+  fats: Decimal;
+  carbs: Decimal;
   unit: string;
 }
 
@@ -114,8 +115,8 @@ export interface IIngredientDeleteData {
 export interface IComponent {
   id: string;
   name: string;
-  category: string;
-  description: string;
+  category: string | null;
+  description: string | null;
   unit: string;
   created_at: Date;
   updated_at: Date;
@@ -152,14 +153,14 @@ export interface IComponentIngredient {
 
 // ComponentIngredient Create - Data
 export interface IComponentIngredientData {
-  componentId: string,
-  ingredientId: string,
-  ingredientQuantity: number
+  component_id: string,
+  ingredient_id: string,
+  ingredient_quantity: number
 }
 
 // ComponentIngredient Create (Ingredient Array) - Data
 export interface IComponentIngredientDataArray {
-  ingredientId: string,
+  ingredient_id: string,
   ingredient_quantity: number
 }
 
@@ -211,26 +212,36 @@ export interface IMealCreateEvent {
   }
 }
 
+// Meal
+export interface IMeal {
+  id: string;
+  name: string;
+  description: string | null;
+  size: string;
+  unit: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 // Meal Create/Update - Data
 export interface IMealData {
   name: string;
   category?: string;
   description?: string;
-  components?: Array<IMealComponentDataArray>;
   unit: string;
   size: string;
 }
 
 // MealComponent Create - Data
 export interface IMealComponentData {
-  mealId: string;
-  componentId: string;
-  componentQuantity: number;
+  meal_id: string;
+  component_id: string;
+  component_quantity: number;
 }
 
 // MealComponent Create (Component Array) - Data
 export interface IMealComponentDataArray {
-  componentId: string,
+  component_id: string,
   component_quantity: number
 }
 

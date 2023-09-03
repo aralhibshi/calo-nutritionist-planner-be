@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponentData, IComponentIngredient, IComponentIngredientData } from '@lib/interfaces';
+import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -21,7 +21,7 @@ export default class ComponentRepository {
 
   async createComponent(
     data: IComponentData
-  ): Promise<any> {
+  ): Promise<IComponent> {
     try {
       console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
@@ -48,13 +48,13 @@ export default class ComponentRepository {
     data: IComponentIngredientData
   ): Promise<IComponentIngredient> {
     try {
-      console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
+      console.log('Creating component ingredient with componentId:', data.component_id, 'and ingredientId:', data.ingredient_id);
 
       const result = await this.prisma.componentIngredient.create({
         data: {
-          component: { connect: { id: data.componentId } },
-          ingredient: { connect: { id: data.ingredientId } },
-          ingredient_quantity: data.ingredientQuantity,
+          component: { connect: { id: data.component_id } },
+          ingredient: { connect: { id: data.ingredient_id } },
+          ingredient_quantity: data.ingredient_quantity,
         },
       });
 
