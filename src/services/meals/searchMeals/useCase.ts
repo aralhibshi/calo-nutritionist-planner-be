@@ -8,7 +8,7 @@ export async function searchMeals(
   const mealRepo = MealRepository.getInstance();
 
   const capitalizedIndex = capitalizeFirstLetter(data.name);
-  const skip = data.skip
+  const skip = Number(data.skip)
 
   // Repo - Search Meals
   const result = await mealRepo.searchMeals(capitalizedIndex, skip);
