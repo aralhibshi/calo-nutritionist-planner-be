@@ -25,8 +25,24 @@ export default middyfy(async (
   // Validation before Processing
   await queryValidationMiddleware(validationSchema)(event);
 
+  const { ...data } = event.queryStringParameters;
+
   // useCase - Get Ingredients
-  const result = await getMeals(event);
-  return result;
+  const result = await getMeals(data);
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'GET',
+    },
+    statusCode: 200,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Meals fetched successfully'
+      },
+      data: result
+    })
+  };
 })
 .use(readExceptionHandlerMiddleware())

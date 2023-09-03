@@ -253,6 +253,12 @@ export interface IMealGetEvent {
   }
 }
 
+// Meal Get - Data
+export interface IMealGetData {
+  skip: number;
+  take: number
+}
+
 // Meal Get (Search) - Event
 export interface IMealSearchEvent {
   queryStringParameters: {

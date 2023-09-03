@@ -77,21 +77,9 @@ export default class MealRepository {
       });
   
       console.log('Meals fetched successfully');
-  
       return {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-control-Allow-Methods":"GET",
-        },
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meals fetched successfully'
-          },
-          count: count,
-          data: result
-        }),
+        count,
+        result
       };
     } catch (err) {
       console.log('Prisma Error:', err)
