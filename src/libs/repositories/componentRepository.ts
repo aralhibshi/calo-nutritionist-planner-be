@@ -95,6 +95,13 @@ export default class ComponentRepository {
                 ingredient_id: ingredientId
               }
             }
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true,
+              },
+            },
           }
         })
 
