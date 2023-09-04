@@ -14,7 +14,11 @@ export default middyfy(async (
     skip: Joi
       .number()
       .min(0)
-      .required()
+      .required(),
+    ingredient_id: Joi
+      .string()
+      .min(36)
+      .max(36)
   })
 
   // Validation before Processing

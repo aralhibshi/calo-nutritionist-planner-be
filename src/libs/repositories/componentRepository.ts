@@ -68,34 +68,69 @@ export default class ComponentRepository {
   }
 
   async getComponents(
+    ingredientId: string | undefined,
     skip: number
   ): Promise<any> {
     try {
-      console.log(`Fetching components with skip: ${skip}`);
+      if (ingredientId) {
+        console.log(`Fetching components with ingredient_id: ${ingredientId}`)
 
-      const count = await this.prisma.component.count()
-  
-      const result = await this.prisma.component.findMany({
-        skip: skip,
-        take: 9,
-        orderBy: {
-          name: 'asc',
-        },
-        include: {
-          components_ingredients: {
-            include: {
-              ingredient: true,
+        const count = await this.prisma.component.count({
+          where: {
+            components_ingredients: {
+              some: {
+                ingredient_id: ingredientId
+              }
+            }
+          }
+        })
+
+        const result = await this.prisma.component.findMany({
+          orderBy: {
+            name: 'asc'
+          },
+          where: {
+            components_ingredients: {
+              some: {
+                ingredient_id: ingredientId
+              }
+            }
+          }
+        })
+
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      } else if (null) {
+        // I'll move the searchComponents to here later
+      } else {
+        console.log(`Fetching components with skip: ${skip}`);
+
+        const count = await this.prisma.component.count()
+
+        const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: 9,
+          orderBy: {
+            name: 'asc',
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true,
+              },
             },
           },
-        },
-      });
-
-  
-      console.log('Components fetched successfully');
-      return {
-        count,
-        components: result
-      };
+        });
+    
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {

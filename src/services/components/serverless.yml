@@ -16,6 +16,7 @@ getComponents:
         request:
           parameters:
             querystrings:
+              ingredient_id: true
               skip: true
 
 searchComponent:

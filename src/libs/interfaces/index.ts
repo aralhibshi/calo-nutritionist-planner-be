@@ -168,12 +168,14 @@ export interface IComponentIngredientDataArray {
 export interface IComponentGetEvent {
   queryStringParameters: {
     skip: number;
+    ingredient_id?: string
   };
 }
 
 // Component Get
 export interface IComponentGetData {
-  skip: number
+  skip: number;
+  ingredient_id?: string;
 }
 
 // Component Get (Search) - Event
