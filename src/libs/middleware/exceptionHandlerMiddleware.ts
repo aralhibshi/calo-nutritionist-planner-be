@@ -13,11 +13,19 @@ export const createExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Erro
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw createError(409, 'Conflict Error', {
           details: error.message,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-control-Allow-Methods':'POST',
+          }
         });
       }
 
       throw createError(500, 'Internal Server Error', {
         details: 'An error occurred while processing the create request',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-control-Allow-Methods':'POST',
+        }
       });
     },
   };
@@ -33,6 +41,10 @@ export const readExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Error,
 
       throw createError(500, 'Internal Server Error', {
         details: 'An error occurred while processing the get request',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-control-Allow-Methods':'GET',
+        }
       });
     },
   };
@@ -49,11 +61,19 @@ export const updateExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Erro
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw createError(409, 'Conflict Error', {
           details: error.message,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-control-Allow-Methods':'PUT',
+          }
         });
       }
 
       throw createError(500, 'Internal Server Error', {
         details: 'An error occurred while processing the update request',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-control-Allow-Methods':'PUT',
+        }
       });
     },
   };
@@ -69,6 +89,10 @@ export const deleteExceptionHandlerMiddleware = (): MiddlewareObj<any, any, Erro
 
       throw createError(500, 'Internal Server Error', {
         details: 'An error occurred while processing the delete request',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-control-Allow-Methods':'DELETE',
+        }
       });
     },
   };
