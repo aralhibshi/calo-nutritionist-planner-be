@@ -17,7 +17,7 @@ getMeals:
           parameters:
             querystrings:
               skip: true
-              take: true
+              # take: true
 
 searchMeal:
   handler: src/services/meals/searchMeals/handler.default
@@ -30,6 +30,7 @@ searchMeal:
           parameters:
             querystrings:
               name: true
+              skip: true
 
 deleteMeal:
   handler: src/services/meals/deleteMeal/handler.default
