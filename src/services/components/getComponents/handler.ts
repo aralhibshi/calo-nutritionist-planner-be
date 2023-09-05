@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { IComponentGetData, IComponentGetEvent } from '@lib/interfaces';
+import { IComponentGetEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { readExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
