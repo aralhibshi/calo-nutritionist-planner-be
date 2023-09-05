@@ -1,5 +1,6 @@
 import { IMealGetData } from "@lib/interfaces";
 import MealRepository from "@lib/repositories/mealRepository";
+import { capitalizeFirstLetter } from "src/utils/stringUtils";
 
 export async function getMeals(
   data: IMealGetData
@@ -8,8 +9,12 @@ export async function getMeals(
 
   const skip = Number(data.skip);
   const take = Number(data.take);
-  const name = data.name;
+  let name = data.name;
   const componentId = data.component_id
+
+  if (name) {
+    name = capitalizeFirstLetter(name)
+  }
 
   // Repo - Get Meals
   const result = await mealRepo.getMeals(skip, take, name, componentId);
