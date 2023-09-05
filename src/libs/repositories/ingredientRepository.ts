@@ -50,78 +50,69 @@ export default class IngredientRepository {
 
   async getIngredients(
     skip: number,
-    take: number
+    take: number,
+    name: string | undefined
   ): Promise<any> {
     try {
-      console.log(`Fetching ingredients with skip: ${skip}, take: ${take}`);
-      
-      const count = await this.prisma.ingredient.count();
+      if (name) {
+        console.log(`Fetching ingredients with name: ${name}, skip: ${skip}, take: ${take}`)
 
-      const result = await this.prisma.ingredient.findMany({
-        skip: skip,
-        take: take,
-        orderBy: [
-          {
-            name: 'asc',
+        const count = await this.prisma.ingredient.count({
+          where: {
+            name: {
+              contains: name
+            }
           }
-        ]
-      });
+        })
+  
+        const result = await this.prisma.ingredient.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            _relevance: {
+              fields: ['name'],
+              search: name,
+              sort: 'asc'
+            }
+          },
+          where: {
+            name: {
+              contains: name
+            }
+          }
+        });
+  
+  
+        console.log('Ingredients fetched successfully');
+        return {
+          count,
+          ingredients: result
+        }
+      } else {
+        console.log(`Fetching ingredients with skip: ${skip}, take: ${take}`);
+      
+        const count = await this.prisma.ingredient.count();
 
-      console.log('Ingredients fetched successfully');
-      return {
-        count,
-        ingredients: result
+        const result = await this.prisma.ingredient.findMany({
+          skip: skip,
+          take: take,
+          orderBy: [
+            {
+              name: 'asc',
+            }
+          ]
+        });
+
+        console.log('Ingredients fetched successfully');
+        return {
+          count,
+          ingredients: result
+        }
       }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
         details: 'Error fetching ingredients in Prisma',
-      });
-    }
-  }
-
-  async searchIngredients(
-    index: string,
-    skip: number
-  ): Promise<any> {
-    try {
-      console.log('Fetching matching ingredients with name:', index);
-
-      const count = await this.prisma.ingredient.count({
-        where: {
-          name: {
-            contains: index
-          }
-        }
-      })
-
-      const result = await this.prisma.ingredient.findMany({
-        skip: skip,
-        take: 9,
-        orderBy: {
-          _relevance: {
-            fields: ['name'],
-            search: index,
-            sort: 'asc'
-          }
-        },
-        where: {
-          name: {
-            contains: index
-          }
-        }
-      });
-
-
-      console.log('Ingredients fetched successfully');
-      return {
-        count,
-        ingredients: result
-      }
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(500, 'Internal Server Error', {
-        details: 'An error occurred while fetching matching ingredients in Prisma',
       });
     }
   }

@@ -1,4 +1,4 @@
-import { IIngredientGetData, IIngredientGetEvent } from '@lib/interfaces';
+import { IIngredientGetData } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 
 export async function getIngredients(
@@ -8,9 +8,10 @@ export async function getIngredients(
 
   const skip = Number(data.skip);
   const take = Number(data.take);
+  const name = data.name
 
   // Repo - Get Ingredients
-  const result = await ingredientRepo.getIngredients(skip, take);
+  const result = await ingredientRepo.getIngredients(skip, take, name);
 
   console.log('Ingredients fetched successfully');
   return result;

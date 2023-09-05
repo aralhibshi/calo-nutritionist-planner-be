@@ -13,24 +13,11 @@ getMeals:
         path: v1/meals
         method: get
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
-        request: 
+        request:
           parameters:
             querystrings:
               skip: true
-              # take: true
-
-searchMeal:
-  handler: src/services/meals/searchMeals/handler.default
-  events:
-    - http:
-        path: v1/meal/search
-        method: get
-        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
-        request: 
-          parameters:
-            querystrings:
-              name: true
-              skip: true
+              take: true
 
 deleteMeal:
   handler: src/services/meals/deleteMeal/handler.default

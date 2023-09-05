@@ -16,21 +16,8 @@ getComponents:
         request:
           parameters:
             querystrings:
-              ingredient_id: true
               skip: true
-
-searchComponent:
-  handler: src/services/components/searchComponents/handler.default
-  events:
-    - http:
-        path: v1/component/search
-        method: get
-        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
-        request:
-          parameters:
-            querystrings:
-              name: true
-              skip: true
+              take: true
 
 deleteComponent:
   handler: src/services/components/deleteComponent/handler.default

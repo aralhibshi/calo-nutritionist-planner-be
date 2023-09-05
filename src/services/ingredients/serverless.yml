@@ -13,20 +13,25 @@ getIngredients:
         path: v1/ingredients
         method: get
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
-        
-searchIngredients:
-  handler: src/services/ingredients/searchIngredients/handler.default
-  events:
-    - http:
-        path: v1/ingredient/search
-        method: get
-        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
-        # cors: true
         request:
           parameters:
             querystrings:
-              name: true
               skip: true
+              take: true
+        
+# searchIngredients:
+#   handler: src/services/ingredients/searchIngredients/handler.default
+#   events:
+#     - http:
+#         path: v1/ingredient/search
+#         method: get
+#         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+#         # cors: true
+#         request:
+#           parameters:
+#             querystrings:
+#               name: true
+#               skip: true
 
 updateIngredient:
   handler: src/services/ingredients/updateIngredient/handler.default

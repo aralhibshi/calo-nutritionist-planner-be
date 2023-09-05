@@ -68,12 +68,54 @@ export default class ComponentRepository {
   }
 
   async getComponents(
+    skip: number,
+    take: number,
+    name: string | undefined,
     ingredientId: string | undefined,
-    skip: number
   ): Promise<any> {
     try {
-      if (ingredientId) {
-        console.log(`Fetching components with ingredient_id: ${ingredientId}`)
+      if (name) {
+        console.log(`Fetching components with name: ${name}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.component.count({
+          where: {
+            name: {
+              contains: name
+            }
+          }
+        })
+    
+        const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: take,
+          where: {
+            name: {
+              contains: name,
+            },
+          },  
+          orderBy: {
+            _relevance: {
+              fields: ['name'],
+              search: name,
+              sort: 'asc'
+            }
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true
+              }
+            }
+          }
+        });
+    
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      } else if (ingredientId) {
+        console.log(`Fetching components with ingredient_id: ${ingredientId}, skip: ${skip}, take: ${take}`)
 
         const count = await this.prisma.component.count({
           where: {
@@ -86,6 +128,8 @@ export default class ComponentRepository {
         })
 
         const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: take,
           orderBy: {
             name: 'asc'
           },
@@ -110,16 +154,14 @@ export default class ComponentRepository {
           count,
           components: result
         };
-      } else if (null) {
-        // I'll move the searchComponents to here later
       } else {
-        console.log(`Fetching components with skip: ${skip}`);
+        console.log(`Fetching components with skip: ${skip}, take: ${take}`);
 
         const count = await this.prisma.component.count()
 
         const result = await this.prisma.component.findMany({
           skip: skip,
-          take: 9,
+          take: take,
           orderBy: {
             name: 'asc',
           },
@@ -145,59 +187,7 @@ export default class ComponentRepository {
       });
     }
   }  
-
-  async searchComponents(
-    index: string,
-    skip: number
-  ): Promise<any> {
-    try {
-      console.log(`Fetching matching components with name: ${index}, skip: ${skip}`);
-
-      const count = await this.prisma.component.count({
-        where: {
-          name: {
-            contains: index
-          }
-        }
-      })
   
-      const result = await this.prisma.component.findMany({
-        skip: skip,
-        take: 9,
-        where: {
-          name: {
-            contains: index,
-          },
-        },
-        orderBy: {
-          _relevance: {
-            fields: ['name'],
-            search: index,
-            sort: 'asc'
-          }
-        },
-        include: {
-          components_ingredients: {
-            include: {
-              ingredient: true
-            }
-          }
-        }
-      });
-  
-      console.log('Components fetched successfully');
-      return {
-        count,
-        components: result
-      };
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(400, 'Prisma Error', {
-        details: 'Error fetching matching components in Prisma',
-      });
-    }
-  }
-
   async removeComponentFromComponentIngredient(
     id: string
   ): Promise<any> {
