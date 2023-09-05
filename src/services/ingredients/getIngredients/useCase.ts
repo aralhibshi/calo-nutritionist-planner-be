@@ -1,5 +1,6 @@
 import { IIngredientGetData } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
+import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function getIngredients(
   data: IIngredientGetData
@@ -8,7 +9,11 @@ export async function getIngredients(
 
   const skip = Number(data.skip);
   const take = Number(data.take);
-  const name = data.name
+  let name = data.name
+
+  if (name) {
+    name = capitalizeFirstLetter(name)
+  }
 
   // Repo - Get Ingredients
   const result = await ingredientRepo.getIngredients(skip, take, name);
