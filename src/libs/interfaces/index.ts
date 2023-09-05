@@ -59,6 +59,7 @@ export interface IIngredientGetEvent {
   queryStringParameters: {
     skip: number;
     take: number;
+    name?: string;
   }
 }
 
@@ -66,6 +67,7 @@ export interface IIngredientGetEvent {
 export interface IIngredientGetData {
   skip: number;
   take: number;
+  name?: string;
 }
 
 // Ingredient Get (Search) - Event
@@ -168,13 +170,17 @@ export interface IComponentIngredientDataArray {
 export interface IComponentGetEvent {
   queryStringParameters: {
     skip: number;
-    ingredient_id?: string
+    take: number;
+    name?: string;
+    ingredient_id?: string;
   };
 }
 
 // Component Get
 export interface IComponentGetData {
   skip: number;
+  take: number;
+  name?: string;
   ingredient_id?: string;
 }
 
@@ -250,13 +256,19 @@ export interface IMealComponentDataArray {
 // Meal Get - Event
 export interface IMealGetEvent {
   queryStringParameters: {
-    skip: number
+    skip: number;
+    take: number;
+    name?: string,
+    component_id?: string
   }
 }
 
 // Meal Get - Data
 export interface IMealGetData {
   skip: number;
+  take: number;
+  name?: string,
+  component_id?: string;
 }
 
 // Meal Get (Search) - Event

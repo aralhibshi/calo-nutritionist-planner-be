@@ -7,10 +7,12 @@ export async function getComponents(
 ): Promise<any> {
   const componentRepo = ComponentRepository.getInstance();
 
-  const ingredientId = data.ingredient_id
-  const skip = Number(data.skip)
+  const skip = Number(data.skip);
+  const take = Number(data.take);
+  const name = data.name;
+  const ingredientId = data.ingredient_id;
 
   // Repo - Get Components
-  const result = await componentRepo.getComponents(ingredientId, skip);
+  const result = await componentRepo.getComponents(skip, take, name, ingredientId);
   return result;
 }

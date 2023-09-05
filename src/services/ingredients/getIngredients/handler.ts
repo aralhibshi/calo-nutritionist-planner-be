@@ -20,7 +20,10 @@ export default middyfy(async (
       .number()
       .min(9)
       .max(500)
-      .required()
+      .required(),
+    name: Joi
+      .string()
+      .min(1)
   })
 
   // Validation befor Processing
