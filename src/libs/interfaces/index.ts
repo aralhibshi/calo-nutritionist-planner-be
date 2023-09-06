@@ -54,6 +54,19 @@ export interface IIngredientData {
   unit: string;
 }
 
+// Ingredient Update - Data
+export interface IIngredientUpdateData {
+  id: string;
+  name: string;
+  category?: string;
+  description?: string;
+  price: number;
+  protein: number;
+  fats: number;
+  carbs: number;
+  unit: string;
+}
+
 // Ingredient Get - Event
 export interface IIngredientGetEvent {
   queryStringParameters: {

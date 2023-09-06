@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IIngredient, IIngredientData } from '@lib/interfaces';
+import { IIngredient, IIngredientData, IIngredientUpdateData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class IngredientRepository {
@@ -119,7 +119,7 @@ export default class IngredientRepository {
 
   async updateIngredient(
     id: string,
-    data: IIngredientData
+    data: IIngredientUpdateData
   ): Promise<any> {
     try {
       console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));

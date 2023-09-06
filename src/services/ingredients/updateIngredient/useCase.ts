@@ -1,9 +1,9 @@
-import { IIngredient } from '@lib/interfaces';
+import { IIngredientUpdateData } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function updateIngredient(
-  data: IIngredient
+  data: IIngredientUpdateData
 ): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
