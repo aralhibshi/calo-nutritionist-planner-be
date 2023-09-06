@@ -72,6 +72,7 @@ export default class MealRepository {
     skip: number,
     take: number,
     name: string | undefined,
+    ingredientId: string | undefined,
     componentId: string | undefined
   ): Promise<any> {
     try {
@@ -88,7 +89,7 @@ export default class MealRepository {
     
         const result = await this.prisma.meal.findMany({
           skip: skip,
-          take: 9,
+          take: take,
           where: {
             name: {
               contains: name,
@@ -104,7 +105,15 @@ export default class MealRepository {
           include: {
             meals_components: {
               include: {
-                component: true
+                component: {
+                  include: {
+                    components_ingredients: {
+                      include: {
+                        ingredient: true
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -115,8 +124,69 @@ export default class MealRepository {
           count,
           meals: result
         };
+
+      } else if (ingredientId) {
+        console.log(`Fetching meals with ingredient_id: ${ingredientId}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.meal.count({
+          where: {
+            meals_components: {
+              some: {
+                component: {
+                  components_ingredients: {
+                    some: {
+                      ingredient_id: ingredientId
+                    }
+                  }
+                }
+              }
+            }
+          }
+        })
+
+        const result = await this.prisma.meal.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc'
+          },
+          where: {
+            meals_components: {
+              some: {
+                component: {
+                  components_ingredients: {
+                    some: {
+                      ingredient_id: ingredientId
+                    }
+                  }
+                }
+              }
+            }
+          },
+          include: {
+            meals_components: {
+              include: {
+                component: {
+                  include: {
+                    components_ingredients: {
+                      include: {
+                        ingredient: true
+                      }
+                    }
+                  }
+                }
+              },
+            },
+          }
+        })
+
+        console.log('Meals fetched successfully');
+        return {
+          count,
+          meals: result
+        };
       } else if (componentId) {
-        console.log(`Fetching components with component_id: ${componentId}, skip: ${skip}, take: ${take}`)
+        console.log(`Fetching meals with component_id: ${componentId}, skip: ${skip}, take: ${take}`)
 
         const count = await this.prisma.meal.count({
           where: {

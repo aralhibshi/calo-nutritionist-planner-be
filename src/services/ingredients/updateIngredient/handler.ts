@@ -15,6 +15,7 @@ export default middyfy(async (
     id: Joi
       .string()
       .min(36)
+      .max(36)
       .required(),
   })
 
@@ -64,7 +65,7 @@ export default middyfy(async (
   return {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-control-Allow-Methods':'PUT',
+      'Access-control-Allow-Methods':'PUT'
     },
     statusCode: 200,
     body: JSON.stringify({

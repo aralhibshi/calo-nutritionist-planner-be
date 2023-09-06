@@ -24,6 +24,10 @@ export default middyfy(async (
     name: Joi
       .string()
       .min(1),
+    ingredient_id: Joi
+      .string()
+      .min(36)
+      .max(36),
     component_id: Joi
       .string()
       .min(36)

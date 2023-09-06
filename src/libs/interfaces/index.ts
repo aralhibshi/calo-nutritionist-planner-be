@@ -295,7 +295,8 @@ export interface IMealGetEvent {
     skip: number;
     take: number;
     name?: string,
-    component_id?: string
+    ingredient_id?: string;
+    component_id?: string;
   }
 }
 
@@ -304,6 +305,7 @@ export interface IMealGetData {
   skip: number;
   take: number;
   name?: string,
+  ingredient_id?: string;
   component_id?: string;
 }
 
