@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData } from '@lib/interfaces';
+import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData, IComponentUpdateData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -188,6 +188,37 @@ export default class ComponentRepository {
     }
   }  
   
+
+  async updateComponent(
+    id: string,
+    data: IComponentUpdateData
+  ): Promise<any> {
+    try {
+      console.log(`Updating component with Id: ${id}, data:`, JSON.stringify(data, null, 2));
+
+      const componentData = {
+        ...data,
+      };
+
+      const result = await this.prisma.component.update({
+        where: {
+          id: id
+        },
+        data: {
+          ...componentData
+        }
+      })
+
+      console.log('Component updated successfully');
+      return result;
+    } catch (err) {
+      console.log('Prisma Error:', err)
+      throw createError(500, 'Prisma Error', {
+        details: 'Error removing component from MealComponent with Prisma',
+      });
+    }
+  }
+
   async removeComponentFromComponentIngredient(
     id: string
   ): Promise<any> {
