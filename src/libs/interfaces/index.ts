@@ -148,8 +148,31 @@ export interface IComponentCreateEvent {
   }
 }
 
-// Component Create/Update - Data
+// Component Create - Data
 export interface IComponentData {
+  name: string;
+  category?: string;
+  description?: string;
+  unit: string;
+}
+
+
+// Ingredient Update - Event
+export interface IComponentUpdateEvent {
+  queryStringParameters: {
+    id: string;
+  };
+  body: {
+    id: string;
+    name: string;
+    category?: string;
+    description?: string;
+    unit: string;
+  };
+}
+// component Update - Data
+export interface IComponentUpdateData {
+  id: string;
   name: string;
   category?: string;
   description?: string;

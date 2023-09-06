@@ -19,6 +19,18 @@ getComponents:
               skip: true
               take: true
 
+updateComponent:
+  handler: src/services/components/updateComponent/handler.default
+  events:
+    - http:
+        path: v1/component/update
+        method: put
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        request:
+          parameters:
+            querystrings:
+              id: true
+
 deleteComponent:
   handler: src/services/components/deleteComponent/handler.default
   events:
