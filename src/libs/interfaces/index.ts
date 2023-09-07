@@ -301,6 +301,42 @@ export interface IMealComponentDataArray {
   component_quantity: number
 }
 
+// Meal Update - Event
+export interface IMealUpdateEvent {
+  queryStringParameters: {
+    id: string;
+  };
+  body: {
+    components: IMealComponentDataArray[];
+    id: string;
+    name: string;
+    category?: string;
+    description?: string;
+    unit: string;
+    size: string;
+  };
+}
+
+// Meal Update - Data
+export interface IMealUpdateData {
+  components?: IMealComponentDataArray[]
+  id: string;
+  name: string;
+  description?: string;
+  size: string;
+  unit: string;
+}
+
+// component Update - Data
+export interface IComponentUpdateData {
+  ingredients:IComponentIngredientDataArray[];
+  id: string;
+  name: string;
+  category?: string;
+  description?: string;
+  unit: string;
+}
+
 // Meal Get - Event
 export interface IMealGetEvent {
   queryStringParameters: {
