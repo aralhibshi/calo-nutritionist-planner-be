@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData, IComponentUpdateData } from '@lib/interfaces';
+import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData, IComponentUpdateData, IMealComponentData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -52,9 +52,9 @@ export default class ComponentRepository {
 
       const result = await this.prisma.componentIngredient.create({
         data: {
-          component: { connect: { id: data.component_id } },
+      component: { connect: { id: data.component_id } },
           ingredient: { connect: { id: data.ingredient_id } },
-          ingredient_quantity: data.ingredient_quantity,
+          ingredient_quantity: data.ingredient_quantity,    
         },
       });
 
@@ -194,30 +194,56 @@ export default class ComponentRepository {
     data: IComponentUpdateData
   ): Promise<any> {
     try {
-      console.log(`Updating component with Id: ${id}, data:`, JSON.stringify(data, null, 2));
-
-      const componentData = {
-        ...data,
-      };
-
+      console.log('Updating component with Id:', id);
+  
       const result = await this.prisma.component.update({
         where: {
-          id: id
+          id: id,
         },
         data: {
-          ...componentData
-        }
-      })
-
+          name: data.name,
+          category: data.category,
+          description: data.description,
+          unit: data.unit,
+        },
+      });
+  
       console.log('Component updated successfully');
       return result;
     } catch (err) {
-      console.log('Prisma Error:', err)
-      throw createError(500, 'Prisma Error', {
-        details: 'Error removing component from MealComponent with Prisma',
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error updating component from component in Prisma',
       });
     }
   }
+
+  async updateComponentInComponentIngredient(
+    id: string,
+    data: IComponentIngredientData
+  ): Promise<any> {
+    try {
+      console.log('Updating component in ComponentIngredient');
+
+      const result = await this.prisma.componentIngredient.updateMany({
+        where: {
+          component_id: {
+            equals: id
+          }
+        },
+        data: data
+      })
+
+      console.log('Component updated in ComponentIngredient successfully');
+      // return result;
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error updating component in ComponentIngredient in Prisma',
+      });
+    }
+  }
+
 
   async removeComponentFromComponentIngredient(
     id: string
