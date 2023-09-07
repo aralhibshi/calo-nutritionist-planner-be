@@ -163,6 +163,7 @@ export interface IComponentUpdateEvent {
     id: string;
   };
   body: {
+    ingredients:IComponentIngredientDataArray[];
     id: string;
     name: string;
     category?: string;
@@ -172,6 +173,7 @@ export interface IComponentUpdateEvent {
 }
 // component Update - Data
 export interface IComponentUpdateData {
+  ingredients:IComponentIngredientDataArray[];
   id: string;
   name: string;
   category?: string;
@@ -189,6 +191,16 @@ export interface IComponentIngredient {
   updated_at: Date;
 }
 
+export interface IComponentIngredientUpdateEvent {
+  queryStringParameters: {
+    id: string;
+  };
+  body: {
+    component_id: string,
+    ingredient_id: string,
+    ingredient_quantity: number
+  };
+}
 // ComponentIngredient Create - Data
 export interface IComponentIngredientData {
   component_id: string,

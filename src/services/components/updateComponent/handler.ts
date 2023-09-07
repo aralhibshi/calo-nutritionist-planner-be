@@ -1,13 +1,13 @@
 import Joi from 'joi';
-import { IComponentUpdateEvent } from '@lib/interfaces';
+import { IComponentIngredientData, IComponentUpdateEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { updateExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
-import { updateComponent } from './useCase';
+import { updateComponent, updateComponentInComponentIngredient } from './useCase';
 
 export default middyfy(async (
-  event: IComponentUpdateEvent
+  event: IComponentUpdateEvent 
 ): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
@@ -48,6 +48,8 @@ export default middyfy(async (
   }
 
   // useCase - Update Ingredient
+  await updateComponentInComponentIngredient(data,event.body.ingredients)
+  // await updateComponentInMealComponent(data)
   const result = await updateComponent(data);
 
   return {
