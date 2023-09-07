@@ -142,7 +142,7 @@ export default class IngredientRepository {
     } catch (err) {
       console.log('Prisma Error:', err)
       throw createError(500, 'Prisma Error', {
-        details: 'Error removing ingredient from ComponentIngredient with Prisma',
+        details: 'Error updating ingredient with Prisma Prisma',
       });
     }
   }

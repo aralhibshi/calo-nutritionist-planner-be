@@ -19,6 +19,18 @@ getMeals:
               skip: true
               take: true
 
+updateMeal:
+  handler: src/services/meals/updateMeal/handler.default
+  events:
+    - http:
+        path: v1/meal/update
+        method: put
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        request:
+          parameters:
+            querystrings:
+              id: true
+
 deleteMeal:
   handler: src/services/meals/deleteMeal/handler.default
   events:

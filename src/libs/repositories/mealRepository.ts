@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IMealData,  IMealComponentData, IMeal } from '@lib/interfaces';
+import { IMealData,  IMealComponentData, IMeal, IMealUpdateData, IMealComponentDataArray } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class MealRepository {
@@ -263,6 +263,61 @@ export default class MealRepository {
       console.log('Prisma Error:', err)
       throw createError(400, 'Prisma Error', {
         details: 'Error fetching meals in Prisma',
+      });
+    }
+  }
+
+  async updateMeal(
+    id: string,
+    data: IMealUpdateData
+  ): Promise<any> {
+    try {
+      console.log(`Updating Meal with Id: ${id}, data:`, JSON.stringify(data, null, 2));
+
+      const mealData = {
+        ...data
+      };
+
+      const result = await this.prisma.meal.update({
+        where: {
+          id: id
+        },
+        data: {
+          ...mealData
+        }
+      })
+
+      console.log('Meal updated successfully');
+      return result;
+    } catch (err) {
+      console.log('Prisma Error:', err)
+      throw createError(500, 'Prisma Error', {
+        details: 'Error updating meal in Prisma',
+      });
+    }
+  }
+
+  async updateMealComponent(
+    id: string,
+    data: IMealComponentDataArray
+  ): Promise<any> {
+    try {
+      console.log('Updating meal in MealComponent');
+
+      await this.prisma.mealComponent.updateMany({
+        where: {
+          meal_id: {
+            equals: id
+          }
+        },
+        data: data
+      })
+
+      console.log('Meal updated in MealComponent successfully');
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error updating meal in MealComponent with Prisma',
       });
     }
   }
