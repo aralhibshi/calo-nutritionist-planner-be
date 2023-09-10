@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["./src/libs/*"],
+      "@lib/*": ["calo-nutritionist-planner/src/libs/*"],
     },
     "lib": [
       "esnext"
@@ -23,7 +23,7 @@
   "include": [
     "./prisma/**/*.ts",
     "**/*.ts",
-    "./src/**/*.ts"
+    "calo-nutritionist-planner/src/**/*.ts"
   ],
   "exclude": [
     "node_modules/**/*",
