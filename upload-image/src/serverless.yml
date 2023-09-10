@@ -1,0 +1,24 @@
+uploadMealImage:
+  handler: src/uploadMealImage/handler.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource:
+        - Fn::GetAtt:
+          - UserProfilePictureBucket
+          - Arn
+  events:
+    - http:
+        method: post
+        path: v1/user/mealImage/add
+        # authorizer:
+        #   name: UserAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - MyCognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email
