@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IComponentData, IComponentIngredientData } from '@lib/interfaces';
-import { pascalToSnake, convertKeys } from 'src/utils/keyUtils';
+import { IComponent, IComponentData, IComponentIngredient, IComponentIngredientData, IComponentUpdateData, IMealComponentData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class ComponentRepository {
@@ -22,27 +21,14 @@ export default class ComponentRepository {
 
   async createComponent(
     data: IComponentData
-  ): Promise<any> {
+  ): Promise<IComponent> {
     try {
       console.log('Creating component with data:', JSON.stringify(data, null, 2));
 
       const result = await this.prisma.component.create({ data });
-      const componentId = result.id;
 
       console.log('Component created successfully');
-      return {
-        statusCode: 201,
-        body: {
-          success: {
-            title: 'Success',
-            message: 'Component created successfully'
-          },
-          data: {
-            componentId,
-            ...result,
-          }
-        }
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);
@@ -60,29 +46,20 @@ export default class ComponentRepository {
 
   async createComponentIngredient(
     data: IComponentIngredientData
-  ): Promise<any> {
+  ): Promise<IComponentIngredient> {
     try {
-      console.log('Creating component ingredient with componentId:', data.componentId, 'and ingredientId:', data.ingredientId);
+      console.log('Creating component ingredient with componentId:', data.component_id, 'and ingredientId:', data.ingredient_id);
 
       const result = await this.prisma.componentIngredient.create({
         data: {
-          component: { connect: { id: data.componentId } },
-          ingredient: { connect: { id: data.ingredientId } },
-          ingredient_quantity: data.ingredientQuantity,
+      component: { connect: { id: data.component_id } },
+          ingredient: { connect: { id: data.ingredient_id } },
+          ingredient_quantity: data.ingredient_quantity,    
         },
       });
 
       console.log('Component ingredient created successfully');
-      return {
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'ComponentIngredient created successfully'
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       throw createError(400, 'Prisma Error', {
         details: 'Error creating ComponentIngredient in Prisma',
@@ -91,33 +68,118 @@ export default class ComponentRepository {
   }
 
   async getComponents(
+    skip: number,
+    take: number,
+    name: string | undefined,
+    ingredientId: string | undefined,
   ): Promise<any> {
     try {
-      console.log('Fetching components');
-  
-      const result = await this.prisma.component.findMany({
-        include: {
-          ComponentIngredient: {
-            include: {
-              ingredient: true,
+      if (name) {
+        console.log(`Fetching components with name: ${name}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.component.count({
+          where: {
+            name: {
+              contains: name
+            }
+          }
+        })
+    
+        const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: take,
+          where: {
+            name: {
+              contains: name,
+            },
+          },  
+          orderBy: {
+            _relevance: {
+              fields: ['name'],
+              search: name,
+              sort: 'asc'
+            }
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true
+              }
+            }
+          }
+        });
+    
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      } else if (ingredientId) {
+        console.log(`Fetching components with ingredient_id: ${ingredientId}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.component.count({
+          where: {
+            components_ingredients: {
+              some: {
+                ingredient_id: ingredientId
+              }
+            }
+          }
+        })
+
+        const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc'
+          },
+          where: {
+            components_ingredients: {
+              some: {
+                ingredient_id: ingredientId
+              }
+            }
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true,
+              },
+            },
+          }
+        })
+
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      } else {
+        console.log(`Fetching components with skip: ${skip}, take: ${take}`);
+
+        const count = await this.prisma.component.count()
+
+        const result = await this.prisma.component.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc',
+          },
+          include: {
+            components_ingredients: {
+              include: {
+                ingredient: true,
+              },
             },
           },
-        },
-      });
-  
-      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
-  
-      console.log('Components fetched successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Components fetched successfully',
-          },
-          data: snakeCaseResults,
-        }),
-      };
+        });
+    
+        console.log('Components fetched successfully');
+        return {
+          count,
+          components: result
+        };
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
@@ -125,61 +187,63 @@ export default class ComponentRepository {
       });
     }
   }  
+  
 
-  async searchComponents(
-    index: string
+  async updateComponent(
+    id: string,
+    data: IComponentUpdateData
   ): Promise<any> {
     try {
-      console.log('Fetching matching components with name:', index);
+      console.log('Updating component with Id:', id);
   
-      const result = await this.prisma.component.findMany({
+      const result = await this.prisma.component.update({
         where: {
-          name: {
-            contains: index,
-          },
+          id: id,
         },
-        orderBy: {
-          name: 'asc',
+        data: {
+          name: data.name,
+          category: data.category,
+          description: data.description,
+          unit: data.unit,
         },
-        include: {
-          ComponentIngredient: {
-            include: {
-              ingredient: true
-            }
-          }
-        }
       });
-      
-       const sortedResults = result.sort((a, b) => {
-        if (a.name === index && b.name !== index) {
-          return -1;
-        } else if (a.name !== index && b.name === index) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
-      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
   
-      console.log('Components fetched successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Components fetched successfully',
-          },
-          data: snakeCaseResults,
-        })
-      };
+      console.log('Component updated successfully');
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
-        details: 'Error feetching matcing components in Prisma',
+        details: 'Error updating component from component in Prisma',
       });
     }
   }
+
+  async updateComponentInComponentIngredient(
+    id: string,
+    data: IComponentIngredientData
+  ): Promise<any> {
+    try {
+      console.log('Updating component in ComponentIngredient');
+
+      const result = await this.prisma.componentIngredient.updateMany({
+        where: {
+          component_id: {
+            equals: id
+          }
+        },
+        data: data
+      })
+
+      console.log('Component updated in ComponentIngredient successfully');
+      // return result;
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: 'Error updating component in ComponentIngredient in Prisma',
+      });
+    }
+  }
+
 
   async removeComponentFromComponentIngredient(
     id: string
@@ -196,16 +260,7 @@ export default class ComponentRepository {
       })
 
       console.log('Component removed from ComponentIngredient successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from ComponentIngredient successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
@@ -229,16 +284,7 @@ export default class ComponentRepository {
       });
 
       console.log('Component removed from MealComponent successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from MealComponent successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
@@ -260,16 +306,7 @@ export default class ComponentRepository {
       });
   
       console.log('Component deleted successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {

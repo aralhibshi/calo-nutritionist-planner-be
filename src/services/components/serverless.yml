@@ -13,18 +13,23 @@ getComponents:
         path: v1/components
         method: get
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        request:
+          parameters:
+            querystrings:
+              skip: true
+              take: true
 
-searchComponent:
-  handler: src/services/components/searchComponents/handler.default
+updateComponent:
+  handler: src/services/components/updateComponent/handler.default
   events:
     - http:
-        path: v1/component/search
-        method: get
+        path: v1/component/update
+        method: put
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
         request:
           parameters:
             querystrings:
-              name: true
+              id: true
 
 deleteComponent:
   handler: src/services/components/deleteComponent/handler.default

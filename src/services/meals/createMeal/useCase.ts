@@ -1,53 +1,38 @@
-import { IMealCreateEvent, IMealData } from '@lib/interfaces';
+import { IMeal, IMealComponentDataArray, IMealData } from '@lib/interfaces';
 import MealRepository from '@lib/repositories/mealRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createMeal(
-  event: IMealCreateEvent
-): Promise<any> {
+  mealData: IMealData
+): Promise<IMeal> {
   const mealRepo = MealRepository.getInstance();
 
-  const mealData: IMealData = {
-    ...event.body,
-    name: capitalizeFirstLetter(event.body.name),
-    size: capitalizeFirstLetter(event.body.size),
+  const data: IMealData = {
+    ...mealData,
+    name: capitalizeFirstLetter(mealData.name),
+    size: capitalizeFirstLetter(mealData.size),
   };
-  delete mealData.components;
 
   // Repo - Create Meal
-  const result = await mealRepo.createMeal(mealData);
-  const mealId = result.body.data.id
-  return {
-    statusCode: 201,
-    body: JSON.stringify({
-      success: {
-        title: 'Success',
-        message: 'Component created successfully'
-      },
-      data: {
-        id: mealId,
-        ...mealData,
-      }
-    })
-  }
+  const result = await mealRepo.createMeal(data);
+
+  return result;
 }
 
 export async function createMealComponent(
-  meal: any,
-  event: IMealCreateEvent
+  meal: IMeal,
+  components: IMealComponentDataArray[]
   ): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
-  const components = event.body.components
-  const parsedResult = JSON.parse(meal.body)
-  const mealId = parsedResult.data.id;
+  const mealId = meal.id;
 
   // Repo - Create Meal Component
   for (const component of components) {
     let data = {
-      mealId: mealId,
-      componentId: component.componentId,
-      componentQuantity: component.component_quantity
+      meal_id: mealId,
+      component_id: component.component_id,
+      component_quantity: component.component_quantity
     }
     await mealRepo.createMealComponent(data);
   }

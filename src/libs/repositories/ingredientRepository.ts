@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IIngredientData } from '@lib/interfaces';
+import { IIngredient, IIngredientData, IIngredientUpdateData } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class IngredientRepository {
@@ -21,7 +21,7 @@ export default class IngredientRepository {
 
   async createIngredient(
     data: IIngredientData
-  ): Promise<any> {
+  ): Promise<IIngredient> {
     try {
       console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
 
@@ -32,16 +32,7 @@ export default class IngredientRepository {
       const result = await this.prisma.ingredient.create({ data: ingredientData });
 
       console.log('Ingredient created successfully');
-      return {
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient created successfully'
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);
@@ -58,35 +49,66 @@ export default class IngredientRepository {
   }
 
   async getIngredients(
-    skip: number
+    skip: number,
+    take: number,
+    name: string | undefined
   ): Promise<any> {
     try {
-      console.log('Fetching ingredients');
-  
-      const count = await this.prisma.ingredient.count();
+      if (name) {
+        console.log(`Fetching ingredients with name: ${name}, skip: ${skip}, take: ${take}`)
 
-      const result = await this.prisma.ingredient.findMany({
-        skip: skip,
-        take: 15,
-        orderBy: [
-          {
-            name: 'asc',
+        const count = await this.prisma.ingredient.count({
+          where: {
+            name: {
+              contains: name
+            }
           }
-        ],
-      });
-
-      console.log('Ingredients fetched successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredients fetched successfully',
-          },
-          count: count,
-          data: result
         })
-      };
+  
+        const result = await this.prisma.ingredient.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            _relevance: {
+              fields: ['name'],
+              search: name,
+              sort: 'asc'
+            }
+          },
+          where: {
+            name: {
+              contains: name
+            }
+          }
+        });
+  
+  
+        console.log('Ingredients fetched successfully');
+        return {
+          count,
+          ingredients: result
+        }
+      } else {
+        console.log(`Fetching ingredients with skip: ${skip}, take: ${take}`);
+      
+        const count = await this.prisma.ingredient.count();
+
+        const result = await this.prisma.ingredient.findMany({
+          skip: skip,
+          take: take,
+          orderBy: [
+            {
+              name: 'asc',
+            }
+          ]
+        });
+
+        console.log('Ingredients fetched successfully');
+        return {
+          count,
+          ingredients: result
+        }
+      }
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
@@ -95,55 +117,9 @@ export default class IngredientRepository {
     }
   }
 
-  async searchIngredients(
-    index: string
-  ): Promise<any> {
-    try {
-      console.log('Fetching matching ingredients with name:', index);
-
-      const result = await this.prisma.ingredient.findMany({
-        where: {
-          name: {
-            contains: index,
-          },
-        },
-        orderBy: {
-          name: 'asc',
-        },
-      });
-
-      const sortedResults = result.sort((a, b) => {
-        if (a.name === index && b.name !== index) {
-          return -1;
-        } else if (a.name !== index && b.name === index) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
-      console.log('Ingredients fetched successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredients fetched successfully',
-          },
-          data: sortedResults,
-        })
-      };
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(500, 'Internal Server Error', {
-        details: 'An error occurred while fetching matching ingredients in Prisma',
-      });
-    }
-  }
-
   async updateIngredient(
     id: string,
-    data: IIngredientData
+    data: IIngredientUpdateData
   ): Promise<any> {
     try {
       console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));
@@ -162,20 +138,11 @@ export default class IngredientRepository {
       })
 
       console.log('Ingredient updated successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient updated successfully',
-          },
-          data: result,
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err)
       throw createError(500, 'Prisma Error', {
-        details: 'Error removing ingredient from ComponentIngredient with Prisma',
+        details: 'Error updating ingredient with Prisma Prisma',
       });
     }
   }
@@ -195,16 +162,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient removed from ComponentIngredient successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Component removed from ComponentIngredient successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
@@ -226,17 +184,7 @@ export default class IngredientRepository {
       });
   
       console.log('Ingredient deleted successfully');
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Ingredient deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {

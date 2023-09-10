@@ -34,11 +34,30 @@ export default middyfy(async (
   // Validation before Processing
   await bodyValidationMiddleware(validationSchema)(event);
 
+  // Data Separation
+  const { ingredients, ...componentData } = event.body;
+
   // useCase - Create Component
-  const component = await createComponent(event);
+  const component = await createComponent(componentData);
 
   // useCase - Create ComponentIngredient
-  await createComponentIngredient(component, event)
-  return component;
+  await createComponentIngredient(component, ingredients)
+
+  return {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-control-Allow-Methods':'POST',
+    },
+    statusCode: 201,
+    body: JSON.stringify({
+      success: {
+        title: 'Success',
+        message: 'Component created successfully'
+      },
+      data: {
+        ...component,
+      }
+    })
+  }
 })
 .use(createExceptionHandlerMiddleware());

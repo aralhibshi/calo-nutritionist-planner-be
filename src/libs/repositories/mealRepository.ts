@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { IMealData,  IMealComponentData } from '@lib/interfaces';
-import { convertKeys, pascalToSnake } from 'src/utils/keyUtils';
+import { IMealData,  IMealComponentData, IMeal, IMealUpdateData, IMealComponentDataArray } from '@lib/interfaces';
 import createError from 'http-errors';
 
 export default class MealRepository {
@@ -22,24 +21,14 @@ export default class MealRepository {
 
   async createMeal(
     data: IMealData
-  ): Promise<any> {
+  ): Promise<IMeal> {
     try {
       console.log('Creating Meal with data:', JSON.stringify(data, null, 2));
 
-      const createdMeal = await this.prisma.meal.create({ data });
+      const result = await this.prisma.meal.create({ data });
 
       console.log('Meal created successfully');
-
-      return {
-        statusCode: 201,
-        body: {
-          success: {
-            title: 'Success',
-            message: 'Meal created successfully'
-          },
-          data: createdMeal
-        }
-      };
+      return result;
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         console.log('Conflict Error:', err);
@@ -55,35 +44,221 @@ export default class MealRepository {
     }
   }
 
-  async getMeals(
+  async createMealComponent(
+    data: IMealComponentData
   ): Promise<any> {
     try {
-      console.log('Fetching meals');
+      console.log('Creating meal component with mealId:', data.meal_id, 'and componentId:', data.component_id);
   
-      const result = await this.prisma.meal.findMany({
-        include: {
-          MealComponent: {
-            include: {
-              component: true
+      const result = await this.prisma.mealComponent.create({
+        data: {
+          meal: { connect: { id: data.meal_id } },
+          component: { connect: { id: data.component_id } },
+          component_quantity: data.component_quantity
+        },
+      });
+  
+      console.log('Meal component created successfully');
+      return result;
+    } catch (err) {
+      console.log('Prisma Error', err)
+      throw createError(400, 'Prisma Error', {
+        details: 'Error creating ComponentIngredient in Prisma',
+      });
+    }
+  }
+
+  async getMeals(
+    skip: number,
+    take: number,
+    name: string | undefined,
+    ingredientId: string | undefined,
+    componentId: string | undefined
+  ): Promise<any> {
+    try {
+      if (name) {
+        console.log(`Fetching matching meals with name: ${name}, skip: ${skip}, take: ${take}`);
+
+        const count = await this.prisma.meal.count({
+          where: {
+            name: {
+              contains: name
             }
           }
-        }
-      });
-
-      const snakeCaseResults = result.map(item => convertKeys(item, pascalToSnake));
-  
-      console.log('Meals fetched successfully');
-  
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meals fetched successfully'
+        })
+    
+        const result = await this.prisma.meal.findMany({
+          skip: skip,
+          take: take,
+          where: {
+            name: {
+              contains: name,
+            },
           },
-          data: snakeCaseResults
-        }),
-      };
+          orderBy: {
+            _relevance: {
+              fields: ['name'],
+              search: name,
+              sort: 'asc'
+            }
+          },
+          include: {
+            meals_components: {
+              include: {
+                component: {
+                  include: {
+                    components_ingredients: {
+                      include: {
+                        ingredient: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+    
+        console.log('Meals fetched successfully');
+        return {
+          count,
+          meals: result
+        };
+
+      } else if (ingredientId) {
+        console.log(`Fetching meals with ingredient_id: ${ingredientId}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.meal.count({
+          where: {
+            meals_components: {
+              some: {
+                component: {
+                  components_ingredients: {
+                    some: {
+                      ingredient_id: ingredientId
+                    }
+                  }
+                }
+              }
+            }
+          }
+        })
+
+        const result = await this.prisma.meal.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc'
+          },
+          where: {
+            meals_components: {
+              some: {
+                component: {
+                  components_ingredients: {
+                    some: {
+                      ingredient_id: ingredientId
+                    }
+                  }
+                }
+              }
+            }
+          },
+          include: {
+            meals_components: {
+              include: {
+                component: {
+                  include: {
+                    components_ingredients: {
+                      include: {
+                        ingredient: true
+                      }
+                    }
+                  }
+                }
+              },
+            },
+          }
+        })
+
+        console.log('Meals fetched successfully');
+        return {
+          count,
+          meals: result
+        };
+      } else if (componentId) {
+        console.log(`Fetching meals with component_id: ${componentId}, skip: ${skip}, take: ${take}`)
+
+        const count = await this.prisma.meal.count({
+          where: {
+            meals_components: {
+              some: {
+                component_id: componentId
+              }
+            }
+          }
+        })
+
+        const result = await this.prisma.meal.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc'
+          },
+          where: {
+            meals_components: {
+              some: {
+                component_id: componentId
+              }
+            }
+          },
+          include: {
+            meals_components: {
+              include: {
+                component: true,
+              },
+            },
+          }
+        })
+
+        console.log('Meals fetched successfully');
+        return {
+          count,
+          meals: result
+        };
+      } else {
+        console.log(`Fetching meals with skip: ${skip}, take: ${take}`);
+
+        const count = await this.prisma.meal.count();
+    
+        const result = await this.prisma.meal.findMany({
+          skip: skip,
+          take: take,
+          orderBy: {
+            name: 'asc',
+          },
+          include: {
+            meals_components: {
+              include: {
+                component: {
+                  include: {
+                    components_ingredients: {
+                      include: {
+                        ingredient: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+    
+        console.log('Meals fetched successfully');
+        return {
+          count,
+          meals: result
+        };
+      }
     } catch (err) {
       console.log('Prisma Error:', err)
       throw createError(400, 'Prisma Error', {
@@ -92,91 +267,57 @@ export default class MealRepository {
     }
   }
 
-  async searchMeals(
-    index: string
+  async updateMeal(
+    id: string,
+    data: IMealUpdateData
   ): Promise<any> {
     try {
-      console.log('Fetching meals with name:', index);
-  
-      const result = await this.prisma.meal.findMany({
-        where: {
-          name: {
-            contains: index,
-          },
-        },
-        orderBy: {
-          name: 'asc',
-        },
-        include: {
-          MealComponent: {
-            include: {
-              component: true
-            }
-          }
-        }
-      });
-      
-      const sortedResults = result.sort((a, b) => {
-      if (a.name === index && b.name !== index) {
-        return -1;
-      } else if (a.name !== index && b.name === index) {
-        return 1;
-      } else {
-        return 0;
-      }
-      });
+      console.log(`Updating Meal with Id: ${id}, data:`, JSON.stringify(data, null, 2));
 
-      const snakeCaseResults = sortedResults.map(item => convertKeys(item, pascalToSnake));
-  
-      console.log('Meals fetched successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meals fetched successfully',
-          },
-          data: snakeCaseResults,
-        })
+      const mealData = {
+        ...data
       };
+
+      const result = await this.prisma.meal.update({
+        where: {
+          id: id
+        },
+        data: {
+          ...mealData
+        }
+      })
+
+      console.log('Meal updated successfully');
+      return result;
     } catch (err) {
-      console.log('Prisma Error', err)
-      throw createError(400, 'Prisma Error', {
-        details: 'Error fetching matching meals in Prisma',
+      console.log('Prisma Error:', err)
+      throw createError(500, 'Prisma Error', {
+        details: 'Error updating meal in Prisma',
       });
     }
   }
 
-  async createMealComponent(
-    data: IMealComponentData
+  async updateMealComponent(
+    id: string,
+    data: IMealComponentDataArray
   ): Promise<any> {
     try {
-      console.log('Creating meal component with mealId:', data.mealId, 'and componentId:', data.componentId);
-  
-      const result = await this.prisma.mealComponent.create({
-        data: {
-          meal: { connect: { id: data.mealId } },
-          component: { connect: { id: data.componentId } },
-          component_quantity: data.componentQuantity
+      console.log('Updating meal in MealComponent');
+
+      await this.prisma.mealComponent.updateMany({
+        where: {
+          meal_id: {
+            equals: id
+          }
         },
-      });
-  
-      console.log('Meal component created successfully');
-  
-      return {
-        statusCode: 201,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'ComponentIngredient created successfully'
-          },
-          data: result
-        })
-      };
+        data: data
+      })
+
+      console.log('Meal updated in MealComponent successfully');
     } catch (err) {
-      console.log('Prisma Error', err)
+      console.log('Prisma Error:', err);
       throw createError(400, 'Prisma Error', {
-        details: 'Error creating ComponentIngredient in Prisma',
+        details: 'Error updating meal in MealComponent with Prisma',
       });
     }
   }
@@ -196,16 +337,7 @@ export default class MealRepository {
       });
   
       console.log('Meal removed from MealComponent successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meal removed from MealComponent successfully',
-          }
-        }),
-        data: result
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error', err)
       throw createError(400, 'Prisma Error', {
@@ -227,16 +359,7 @@ export default class MealRepository {
       });
   
       console.log('Meal deleted successfully');
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: {
-            title: 'Success',
-            message: 'Meal deleted successfully',
-          },
-          data: result
-        })
-      };
+      return result;
     } catch (err) {
       console.log('Prisma Error', err)
       throw createError(400, 'Prisma Error', {

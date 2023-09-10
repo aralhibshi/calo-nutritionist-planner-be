@@ -1,13 +1,13 @@
 import Joi from 'joi';
-import { IIngredientUpdateEvent } from '@lib/interfaces';
+import { IMealUpdateEvent } from '@lib/interfaces';
 import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
 import { updateExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
-import { updateIngredient } from './useCase';
+import { updateMeal, updateMealComponent } from './useCase';
 
 export default middyfy(async (
-  event: IIngredientUpdateEvent
+  event: IMealUpdateEvent 
 ): Promise<any> => {
   console.log('Received CloudFormation Event:', JSON.stringify(event, null, 2));
 
@@ -15,40 +15,34 @@ export default middyfy(async (
     id: Joi
       .string()
       .min(36)
-      .max(36)
       .required(),
   })
-
   const bodyValidationSchema = Joi.object({
+    components: Joi
+      .array()
+      .min(1)
+      .required(),
     name: Joi
       .string()
+      .min(3)
       .required(),
     category: Joi
       .string(),
     description: Joi
       .string(),
-    price: Joi
-      .number()
-      .max(999.999)
-      .required(),
-    protein: Joi
-      .number()
-      .max(0.999)
-      .required(),
-    fats: Joi
-      .number()
-      .max(0.999)
-      .required(),
-    carbs: Joi
-      .number()
-      .max(0.999)
+    size: Joi
+      .string()
+      .min(1)
+      .max(1)
+      .valid('S', 'M', 'L')
       .required(),
     unit: Joi
       .string()
+      .min(1)
       .max(2)
       .valid('g', 'ml')
-      .required(),
-  });
+      .required()
+  })
 
   // Validation before Processing
   await queryValidationMiddleware(queryValidationSchema)(event);
@@ -60,18 +54,20 @@ export default middyfy(async (
   }
 
   // useCase - Update Ingredient
-  const result = await updateIngredient(data);
+  await updateMealComponent(data, event.body.components)
+  // await updateComponentInMealComponent(data)
+  const result = await updateMeal(data);
 
   return {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-control-Allow-Methods':'PUT'
+      'Access-control-Allow-Methods':'PUT',
     },
     statusCode: 200,
     body: JSON.stringify({
       success: {
         title: 'Success',
-        message: 'Ingredient updated successfully',
+        message: 'Component updated successfully',
       },
       data: result,
     })
