@@ -10,6 +10,7 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.409.0",
     "@middy/core": "^4.5.5",
     "@middy/http-json-body-parser": "^4.5.5",
     "@prisma/client": "^5.1.1",
