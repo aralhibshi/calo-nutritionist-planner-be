@@ -2,13 +2,13 @@ import { Prisma } from '@prisma/client';
 import createError from 'http-errors';
 import BaseRepo from './baseRepository';
 
-export class JoinBaseRepo<T> extends BaseRepo<T> {
-  private static fieldNames: Record<string, string> = {
-    ingredient_id: 'ingredient_id',
-    component_id: 'component_id',
-    meal_id: 'meal_id'
-  };
+type FieldNames = {
+  ingredient_id: 'ingredient_id';
+  component_id: 'component_id';
+  meal_id: 'meal_id';
+};
 
+export class JoinBaseRepo<T> extends BaseRepo<T> {
   constructor(model: Prisma.ModelName) {
     super(model);
   }
@@ -37,25 +37,55 @@ export class JoinBaseRepo<T> extends BaseRepo<T> {
     }
   }
 
+  public async update(
+    fieldName: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    try {
+      console.log(`Updating ${this.model} with data: ${JSON.stringify(data, null, 2)}`);
+  
+      const id = data[fieldName];
+  
+      const whereCondition: Record<string, any> = {};
+      whereCondition[fieldName] = {
+        equals: id
+      };
+  
+      await this.prisma[this.model].deleteMany({
+        where: whereCondition
+      });
+  
+      const result = this.prisma[this.model].create({
+        data: {
+          ...data
+        }
+      })
+  
+      console.log(`Updated ${this.model} join successfully`);
+      return result;
+    } catch (err) {
+      console.log('Prisma Error:', err);
+      throw createError(400, 'Prisma Error', {
+        details: `Error updating component in ${this.model} in Prisma`,
+      });
+    }
+  }
+
   public async delete(
+    fieldName: string,
     data: Record<string, any>
   ): Promise<any> {
     try {
       console.log(`Deleting ${this.model}`);
 
-      const entityType = Object.keys(JoinBaseRepo.fieldNames).find((key) => key in data);
-      if (!entityType) {
-        throw new Error('Unsupported entity type');
-      }
+      const id = data[fieldName];
 
-      const fieldName = JoinBaseRepo.fieldNames[entityType];
-  
       const whereCondition: Record<string, any> = {};
       whereCondition[fieldName] = {
-        equals: data.id,
+        equals: id
       };
   
-      const result: T = await this.prisma[this.model].deleteMany({
+      const result = await this.prisma[this.model].deleteMany({
         where: whereCondition,
       });
   
@@ -65,40 +95,6 @@ export class JoinBaseRepo<T> extends BaseRepo<T> {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
         details: `Error deleting ${this.model} with Prisma`,
-      });
-    }
-  }
-
-  public async update(
-    data: Record<string, any>
-  ): Promise<any> {
-    try {
-      console.log(`Updating ${this.model}`);
-
-      const entityType = Object.keys(JoinBaseRepo.fieldNames).find((key) => key in data);
-
-      if (!entityType) {
-        throw new Error('Unsupported entity type');
-      }
-
-      const fieldName = JoinBaseRepo.fieldNames[entityType];
-  
-      const whereCondition: Record<string, any> = {};
-      whereCondition[fieldName] = {
-        equals: data.id,
-      };
-  
-      const result: T = await this.prisma[this.model].deleteMany({
-        where: whereCondition,
-        data: data
-      });
-
-      console.log(`Updated ${this.model} join successfully`);
-      return result;
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(400, 'Prisma Error', {
-        details: `Error updating component in ${this.model} in Prisma`,
       });
     }
   }

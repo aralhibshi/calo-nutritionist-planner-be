@@ -11,7 +11,7 @@ export async function removeComponentFromComponentIngredient(
   data.component_id = data.id;
 
   // Repo - Remove Component from Component Ingredient
-  const result = await componentIngredientRepo.delete(data);
+  const result = await componentIngredientRepo.delete('component_id', data);
   return result;
 }
 
@@ -23,7 +23,7 @@ export async function removeComponentFomMealComponent(
   data.component_id = data.id;
 
   // Repo - Remove Component from Meal Component
-  const result = await mealComponentRepository.delete(data);
+  const result = await mealComponentRepository.delete('component_id' ,data);
   return result;
 }
 

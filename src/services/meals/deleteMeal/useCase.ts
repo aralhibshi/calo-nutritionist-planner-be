@@ -10,7 +10,7 @@ export async function removeMealFomMealComponent(
   data.meal_id = data.id
 
   // Repo - Remove Meal From Meal Component
-  const result = mealComponentRepo.delete(data);
+  const result = mealComponentRepo.delete('meal_id', data);
   return result;
 }
 

@@ -3,29 +3,6 @@ import ComponentRepository from '@lib/repositories/componentRepository';
 import ComponentIngredientRepository from '@lib/repositories/componentIngredient';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
-
-
-export async function updateComponent(
-  data: IComponentUpdateData
-): Promise<any> {
-  const componentRepo = ComponentRepository.getInstance();
-
-  const capitzaliedData = {
-    ...data,
-    name: capitalizeFirstLetter(data.name),
-  };
-
-  const {
-    ingredients,
-    ...updateData
-  } = capitzaliedData
-
-  // Repo - Update Ingredient
-  const result = await componentRepo.update(updateData);
-  return result;
-}
-
-
 export async function updateComponentInComponentIngredient(
   component: IComponentUpdateData,
   ingredients: IComponentIngredientDataArray[],
@@ -41,6 +18,27 @@ export async function updateComponentInComponentIngredient(
       ingredient_id: ingredient.ingredient_id,
       ingredient_quantity: ingredient.ingredient_quantity 
     }
-  await componentIngredientRepo.update(data)
+  await componentIngredientRepo.update('component_id', data)
   }
+}
+
+export async function updateComponent(
+  data: IComponentUpdateData
+): Promise<any> {
+  const componentRepo = ComponentRepository.getInstance();
+
+  const capitzaliedData = {
+    ...data,
+    name: capitalizeFirstLetter(data.name),
+  };
+  
+
+  const {
+    ingredients,
+    ...updateData
+  } = capitzaliedData
+
+  // Repo - Update Ingredient
+  const result = await componentRepo.update(updateData);
+  return result;
 }
