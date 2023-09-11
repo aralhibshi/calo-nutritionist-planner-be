@@ -1,4 +1,4 @@
-import { IIngredient, IIngredientData } from '@lib/interfaces';
+import { IIngredient } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 

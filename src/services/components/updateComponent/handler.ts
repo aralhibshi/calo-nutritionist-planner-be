@@ -48,7 +48,7 @@ export default middyfy(async (
   }
 
   // useCase - Update Ingredient
-  await updateComponentInComponentIngredient(data,event.body.ingredients)
+  // await updateComponentInComponentIngredient(data,event.body.ingredients)
   // await updateComponentInMealComponent(data)
   const result = await updateComponent(data);
 

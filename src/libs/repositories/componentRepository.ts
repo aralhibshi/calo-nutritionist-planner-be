@@ -4,9 +4,9 @@ import prisma from '@lib/prismaClient';
 import { Component } from '@lib/interfaces/entities';
 import createError from 'http-errors';
 
-import BaseRepo from './baseRepository';
+import { StandaloneBaseRepo } from './base/standaloneBaseRepository';
 
-export default class ComponentRepository extends BaseRepo<Component> {
+export default class ComponentRepository extends StandaloneBaseRepo<Component> {
   private static instance: ComponentRepository | null = null;
 
   private constructor() {
@@ -20,7 +20,7 @@ export default class ComponentRepository extends BaseRepo<Component> {
     return ComponentRepository.instance;
   }
 
-  async getComponents(
+  public async get(
     skip: number,
     take: number,
     name: string | undefined,
@@ -143,35 +143,6 @@ export default class ComponentRepository extends BaseRepo<Component> {
 }
 
 // export default class ComponentRepository {
-
-//   async updateComponent(
-//     id: string,
-//     data: IComponentUpdateData
-//   ): Promise<any> {
-//     try {
-//       console.log('Updating component with Id:', id);
-  
-//       const result = await this.prisma.component.update({
-//         where: {
-//           id: id,
-//         },
-//         data: {
-//           name: data.name,
-//           category: data.category,
-//           description: data.description,
-//           unit: data.unit,
-//         },
-//       });
-  
-//       console.log('Component updated successfully');
-//       return result;
-//     } catch (err) {
-//       console.log('Prisma Error:', err);
-//       throw createError(400, 'Prisma Error', {
-//         details: 'Error updating component from component in Prisma',
-//       });
-//     }
-//   }
 
 //   async updateComponentInComponentIngredient(
 //     id: string,

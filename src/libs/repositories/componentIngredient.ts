@@ -1,11 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import prisma from '@lib/prismaClient';
-import { Component } from '@lib/interfaces/entities';
+import { ComponentIngredient } from '@lib/interfaces/entities';
 import createError from 'http-errors';
 
-import { RestrictedBaseRepo } from './baseRepository';
+import { JoinBaseRepo } from './base/joinBaseRepository';
 
-export default class ComponentIngredientRepository extends RestrictedBaseRepo<Component> {
+export default class ComponentIngredientRepository extends JoinBaseRepo<ComponentIngredient> {
   private static instance: ComponentIngredientRepository | null = null;
 
   private constructor() {

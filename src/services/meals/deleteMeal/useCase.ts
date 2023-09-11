@@ -1,15 +1,16 @@
 import { IMealDeleteData, IMealDeleteEvent } from '@lib/interfaces';
 import MealRepository from '@lib/repositories/mealRepository';
+import MealComponentRepository from '@lib/repositories/mealComponentRepository';
 
 export async function removeMealFomMealComponent(
   data: IMealDeleteData
 ): Promise<any> {
-  const mealRepo = MealRepository.getInstance();
+  const mealComponentRepo = MealComponentRepository.getInstance();
 
-  const id = data.id;
+  data.meal_id = data.id
 
   // Repo - Remove Meal From Meal Component
-  const result = mealRepo.removeMealFomMealComponent(id);
+  const result = mealComponentRepo.delete(data);
   return result;
 }
 
@@ -21,6 +22,6 @@ export async function deleteMeal(
   const id = data.id;
 
   // Repo - Delete Meal
-  const result = mealRepo.deleteMeal(id);
+  const result = mealRepo.delete(id);
   return result;
 }
