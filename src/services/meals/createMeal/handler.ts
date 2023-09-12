@@ -38,6 +38,7 @@ export default middyfy(async (
   // Validation before Processing
   await bodyValidationMiddleware(validationSchema)(event);
 
+  // Data Separation
   const { components, ...mealData } = event.body
 
   // useCase - Create Meal
