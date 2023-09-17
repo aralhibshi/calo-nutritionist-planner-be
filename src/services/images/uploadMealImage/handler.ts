@@ -33,7 +33,7 @@ export default middyfy(async (event) => {
     return {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Methods": "POST, PUT", // Add PUT to the allowed methods
       },
       statusCode: 200,
       body: JSON.stringify({
@@ -46,7 +46,7 @@ export default middyfy(async (event) => {
     return {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Methods": "POST, PUT", // Add PUT to the allowed methods
       },
       statusCode: 500,
       body: JSON.stringify({
