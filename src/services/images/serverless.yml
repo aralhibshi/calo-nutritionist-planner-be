@@ -1,0 +1,46 @@
+uploadMealImage:
+  handler: src/services/images/uploadMealImage/handler.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource:
+        - Fn::GetAtt:
+          - UploadMealImageBucket
+          - Arn
+  events:
+    - http:
+        method: post
+        path: v1/user/mealImage/add
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        # authorizer:
+        #   name: UserAuthorizer
+        #   type: COGNITO_USER_POOLS
+        #   arn:
+        #     Fn::GetAtt:
+        #       - MyCognitoUserPool
+        #       - Arn
+        #   claims:
+        #     - email
+
+processMealImage:
+  handler: src/services/images/processMealImage/handler.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:GetObjectAcl
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource:
+        - Fn::GetAtt:
+            - UploadMealImageBucket
+            - Arn
+      # events:
+      #       - s3:
+      #           bucket: UploadMealImageBucket
+      #           event: s3:ObjectCreated:*
+      #           rules:
+      #                 - prefix: uploads/
+      #           existing: true
