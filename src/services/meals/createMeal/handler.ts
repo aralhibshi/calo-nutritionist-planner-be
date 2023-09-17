@@ -32,6 +32,10 @@ export default middyfy(async (
       .min(1)
       .max(2)
       .valid('g', 'ml')
+      .required(),
+    id: Joi
+      .string()
+      .min(3)
       .required()
   })
 
@@ -50,7 +54,7 @@ export default middyfy(async (
   return {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-control-Allow-Methods':'POST',
+      'Access-control-Allow-Methods':'PUT',
     },
     statusCode: 201,
     body: JSON.stringify({

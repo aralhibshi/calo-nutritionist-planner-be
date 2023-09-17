@@ -3,7 +3,7 @@ createMeal:
   events:
     - http:
         path: v1/meal
-        method: post
+        method: put
         cors: ${file(src/templates/cors.yml):${self:provider.stage}}
 
 getMeals:

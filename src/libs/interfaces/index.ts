@@ -264,6 +264,7 @@ export interface IComponentDeleteData {
 export interface IMealCreateEvent {
   body: {
     components: Array<IMealComponentDataArray>;
+    id:string
     name: string;
     unit: string;
     size: string;
@@ -283,6 +284,7 @@ export interface IMeal {
 
 // Meal Create/Update - Data
 export interface IMealData {
+  id : string
   name: string;
   description?: string;
   unit: string;
