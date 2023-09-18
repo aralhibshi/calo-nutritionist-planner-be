@@ -1,0 +1,7 @@
+processData:
+  handler: src/services/data/processData.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
