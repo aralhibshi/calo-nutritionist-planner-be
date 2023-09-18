@@ -41,7 +41,7 @@ model Component {
 }
 
 model Meal {
-  id               String          @id @default(uuid())
+  id               String          @id @unique
   name             String          @unique @db.VarChar
   description      String?
   size             String
