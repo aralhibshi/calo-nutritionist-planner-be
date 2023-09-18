@@ -1,0 +1,21 @@
+Resources:
+  S3BucketRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: IAMRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3Bucket
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutBucketPolicy
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: arn:aws:s3:::${self:service}-${self:provider.stage}-entity-data

@@ -46,7 +46,11 @@ Resources:
         Statement:
           - Sid: Allow-lambda-PutObject
             Effect: Allow
-            Principal: '*'
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - S3BucketRole
+                  - Arn
             Action:
               - s3:PutObject
               - s3:GetObject
