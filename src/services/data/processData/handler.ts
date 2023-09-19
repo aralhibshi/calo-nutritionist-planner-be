@@ -1,140 +1,68 @@
-import fetch from 'node-fetch';
-import https from "https";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import Joi from 'joi';
+import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
+import { createPresignedPutUrlWithClient, createPresignedGetUrlWithClient, fetchData, putObject } from './useCase';
+import { jsonToCsv } from 'src/utils/conversionUtils';
 
 export default async (event) => {
   try {
-    const bucketName = process.env.BUCKET_NAME!;
-    console.log('bucketName:', bucketName);
+    const validationSchema = Joi.object({
+      entity: Joi
+        .string()
+        .min(5)
+        .max(11)
+        .required(),
+      user_id: Joi
+        .string()
+        .required(),
+      skip: Joi
+        .number()
+        .min(0)
+        .max(500)
+        .required(),
+      take: Joi
+        .number()
+        .min(4)
+        .max(500)
+        .required()
+    })
 
-    const { entity, user_id } = event
-    const objectKey = `${entity}/${user_id}-test.csv`;
-    const putExpiresIn = 120;
-    const getExpiresIn = 300;
+    // Validation befor Processing
+    await queryValidationMiddleware(validationSchema)(event)
+
+    const { entity, user_id, skip, take } = event.queryStringParameters
+    const bucketName = process.env.BUCKET_NAME!;
+    const objectKey = `${entity}/${user_id}.csv`;
 
     // Create Put Url
-    const putUrl = await createPresignedPutUrlWithClient(bucketName, objectKey, putExpiresIn);
+    const putUrl = await createPresignedPutUrlWithClient(bucketName, objectKey);
 
     // Create Get Url
-    const getUrl = await createPresignedGetUrlWithClient(bucketName, objectKey, getExpiresIn);
-    console.log(getUrl);
+    const getUrl = await createPresignedGetUrlWithClient(bucketName, objectKey, entity);
 
     // Get Entity Data
-    const response: any = await fetchData(entity);
+    const response: any = await fetchData(entity, skip, Number(take));
 
     // Convert JSON to CSV
     const data = jsonToCsv(response.data[entity])
 
     // Create Object in S3 Bucket
-
-    // await putObject(putUrl, JSON.stringify(response?.data.data));
-    // await putObject(putUrl, JSON.stringify(response.data[entity]));
     await putObject(putUrl, data);
+
+    return {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-control-Allow-Methods':'GET',
+      },
+      statusCode: 200,
+      body: JSON.stringify({
+        success: {
+          title: 'Success',
+          message: `${entity} exported successfully`,
+        },
+        url: getUrl
+      })
+    };
   } catch (err) {
     console.log('Error while processing data', err)
   }
-}
-
-// Presigned Put URL
-async function createPresignedPutUrlWithClient (bucket: string, key: string, expires: number) {
-  try {
-    const client = new S3Client({
-      region: 'us-east-1'
-    });
-  
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key
-    });
-  
-    return await getSignedUrl(client, command, {expiresIn: expires});
-  }
-  catch (err) {
-    console.log('Error creating pre-signed PUT Url', err);
-  }
-};
-
-// Presigned Get URL
-async function createPresignedGetUrlWithClient (bucket: string, key: string, expires: number) {
-  try {
-    const client = new S3Client({
-      region: 'us-east-1'
-    });
-  
-    const command = new GetObjectCommand({
-      Bucket: bucket,
-      Key: key
-    });
-  
-    return await getSignedUrl(client, command, {expiresIn: expires});
-  }
-  catch (err) {
-    console.log('Error creating presigned GET Url', err);
-  }
-};
-
-// Put Object
-async function putObject(url, data) {
-  try {
-    return new Promise((resolve, reject) => {
-      const contentLength = Buffer.byteLength(data, 'utf-8');
-      const req = https.request(
-        url,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Length": contentLength
-          }
-        },
-        (res) => {
-          let responseBody = "";
-          res.on("data", (chunk) => {
-            responseBody += chunk;
-          });
-          res.on("end", () => {
-            resolve(responseBody);
-          });
-        }
-      );
-      req.on("error", (err) => {
-        reject(err);
-      });
-      req.write(data);
-      req.end();
-    });
-  }
-  catch (err) {
-    console.log('Error putting object into bucket', err)
-  }
-}
-
-// Fetch Entity Data
-async function fetchData(entity: string) {
-  try {
-    const baseUrl = process.env.BASE_URL!;
-    const url = baseUrl + entity + '?skip=0&take=10';
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    return await response.json();
-  }
-  catch (err) {
-    console.log('Error fetching data', err)
-  }
-}
-
-// Convert JSON to CSV
-function jsonToCsv(jsonData) {
-  if (!Array.isArray(jsonData)) {
-    throw new Error('Input data must be an array of objects.');
-  }
-
-  const header = Object.keys(jsonData[0]);
-  const csvData = jsonData.map(row => header.map(fieldName => JSON.stringify(row[fieldName])).join(','));
-
-  return [header.join(','), ...csvData].join('\n');
 }

@@ -12,3 +12,15 @@ processData:
   environment:
     BUCKET_NAME:
       Ref: EntityDataBucket
+  events:
+    - http:
+        path: v1/data
+        method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        request:
+          parameters:
+            querystrings:
+              entity: true
+              user_id: true
+              skip: true
+              take: true
