@@ -1,7 +1,14 @@
 processData:
-  handler: src/services/data/processData.default
+  handler: src/services/data/processData/handler.default
   iamRoleStatements:
     - Effect: Allow
       Action:
         - s3:PutObject
         - s3:GetObject
+      Resource:
+        - Fn::GetAtt:
+          - EntityDataBucket
+          - Arn
+  environment:
+    BUCKET_NAME:
+      Ref: EntityDataBucket

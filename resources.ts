@@ -5,7 +5,6 @@ import yml from 'js-yaml';
 const files = [
   readFileSync('./src/resources/cognito.yml'),
   readFileSync('./src/resources/s3.yml'),
-  readFileSync('./src/resources/iam.yml')
 ];
 
 export default files.reduce((res, row) => {
