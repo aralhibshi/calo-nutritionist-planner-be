@@ -6,7 +6,8 @@ const files = [
   readFileSync('./src/services/ingredients/serverless.yml'),
   readFileSync('./src/services/components/serverless.yml'),
   readFileSync('./src/services/meals/serverless.yml'),
-  readFileSync('./src/services/images/serverless.yml')
+  readFileSync('./src/services/images/serverless.yml'),
+  readFileSync('./src/services/data/serverless.yml')
 ];
 
 export default files.reduce((res, row) => {
