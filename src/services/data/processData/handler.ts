@@ -9,7 +9,7 @@ export default async (event) => {
     console.log('bucketName:', bucketName);
 
     const { entity, user_id } = event
-    const objectKey = `${entity}/${user_id}-test.txt`;
+    const objectKey = `${entity}/${user_id}-test.csv`;
     const putExpiresIn = 120;
     const getExpiresIn = 300;
 
@@ -21,10 +21,16 @@ export default async (event) => {
     console.log(getUrl);
 
     // Get Entity Data
-    const response = await fetchData(event.entity);
+    const response: any = await fetchData(entity);
+
+    // Convert JSON to CSV
+    const data = jsonToCsv(response.data[entity])
 
     // Create Object in S3 Bucket
-    await put(putUrl, JSON.stringify('hello this is a test'));
+
+    // await putObject(putUrl, JSON.stringify(response?.data.data));
+    // await putObject(putUrl, JSON.stringify(response.data[entity]));
+    await putObject(putUrl, data);
   } catch (err) {
     console.log('Error while processing data', err)
   }
@@ -69,7 +75,7 @@ async function createPresignedGetUrlWithClient (bucket: string, key: string, exp
 };
 
 // Put Object
-async function put(url, data) {
+async function putObject(url, data) {
   try {
     return new Promise((resolve, reject) => {
       const contentLength = Buffer.byteLength(data, 'utf-8');
@@ -106,16 +112,29 @@ async function put(url, data) {
 // Fetch Entity Data
 async function fetchData(entity: string) {
   try {
-    const baseUrl = process.env.BASE_URL;
-    console.log(baseUrl);
-    const apiUrl = baseUrl + entity
-    const response = await fetch(apiUrl, {
-      method: 'GET'
-    })
+    const baseUrl = process.env.BASE_URL!;
+    const url = baseUrl + entity + '?skip=0&take=10';
 
-    return response
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
   }
   catch (err) {
     console.log('Error fetching data', err)
   }
+}
+
+// Convert JSON to CSV
+function jsonToCsv(jsonData) {
+  if (!Array.isArray(jsonData)) {
+    throw new Error('Input data must be an array of objects.');
+  }
+
+  const header = Object.keys(jsonData[0]);
+  const csvData = jsonData.map(row => header.map(fieldName => JSON.stringify(row[fieldName])).join(','));
+
+  return [header.join(','), ...csvData].join('\n');
 }
