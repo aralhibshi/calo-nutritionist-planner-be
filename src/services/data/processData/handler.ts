@@ -9,7 +9,7 @@ export default async (event) => {
     console.log('bucketName:', bucketName);
 
     const { entity, user_id } = event
-    const objectKey = `${entity}/${user_id}-test.txt`;
+    const objectKey = `${entity}/${user_id}-test.csv`;
     const putExpiresIn = 120;
     const getExpiresIn = 300;
 
@@ -21,12 +21,16 @@ export default async (event) => {
     console.log(getUrl);
 
     // Get Entity Data
-    const response: any = await fetchData(event.entity);
+    const response: any = await fetchData(entity);
+
+    // Convert JSON to CSV
+    const data = jsonToCsv(response.data[entity])
 
     // Create Object in S3 Bucket
-    // await putObject(putUrl, JSON.stringify('hello this is a test'));
+
     // await putObject(putUrl, JSON.stringify(response?.data.data));
-    await putObject(putUrl, JSON.stringify(response.data));
+    // await putObject(putUrl, JSON.stringify(response.data[entity]));
+    await putObject(putUrl, data);
   } catch (err) {
     console.log('Error while processing data', err)
   }
@@ -121,4 +125,16 @@ async function fetchData(entity: string) {
   catch (err) {
     console.log('Error fetching data', err)
   }
+}
+
+// Convert JSON to CSV
+function jsonToCsv(jsonData) {
+  if (!Array.isArray(jsonData)) {
+    throw new Error('Input data must be an array of objects.');
+  }
+
+  const header = Object.keys(jsonData[0]);
+  const csvData = jsonData.map(row => header.map(fieldName => JSON.stringify(row[fieldName])).join(','));
+
+  return [header.join(','), ...csvData].join('\n');
 }
