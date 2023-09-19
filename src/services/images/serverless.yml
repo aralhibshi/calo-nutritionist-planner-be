@@ -26,17 +26,21 @@ uploadMealImage:
 
 processMealImage:
   handler: src/services/images/processMealImage/handler.default
+  destinations:
+    onFailure: arn:aws:sqs:us-east-1:054700988317:calo-nutritionist-planner-dev-process-image-dlq
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - s3:GetObject
-        - s3:GetObjectAcl
+        # - s3:GetObject
+        # - s3:GetObjectAcl
         - s3:PutObject
         - s3:PutObjectAcl
+        - sqs:SendMessage
       Resource:
         - Fn::GetAtt:
             - UploadMealImageBucket
             - Arn
+        - arn:aws:sqs:us-east-1:054700988317:calo-nutritionist-planner-dev-process-image-dlq
       # events:
       #       - s3:
       #           bucket: UploadMealImageBucket
