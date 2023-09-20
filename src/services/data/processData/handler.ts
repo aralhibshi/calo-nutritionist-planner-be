@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
-import { createUrls, fetchData, putObject } from './useCase';
+import { createUrls, fetchData, putObject, sendMessageToSQS } from './useCase';
 
 export default async (event) => {
   try {
@@ -25,7 +25,7 @@ export default async (event) => {
         .required()
     })
 
-    // Validation befor Processing
+    // Validation before Processing
     await queryValidationMiddleware(validationSchema)(event)
 
     const { entity, user_id, skip, take } = event.queryStringParameters
@@ -38,6 +38,9 @@ export default async (event) => {
 
     // Create Object in S3 Bucket
     await putObject(urls?.putUrl!, response.data[entity]);
+
+    // Send Message to SQS
+    await sendMessageToSQS(urls?.getUrl!);
 
     return {
       headers: {

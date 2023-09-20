@@ -1,7 +1,8 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import https from 'https';
 import fetch from 'node-fetch';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { jsonToCsv } from 'src/utils/conversionUtils';
 
@@ -69,8 +70,7 @@ export async function createUrls(
     const getUrl = await createPresignedGetUrlWithClient(bucket, objectKey, entity);
 
     return { putUrl, getUrl };
-  }
-  catch (err) {
+  } catch (err) {
     console.log('Error creating urls', err);
   }
 }
@@ -110,8 +110,7 @@ export async function putObject(
       req.write(convertedData);
       req.end();
     });
-  }
-  catch (err) {
+  } catch (err) {
     console.log('Error putting object into bucket', err)
   }
 }
@@ -132,8 +131,28 @@ export async function fetchData(
     }
 
     return await response.json();
-  }
-  catch (err) {
+  } catch (err) {
     console.log('Error fetching data', err)
+  }
+}
+
+// Send Message to SQS
+export async function sendMessageToSQS(messageBody: string) {
+  try {
+    const client = new SQSClient({
+      region: 'us-east-1',
+    });
+
+    const params = {
+      QueueUrl: process.env.SQS_QUEUE_URL!,
+      MessageBody: messageBody,
+    };
+
+    const command = new SendMessageCommand(params);
+    const result = await client.send(command);
+    console.log('Message sent to SQS:', result.MessageId);
+  } catch (error) {
+    console.error('Error sending message to SQS:', error);
+    throw error;
   }
 }

@@ -5,13 +5,19 @@ processData:
       Action:
         - s3:PutObject
         - s3:GetObject
+        - sqs:SendMessage
       Resource:
         - Fn::GetAtt:
           - EntityDataBucket
           - Arn
+        - Fn::GetAtt:
+          - SendSaveEmailQueue
+          - Arn
   environment:
     BUCKET_NAME:
       Ref: EntityDataBucket
+    SQS_QUEUE_URL:
+      Ref: SendSaveEmailQueue
   events:
     - http:
         path: v1/data
@@ -24,3 +30,12 @@ processData:
               user_id: true
               skip: true
               take: true
+
+sendSaveEmail:
+  handler: src/services/data/sendSaveEmail/handler.default
+  events:
+    - sqs:
+        arn:
+          Fn::GetAtt:
+            - SendSaveEmailQueue
+            - Arn
