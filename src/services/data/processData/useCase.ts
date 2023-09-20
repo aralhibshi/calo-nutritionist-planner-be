@@ -46,7 +46,8 @@ export async function createPresignedGetUrlWithClient(
       Bucket: bucket,
       Key: key,
       ResponseContentType: 'text/csv',
-      ResponseContentDisposition: `inline; filename=${capitalizedEntity}.csv`
+      ResponseContentDisposition: `attachment; filename=${capitalizedEntity}.csv`,
+      ResponseCacheControl: 'No-cache'
     });
 
     const url = await getSignedUrl(client, command, { expiresIn: 300 });
@@ -137,7 +138,12 @@ export async function fetchData(
 }
 
 // Send Message to SQS
-export async function sendMessageToSQS(messageBody: string) {
+export async function sendMessageToSQS(
+  entity: string,
+  user_email: string,
+  email_type: string,
+  url: string,
+) {
   try {
     const client = new SQSClient({
       region: 'us-east-1',
@@ -145,7 +151,12 @@ export async function sendMessageToSQS(messageBody: string) {
 
     const params = {
       QueueUrl: process.env.SQS_QUEUE_URL!,
-      MessageBody: messageBody,
+      MessageBody: JSON.stringify({
+        entity,
+        user_email,
+        email_type,
+        url
+      }),
     };
 
     const command = new SendMessageCommand(params);

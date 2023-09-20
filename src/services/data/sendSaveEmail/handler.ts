@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
+import { sendEmail } from './useCase';
 
 export default async (event) => {
   try {
@@ -11,17 +12,17 @@ export default async (event) => {
     // Validation Before Processing
     await bodyValidationMiddleware(validationSchema)(event)
 
-    const sqsMessage = event.Records[0].body;
-    console.log(sqsMessage)
+    const { entity, user_email, email_type, url } = JSON.parse(event.Records[0].body);
 
+    // Send Email
+    await sendEmail(entity, user_email, email_type, url);
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: {
           title: 'Success',
           message: `SQS message received successfully`,
-        },
-        message: sqsMessage
+        }
       })
     };
   } catch (err) {

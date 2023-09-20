@@ -5,14 +5,17 @@ processData:
       Action:
         - s3:PutObject
         - s3:GetObject
+      Resource:
+        - Fn::GetAtt:
+            - EntityDataBucket
+            - Arn
+    - Effect: Allow
+      Action:
         - sqs:SendMessage
       Resource:
         - Fn::GetAtt:
-          - EntityDataBucket
-          - Arn
-        - Fn::GetAtt:
-          - SendSaveEmailQueue
-          - Arn
+            - SendSaveEmailQueue
+            - Arn
   environment:
     BUCKET_NAME:
       Ref: EntityDataBucket
@@ -28,11 +31,27 @@ processData:
             querystrings:
               entity: true
               user_id: true
+              user_email: true
+              email_type: true
               skip: true
               take: true
 
 sendSaveEmail:
   handler: src/services/data/sendSaveEmail/handler.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource:
+        - Fn::GetAtt:
+            - EmailEventsDatabase
+            - Arn
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource:
+        - '*'
   events:
     - sqs:
         arn:
