@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import { queryValidationMiddleware } from '@lib/middleware/validationMiddleware';
-import { createPresignedPutUrlWithClient, createPresignedGetUrlWithClient, fetchData, putObject } from './useCase';
-import { jsonToCsv } from 'src/utils/conversionUtils';
+import { createUrls, fetchData, putObject } from './useCase';
 
 export default async (event) => {
   try {
@@ -30,23 +29,15 @@ export default async (event) => {
     await queryValidationMiddleware(validationSchema)(event)
 
     const { entity, user_id, skip, take } = event.queryStringParameters
-    const bucketName = process.env.BUCKET_NAME!;
-    const objectKey = `${entity}/${user_id}.csv`;
 
-    // Create Put Url
-    const putUrl = await createPresignedPutUrlWithClient(bucketName, objectKey);
-
-    // Create Get Url
-    const getUrl = await createPresignedGetUrlWithClient(bucketName, objectKey, entity);
+    // Create Put and Get URLs
+    const urls = await createUrls(entity, user_id);
 
     // Get Entity Data
     const response: any = await fetchData(entity, skip, Number(take));
 
-    // Convert JSON to CSV
-    const data = jsonToCsv(response.data[entity])
-
     // Create Object in S3 Bucket
-    await putObject(putUrl, data);
+    await putObject(urls?.putUrl!, response.data[entity]);
 
     return {
       headers: {
@@ -59,7 +50,7 @@ export default async (event) => {
           title: 'Success',
           message: `${entity} exported successfully`,
         },
-        url: getUrl
+        url: urls?.getUrl!
       })
     };
   } catch (err) {

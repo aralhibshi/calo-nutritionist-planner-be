@@ -5,55 +5,75 @@ import fetch from 'node-fetch';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { jsonToCsv } from 'src/utils/conversionUtils';
 
-
 // Presigned Put URL
 export async function createPresignedPutUrlWithClient(
   bucket: string,
   key: string
-): Promise<any> {
+): Promise<string> {
   try {
     const client = new S3Client({
       region: 'us-east-1'
     });
-  
+
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: key
     });
-  
-    return await getSignedUrl(client, command, {expiresIn: 120});
-  }
-  catch (err) {
+
+    const url = await getSignedUrl(client, command, { expiresIn: 120 });
+    return url;
+  } catch (err) {
     console.log('Error creating pre-signed PUT Url', err);
+    throw err;
   }
-};
+}
 
 // Presigned Get URL
 export async function createPresignedGetUrlWithClient(
   bucket: string,
   key: string,
   entity: string,
-): Promise<any> {
+): Promise<string> {
   try {
     const capitalizedEntity = capitalizeFirstLetter(entity)
 
     const client = new S3Client({
       region: 'us-east-1'
     });
-  
+
     const command = new GetObjectCommand({
       Bucket: bucket,
       Key: key,
       ResponseContentType: 'text/csv',
       ResponseContentDisposition: `inline; filename=${capitalizedEntity}.csv`
     });
-  
-    return await getSignedUrl(client, command, {expiresIn: 300});
+
+    const url = await getSignedUrl(client, command, { expiresIn: 300 });
+    return url;
+  } catch (err) {
+    console.log('Error creating presigned GET Url', err);
+    throw err;
+  }
+}
+
+// Create Urls
+export async function createUrls(
+  entity: string,
+  user_id: string
+) {
+  try {
+    const bucket = process.env.BUCKET_NAME!;
+    const objectKey = `${entity}/${user_id}.csv`;
+
+    const putUrl = await createPresignedPutUrlWithClient(bucket, objectKey);
+    const getUrl = await createPresignedGetUrlWithClient(bucket, objectKey, entity);
+
+    return { putUrl, getUrl };
   }
   catch (err) {
-    console.log('Error creating presigned GET Url', err);
+    console.log('Error creating urls', err);
   }
-};
+}
 
 // Put Object
 export async function putObject(
@@ -61,8 +81,10 @@ export async function putObject(
   data: any,
 ): Promise<any> {
   try {
+    const convertedData = jsonToCsv(data)
+
     return new Promise((resolve, reject) => {
-      const contentLength = Buffer.byteLength(data, 'utf-8');
+      const contentLength = Buffer.byteLength(convertedData, 'utf-8');
       const req = https.request(
         url,
         {
@@ -85,7 +107,7 @@ export async function putObject(
       req.on('error', (err) => {
         reject(err);
       });
-      req.write(data);
+      req.write(convertedData);
       req.end();
     });
   }
