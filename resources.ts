@@ -8,7 +8,8 @@ const files = [
   readFileSync('./src/resources/sqs.yml'),
   readFileSync('./src/resources/ddb.yml'),
   readFileSync('./src/resources/ses.yml'),
-  readFileSync('./src/resources/lambda.yml'),  
+  readFileSync('./src/resources/lambda.yml'),
+  readFileSync('./src/resources/custom.yml')
 ];
 
 export default files.reduce((res, row) => {

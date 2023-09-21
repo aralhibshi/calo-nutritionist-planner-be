@@ -1,0 +1,12 @@
+Resources:
+  ActiveReceiptRuleSet:
+    Type: Custom::ActiveReceiptRuleSet
+    Properties:
+      RuleSetName: ReceiptConfigurationRuleSet
+      Region: us-east-1
+      ServiceToken:
+        Fn::GetAtt:
+          - SendSaveEmailLambdaFunction
+          - Arn
+          # - arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:binxio-cfn-ses-provider
+          

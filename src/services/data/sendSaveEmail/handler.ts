@@ -1,16 +1,16 @@
 import Joi from 'joi';
-import { middyfy } from '@lib/middleware/eventParserMiddleware';
 import { bodyValidationMiddleware } from '@lib/middleware/validationMiddleware';
-import { createExceptionHandlerMiddleware } from '@lib/middleware/exceptionHandlerMiddleware';
 import { sendEmail } from './useCase';
 
-export default middyfy(async (
-  event
-) => {
+export default async (event) => {
   const validationSchema = Joi.object({
     Records: Joi
       .required()
   })
+  
+  // Validation Before Processing
+  await bodyValidationMiddleware(validationSchema)(event)
+  console.log(event)
 
   if (event.hasOwnProperty('Records') && Array.isArray(event.Records)) {
     for (const record of event.Records) {
@@ -29,35 +29,26 @@ export default middyfy(async (
             console.log('Complaint event:', sesEvent);
             break;
 
-          // Add more cases for other SES event types if needed
-
           default:
             console.log('Unknown SES event type:', sesEvent.notificationType);
             break;
         }
+      } else if (record.eventSource === 'aws:sqs') {
+
+        const { entity, user_email, email_type, url } = JSON.parse(event.Records[0].body);
+
+        // Send Email
+        await sendEmail(entity, user_email, email_type, url);
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            success: {
+              title: 'Success',
+              message: `SQS message received successfully`,
+            }
+          })
+        };
       }
     }
-  } else {
-    // Validation Before Processing
-    await bodyValidationMiddleware(validationSchema)(event)
-
-    const { entity, user_email, email_type, url } = JSON.parse(event.Records[0].body);
-
-    // Send Email
-    await sendEmail(entity, user_email, email_type, url);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        success: {
-          title: 'Success',
-          message: `SQS message received successfully`,
-        }
-      })
-    };
   }
-  return {
-    statusCode: 200,
-    body: JSON.stringify('Lambda function executed successfully'),
-  };
-})
-.use(createExceptionHandlerMiddleware());
+} 
