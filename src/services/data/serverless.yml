@@ -50,8 +50,12 @@ sendSaveEmail:
       Action:
         - ses:SendEmail
         - ses:SendRawEmail
-      Resource:
-        - '*'
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: '*'
   events:
     - sqs:
         arn:
