@@ -56,6 +56,9 @@ sendSaveEmail:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
+  environment:
+    TABLE_NAME:
+      Ref: EmailEventsDatabase
   events:
     - sqs:
         arn:
