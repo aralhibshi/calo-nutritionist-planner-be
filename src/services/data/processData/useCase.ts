@@ -131,7 +131,16 @@ export async function fetchData(
       throw new Error('Network response was not ok');
     }
 
-    return await response.json();
+    const responseData: any = await response.json();
+
+    if (entity === 'meals') {
+      console.log(JSON.stringify(responseData.data.meals));
+      return await processMeals(responseData.data.meals);
+    } else if (entity === 'components') {
+      return await processComponents(responseData.data.components);
+    } else if (entity === 'ingredients') {
+      return await responseData;
+    }
   } catch (err) {
     console.log('Error fetching data', err)
   }
@@ -165,5 +174,125 @@ export async function sendMessageToSQS(
   } catch (error) {
     console.error('Error sending message to SQS:', error);
     throw error;
+  }
+}
+
+// Process Meals
+async function processMeals(
+  mealsData: any
+): Promise<any> {
+  try {
+    const processedMeals: any[] = mealsData.map((meal: any) => {
+      let totalFats = 0;
+      let totalCarbs = 0;
+      let totalProteins = 0;
+      let totalCalories = 0;
+      let totalPrice = 0;
+      let totalQuantity = 0;
+
+      meal.meals_components.forEach((mealComponent: any) => {
+        const component = mealComponent.component;
+        if (component && component.components_ingredients) {
+          component.components_ingredients.forEach((el: any) => {
+            const ingredient = el.ingredient;
+            if (ingredient) {
+              const ingredientQuantity = Number(el.ingredient_quantity);
+              totalFats += Number(ingredient.fats) * ingredientQuantity;
+              totalCarbs += Number(ingredient.carbs) * ingredientQuantity;
+              totalProteins += Number(ingredient.protein) * ingredientQuantity;
+              totalCalories +=
+                (Number(ingredient.fats) + Number(ingredient.carbs) + Number(ingredient.protein)) * ingredientQuantity * 9;
+              totalPrice += Number(ingredient.price) * ingredientQuantity;
+              totalQuantity += ingredientQuantity;
+            }
+          });
+        }
+      });
+
+      return {
+        id: meal.id,
+        name: meal.name,
+        description: meal.description || null,
+        price: totalPrice.toFixed(3),
+        protein: (totalProteins / totalQuantity).toFixed(3),
+        fats: (totalFats / totalQuantity).toFixed(3),
+        carbs: (totalCarbs / totalQuantity).toFixed(3),
+        calories: totalCalories.toFixed(3),
+        unit: meal.unit,
+        created_at: meal.created_at,
+        updated_at: meal.updated_at,
+      };
+    });
+
+    console.log('Processed Meals', processedMeals);
+    return {
+      data: {
+        meals: processedMeals
+      }
+    };
+  } catch (err) {
+    console.log('Error processing meals', err);
+    throw err;
+  }
+}
+
+// Process Components
+async function processComponents(
+  componentData: any
+): Promise<any> {
+  try {
+    let totalFats = 0;
+    let totalCarbs = 0;
+    let totalProteins = 0;
+    let totalCalories = 0;
+    let totalPrice = 0;
+    let totalQuantity = 0;
+
+    console.log(componentData);
+
+    componentData.components_ingredients.forEach((ingredient: any) => {
+      const ingredientQuantity = Number(ingredient.ingredient_quantity);
+      const ingredientFats = Number(ingredient.ingredient.fats);
+      const ingredientCarbs = Number(ingredient.ingredient.carbs);
+      const ingredientProtein = Number(ingredient.ingredient.protein);
+      const ingredientPrice = Number(ingredient.ingredient.price);
+
+      totalFats += ingredientFats * ingredientQuantity;
+      totalCarbs += ingredientCarbs * ingredientQuantity;
+      totalProteins += ingredientProtein * ingredientQuantity;
+      totalCalories +=
+        (ingredientFats + ingredientCarbs + ingredientProtein) *
+        ingredientQuantity *
+        9;
+      totalPrice += ingredientPrice * ingredientQuantity;
+      totalQuantity += ingredientQuantity;
+    });
+
+    const processedComponents = [
+      {
+        id: componentData.id,
+        name: componentData.name,
+        category: componentData.category,
+        description: componentData.description || null,
+        price: totalPrice.toFixed(3),
+        protein: (totalProteins / totalQuantity).toFixed(3),
+        fats: (totalFats / totalQuantity).toFixed(3),
+        carbs: (totalCarbs / totalQuantity).toFixed(3),
+        calories: totalCalories.toFixed(3),
+        unit: componentData.unit,
+        created_at: componentData.created_at,
+        updated_at: componentData.updated_at,
+      },
+    ];
+
+    console.log(processedComponents);
+    return {
+      data: {
+        components: processedComponents,
+      },
+    };
+  } catch (err) {
+    console.log('Error processing component', err);
+    throw err;
   }
 }
