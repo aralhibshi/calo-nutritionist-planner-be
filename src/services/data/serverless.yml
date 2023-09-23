@@ -7,8 +7,61 @@ processData:
         - s3:GetObject
       Resource:
         - Fn::GetAtt:
-          - EntityDataBucket
-          - Arn
+            - EntityDataBucket
+            - Arn
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+      Resource:
+        - Fn::GetAtt:
+            - SendSaveEmailQueue
+            - Arn
   environment:
     BUCKET_NAME:
       Ref: EntityDataBucket
+    SQS_QUEUE_URL:
+      Ref: SendSaveEmailQueue
+  events:
+    - http:
+        path: v1/data
+        method: get
+        cors: ${file(src/templates/cors.yml):${self:provider.stage}}
+        request:
+          parameters:
+            querystrings:
+              entity: true
+              user_id: true
+              user_email: true
+              email_type: true
+              skip: true
+              take: true
+
+sendSaveEmail:
+  handler: src/services/data/sendSaveEmail/handler.default
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource:
+        - Fn::GetAtt:
+            - EmailEventsDatabase
+            - Arn
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: '*'
+  environment:
+    TABLE_NAME:
+      Ref: EmailEventsDatabase
+  events:
+    - sqs:
+        arn:
+          Fn::GetAtt:
+            - SendSaveEmailQueue
+            - Arn
