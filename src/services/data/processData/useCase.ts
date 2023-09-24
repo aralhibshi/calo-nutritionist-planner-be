@@ -7,7 +7,7 @@ import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { jsonToCsv } from 'src/utils/conversionUtils';
 
 // Presigned Put URL
-export async function createPresignedPutUrlWithClient(
+async function createPresignedPutUrlWithClient(
   bucket: string,
   key: string
 ): Promise<string> {
@@ -30,7 +30,7 @@ export async function createPresignedPutUrlWithClient(
 }
 
 // Presigned Get URL
-export async function createPresignedGetUrlWithClient(
+async function createPresignedGetUrlWithClient(
   bucket: string,
   key: string,
   entity: string,
@@ -65,7 +65,8 @@ export async function createUrls(
 ) {
   try {
     const bucket = process.env.BUCKET_NAME!;
-    const objectKey = `${entity}/${user_id}.csv`;
+    const date = new Date().toISOString();
+    const objectKey = `${entity}/${user_id}_${date}.csv`;
 
     const putUrl = await createPresignedPutUrlWithClient(bucket, objectKey);
     const getUrl = await createPresignedGetUrlWithClient(bucket, objectKey, entity);
