@@ -17,6 +17,6 @@ export async function getComponents(
   }
 
   // Repo - Get Components
-  const result = await componentRepo.getComponents(skip, take, name, ingredientId);
+  const result = await componentRepo.get(skip, take, name, ingredientId);
   return result;
 }

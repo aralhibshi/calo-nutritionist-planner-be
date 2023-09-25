@@ -1,5 +1,6 @@
 import { IMeal, IMealComponentDataArray, IMealUpdateData } from "@lib/interfaces";
 import MealRepository from "@lib/repositories/mealRepository";
+import MealComponentRepository from "@lib/repositories/mealComponentRepository";
 import { capitalizeFirstLetter } from "src/utils/stringUtils";
 
 export async function updateMeal(
@@ -7,16 +8,18 @@ export async function updateMeal(
 ): Promise<any> {
   const mealRepo = MealRepository.getInstance();
 
-  const mealData = {
+  const capitzaliedData = {
     ...data,
-    name: capitalizeFirstLetter(data.name)
-  }
+    name: capitalizeFirstLetter(data.name),
+  };
 
-  const id = data.id;
-  delete mealData.components;
+  const {
+    components,
+    ...updateData
+  } = capitzaliedData
 
   // Repo - Update Meal
-  const result = await mealRepo.updateMeal(id, mealData);
+  const result = await mealRepo.update(updateData);
   return result;
 }
 
@@ -24,7 +27,7 @@ export async function updateMealComponent(
   meal: IMealUpdateData,
   components: IMealComponentDataArray[]
 ): Promise<any> {
-  const mealRepo = MealRepository.getInstance();
+  const mealComponentRepo = MealComponentRepository.getInstance();
 
   const mealId = meal.id
 
@@ -35,6 +38,6 @@ export async function updateMealComponent(
       component_id: component.component_id,
       component_quantity: component.component_quantity
     }
-    await mealRepo.updateMealComponent(mealId, data)
+    await mealComponentRepo.update('component_id', data)
   }
 }

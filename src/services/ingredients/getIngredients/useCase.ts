@@ -16,6 +16,6 @@ export async function getIngredients(
   }
 
   // Repo - Get Ingredients
-  const result = await ingredientRepo.getIngredients(skip, take, name);
+  const result = await ingredientRepo.get(skip, take, name);
   return result;
 }

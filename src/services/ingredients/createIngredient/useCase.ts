@@ -1,18 +1,18 @@
-import { IIngredient, IIngredientData } from '@lib/interfaces';
+import { IIngredient } from '@lib/interfaces';
 import IngredientRepository from '@lib/repositories/ingredientRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createIngredient(
-  ingredientData: IIngredientData
+  ingredientData: IIngredient
 ): Promise<IIngredient> {
   const ingredientRepo = IngredientRepository.getInstance();
 
-  const data: IIngredientData = {
+  const data: IIngredient = {
     ...ingredientData,
     name: capitalizeFirstLetter(ingredientData.name)
   }
 
   // Repo - Create Ingredient
-  const result = await ingredientRepo.createIngredient(data);
+  const result = await ingredientRepo.create(data);
   return result;
 }

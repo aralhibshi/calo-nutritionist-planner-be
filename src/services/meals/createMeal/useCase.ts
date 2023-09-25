@@ -1,10 +1,12 @@
+import { Meal } from '@lib/interfaces/entities';
 import { IMeal, IMealComponentDataArray, IMealData } from '@lib/interfaces';
 import MealRepository from '@lib/repositories/mealRepository';
+import MealComponentRepository from '@lib/repositories/mealComponentRepository';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 
 export async function createMeal(
   mealData: IMealData
-): Promise<IMeal> {
+): Promise<Meal> {
   const mealRepo = MealRepository.getInstance();
 
   const data: IMealData = {
@@ -14,16 +16,15 @@ export async function createMeal(
   };
 
   // Repo - Create Meal
-  const result = await mealRepo.createMeal(data);
-
+  const result = await mealRepo.create(data);
   return result;
 }
 
 export async function createMealComponent(
-  meal: IMeal,
+  meal: Meal,
   components: IMealComponentDataArray[]
   ): Promise<any> {
-  const mealRepo = MealRepository.getInstance();
+  const mealComponentRepo = MealComponentRepository.getInstance();
 
   const mealId = meal.id;
 
@@ -34,6 +35,6 @@ export async function createMealComponent(
       component_id: component.component_id,
       component_quantity: component.component_quantity
     }
-    await mealRepo.createMealComponent(data);
+    await mealComponentRepo.create(data);
   }
 }

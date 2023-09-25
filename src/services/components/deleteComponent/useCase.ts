@@ -1,27 +1,29 @@
-import { IComponentDeleteData, IComponentDeleteEvent } from '@lib/interfaces';
+import { IComponentDeleteData } from '@lib/interfaces';
+import ComponentIngredientRepository from '@lib/repositories/componentIngredient';
 import ComponentRepository from '@lib/repositories/componentRepository';
+import MealComponentRepository from '@lib/repositories/mealComponentRepository';
 
 export async function removeComponentFromComponentIngredient(
   data: IComponentDeleteData
 ): Promise<any> {
-  const componentRepo = ComponentRepository.getInstance();
+  const componentIngredientRepo = ComponentIngredientRepository.getInstance();
 
-  const id = data.id;
+  data.component_id = data.id;
 
   // Repo - Remove Component from Component Ingredient
-  const result = await componentRepo.removeComponentFromComponentIngredient(id);
+  const result = await componentIngredientRepo.delete('component_id', data);
   return result;
 }
 
 export async function removeComponentFomMealComponent(
   data: IComponentDeleteData
 ): Promise<any> {
-  const componentRepo = ComponentRepository.getInstance();
+  const mealComponentRepository = MealComponentRepository.getInstance();
 
-  const id = data.id;
+  data.component_id = data.id;
 
   // Repo - Remove Component from Meal Component
-  const result = await componentRepo.removeComponentFomMealComponent(id);
+  const result = await mealComponentRepository.delete('component_id' ,data);
   return result;
 }
 
@@ -33,6 +35,6 @@ export async function deleteComponent(
   const id = data.id;
 
   // Repo - Delete Component
-  const result = await componentRepo.deleteComponent(id);
+  const result = await componentRepo.delete(id);
   return result;
 }

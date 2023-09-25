@@ -7,14 +7,12 @@ export async function updateIngredient(
 ): Promise<any> {
   const ingredientRepo = IngredientRepository.getInstance();
 
-  const ingredientData = {
+  const updateData = {
     ...data,
     name: capitalizeFirstLetter(data.name),
   };
 
-  const id = data.id;
-
   // Repo - Update Ingredient
-  const result = await ingredientRepo.updateIngredient(id, ingredientData);
+  const result = await ingredientRepo.update(updateData)
   return result;
 }

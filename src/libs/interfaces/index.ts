@@ -17,14 +17,14 @@ export type TGetEvent = APIGatewayProxyEvent;
 
 // Ingredient
 export interface IIngredient {
-  id: string;
+  // id: string;
   name: string;
-  category: string | null;
-  description: string | null;
-  price: Decimal;
-  protein: Decimal;
-  fats: Decimal;
-  carbs: Decimal;
+  category?: string | null;
+  description?: string | null;
+  price: number;
+  protein: number;
+  fats: number;
+  carbs: number;
   unit: string;
 }
 
@@ -58,8 +58,8 @@ export interface IIngredientData {
 export interface IIngredientUpdateData {
   id: string;
   name: string;
-  category?: string;
-  description?: string;
+  category?: string | null;
+  description?: string | null;
   price: number;
   protein: number;
   fats: number;
@@ -124,6 +124,7 @@ export interface IIngredientDeleteEvent {
 // Ingredient Delete - Data
 export interface IIngredientDeleteData {
   id: string;
+  IngredientComponent?: string | null;
 }
 
 // Component
@@ -256,12 +257,14 @@ export interface IComponentDeleteEvent {
 // Component Delete - Data
 export interface IComponentDeleteData {
   id: string;
+  component_id?: string | null;
 }
 
 // Component Create - Event
 export interface IMealCreateEvent {
   body: {
     components: Array<IMealComponentDataArray>;
+    id:string
     name: string;
     unit: string;
     size: string;
@@ -281,8 +284,8 @@ export interface IMeal {
 
 // Meal Create/Update - Data
 export interface IMealData {
+  id : string
   name: string;
-  category?: string;
   description?: string;
   unit: string;
   size: string;
@@ -381,4 +384,5 @@ export interface IMealDeleteEvent {
 // Meal Delete - Data
 export interface IMealDeleteData {
   id: string;
+  meal_id?: string | null;
 }

@@ -1,0 +1,5 @@
+Resources:
+  SESIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: a.alhibshi@calo.app

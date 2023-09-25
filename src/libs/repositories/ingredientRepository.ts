@@ -1,54 +1,22 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import prisma from '@lib/prismaClient';
-import { IIngredient, IIngredientData, IIngredientUpdateData } from '@lib/interfaces';
+import { Ingredient } from '@lib/interfaces/entities';
+import { StandaloneBaseRepo } from './base/standaloneBaseRepository';
 import createError from 'http-errors';
 
-export default class IngredientRepository {
-  private prisma = prisma;
+export default class IngredientRepository extends StandaloneBaseRepo<Ingredient> {
   private static instance: IngredientRepository | null = null;
 
-  private constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+  private constructor() {
+    super('Ingredient')
   }
 
-  public static getInstance(
-  ): IngredientRepository {
+  public static getInstance(): IngredientRepository {
     if (!IngredientRepository.instance) {
-      IngredientRepository.instance = new IngredientRepository(prisma);
+      IngredientRepository.instance = new IngredientRepository();
     }
     return IngredientRepository.instance;
   }
 
-  async createIngredient(
-    data: IIngredientData
-  ): Promise<IIngredient> {
-    try {
-      console.log('Creating ingredient with data:', JSON.stringify(data, null, 2));
-
-      const ingredientData = {
-        ...data
-      };
-
-      const result = await this.prisma.ingredient.create({ data: ingredientData });
-
-      console.log('Ingredient created successfully');
-      return result;
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-        console.log('Conflict Error:', err);
-        throw createError(409, 'Conflict Error', {
-          details: 'Ingredient name already exists',
-        });
-      }
-
-      console.log('Prisma Error:', err);
-      throw createError(400, 'Prisma Error', {
-        details: 'Error creating ingredient in Prisma',
-      });
-    }
-  }
-
-  async getIngredients(
+  public async get(
     skip: number,
     take: number,
     name: string | undefined
@@ -82,7 +50,6 @@ export default class IngredientRepository {
           }
         });
   
-  
         console.log('Ingredients fetched successfully');
         return {
           count,
@@ -113,82 +80,6 @@ export default class IngredientRepository {
       console.log('Prisma Error:', err);
       throw createError(500, 'Prisma Error', {
         details: 'Error fetching ingredients in Prisma',
-      });
-    }
-  }
-
-  async updateIngredient(
-    id: string,
-    data: IIngredientUpdateData
-  ): Promise<any> {
-    try {
-      console.log(`Updating ingredient with Id: ${id}, data:`, JSON.stringify(data, null, 2));
-
-      const ingredientData = {
-        ...data,
-      };
-
-      const result = await this.prisma.ingredient.update({
-        where: {
-          id: id
-        },
-        data: {
-          ...ingredientData
-        }
-      })
-
-      console.log('Ingredient updated successfully');
-      return result;
-    } catch (err) {
-      console.log('Prisma Error:', err)
-      throw createError(500, 'Prisma Error', {
-        details: 'Error updating ingredient with Prisma Prisma',
-      });
-    }
-  }
-
-  async removeIngredientFromComponentIngredient(
-    id: string
-  ): Promise<any> {
-    try {
-      console.log('Removing ingredient from ComponentIngredient');
-  
-      const result = await this.prisma.componentIngredient.deleteMany({
-        where: {
-          ingredient_id: {
-            equals: id,
-          }
-        }
-      });
-  
-      console.log('Ingredient removed from ComponentIngredient successfully');
-      return result;
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(500, 'Prisma Error', {
-        details: 'Error removing ingredient from ComponentIngredient with Prisma',
-      });
-    }
-  }
-
-  async deleteIngredient(
-    id: string
-  ): Promise<any> {
-    try {
-      console.log('Deleting ingredient with Id:', id);
-  
-      const result = await this.prisma.ingredient.delete({
-        where: {
-          id: id,
-        },
-      });
-  
-      console.log('Ingredient deleted successfully');
-      return result;
-    } catch (err) {
-      console.log('Prisma Error:', err);
-      throw createError(500, 'Prisma Error', {
-        details: 'Error deleting ingredient with Prisma',
       });
     }
   }

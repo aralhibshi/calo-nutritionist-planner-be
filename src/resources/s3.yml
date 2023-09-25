@@ -1,0 +1,59 @@
+Resources:
+  UploadMealImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:service}-${self:provider.stage}-meal-image-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: FALSE
+        BlockPublicPolicy: FALSE
+        IgnorePublicAcls: FALSE
+        RestrictPublicBuckets: FALSE
+
+  UserProfilePictureBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: 
+        Ref: UploadMealImageBucket
+      PolicyDocument:
+        Id: UploadMealImageBucketPolicy
+        Statement:
+          - Sid: Allow-lambda-PutObject
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:GetObject
+              - s3:GetObjectAcl
+            Resource:
+              Fn::Sub:
+                - arn:aws:s3:::${bucket}/*
+                - bucket: 
+                    Ref: UploadMealImageBucket
+
+  EntityDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:service}-${self:provider.stage}-entity-data
+
+  EntityDataBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: 
+        Ref: EntityDataBucket
+      PolicyDocument:
+        Id: EntityDataBucketPolicy
+        Statement:
+          - Sid: Allow-lambda-PutObject
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::Sub: arn:aws:iam::054700988317:role/${self:service}-${self:provider.stage}-processData-us-east-1-lambdaRole
+            Action:
+              - s3:PutObject
+              - s3:GetObject
+            Resource:
+              Fn::Sub:
+                - arn:aws:s3:::${EntityDataBucket}/*
+                - bucket: 
+                    Ref: EntityDataBucket
