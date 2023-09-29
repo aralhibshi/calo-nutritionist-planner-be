@@ -3,3 +3,8 @@ Resources:
     Type: AWS::SES::EmailIdentity
     Properties:
       EmailIdentity: a.alhibshi@calo.app
+
+  EmailIdentity2:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: m.mosfafa@calo.app

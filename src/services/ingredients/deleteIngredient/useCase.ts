@@ -10,7 +10,7 @@ export async function removeIngredientFromComponentIngredient<T>(
   data.IngredientComponent = data.id
 
   // Repo - Remove Component from Meal Component
-  const result = await componentIngredientRepo.delete(data);
+  const result = await componentIngredientRepo.delete('component_id', data);
   return result;
 }
 

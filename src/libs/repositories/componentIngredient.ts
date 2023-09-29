@@ -1,8 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import prisma from '@lib/prismaClient';
 import { ComponentIngredient } from '@lib/interfaces/entities';
-import createError from 'http-errors';
-
 import { JoinBaseRepo } from './base/joinBaseRepository';
 
 export default class ComponentIngredientRepository extends JoinBaseRepo<ComponentIngredient> {
