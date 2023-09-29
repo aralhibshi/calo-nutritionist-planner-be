@@ -193,6 +193,8 @@ async function processMeals(
 
       meal.meals_components.forEach((mealComponent: any) => {
         const component = mealComponent.component;
+
+        const componentQuantity = Number(component.component_quantity)
         if (component && component.components_ingredients) {
           component.components_ingredients.forEach((el: any) => {
             const ingredient = el.ingredient;
@@ -201,12 +203,17 @@ async function processMeals(
               totalFats += Number(ingredient.fats) * ingredientQuantity;
               totalCarbs += Number(ingredient.carbs) * ingredientQuantity;
               totalProteins += Number(ingredient.protein) * ingredientQuantity;
-              totalCalories +=
-                (Number(ingredient.fats) + Number(ingredient.carbs) + Number(ingredient.protein)) * ingredientQuantity * 9;
               totalPrice += Number(ingredient.price) * ingredientQuantity;
               totalQuantity += ingredientQuantity;
             }
-          });
+          }
+          );
+          totalFats += Number(totalFats*componentQuantity)
+          totalCarbs += Number(totalCarbs*componentQuantity)
+          totalProteins += Number(totalProteins*componentQuantity)
+          totalPrice += Number(totalPrice*componentQuantity)
+          totalCalories = Number((totalFats*9)+(totalCarbs*4)+(totalProteins*4))
+
         }
       });
 
@@ -215,9 +222,9 @@ async function processMeals(
         name: meal.name,
         description: meal.description || null,
         price: totalPrice.toFixed(3),
-        protein: (totalProteins / totalQuantity).toFixed(3),
-        fats: (totalFats / totalQuantity).toFixed(3),
-        carbs: (totalCarbs / totalQuantity).toFixed(3),
+        protein: (totalProteins).toFixed(3),
+        fats: (totalFats).toFixed(3),
+        carbs: (totalCarbs).toFixed(3),
         calories: totalCalories.toFixed(3),
         unit: meal.unit,
         created_at: meal.created_at,
