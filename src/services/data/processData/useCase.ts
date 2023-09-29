@@ -259,22 +259,14 @@ async function processComponents(
     console.log(componentData);
 
     componentData.components_ingredients.forEach((ingredient: any) => {
-      const ingredientQuantity = Number(ingredient.ingredient_quantity);
-      const ingredientFats = Number(ingredient.ingredient.fats);
-      const ingredientCarbs = Number(ingredient.ingredient.carbs);
-      const ingredientProtein = Number(ingredient.ingredient.protein);
-      const ingredientPrice = Number(ingredient.ingredient.price);
-
-      totalFats += ingredientFats * ingredientQuantity;
-      totalCarbs += ingredientCarbs * ingredientQuantity;
-      totalProteins += ingredientProtein * ingredientQuantity;
-      totalCalories +=
-        (ingredientFats + ingredientCarbs + ingredientProtein) *
-        ingredientQuantity *
-        9;
-      totalPrice += ingredientPrice * ingredientQuantity;
-      totalQuantity += ingredientQuantity;
+      totalFats += Number(ingredient.ingredient.fats);
+      totalCarbs += Number(ingredient.ingredient.carbs);
+      totalProteins += Number(ingredient.ingredient.protein);
+      totalPrice += Number(ingredient.ingredient.price);
+      totalQuantity += Number(ingredient.ingredient_quantity);
     });
+
+    totalCalories = Number((totalProteins*4)+(totalCarbs*4)+(totalFats*9))
 
     const processedComponents = [
       {
@@ -282,11 +274,11 @@ async function processComponents(
         name: componentData.name,
         category: componentData.category,
         description: componentData.description || null,
-        price: totalPrice.toFixed(3),
+        price: (totalPrice / totalQuantity).toFixed(3),
         protein: (totalProteins / totalQuantity).toFixed(3),
         fats: (totalFats / totalQuantity).toFixed(3),
         carbs: (totalCarbs / totalQuantity).toFixed(3),
-        calories: totalCalories.toFixed(3),
+        calories: (totalCalories / totalQuantity).toFixed(3),
         unit: componentData.unit,
         created_at: componentData.created_at,
         updated_at: componentData.updated_at,
