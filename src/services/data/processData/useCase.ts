@@ -194,26 +194,30 @@ async function processMeals(
       meal.meals_components.forEach((mealComponent: any) => {
         const component = mealComponent.component;
 
-        const componentQuantity = Number(component.component_quantity)
+        const componentQuantity = Number(mealComponent.component_quantity)
         if (component && component.components_ingredients) {
           component.components_ingredients.forEach((el: any) => {
             const ingredient = el.ingredient;
             if (ingredient) {
               const ingredientQuantity = Number(el.ingredient_quantity);
-              totalFats += Number(ingredient.fats) * ingredientQuantity;
-              totalCarbs += Number(ingredient.carbs) * ingredientQuantity;
-              totalProteins += Number(ingredient.protein) * ingredientQuantity;
-              totalPrice += Number(ingredient.price) * ingredientQuantity;
+              totalFats += Number(ingredient.fats * ingredientQuantity);
+              totalCarbs += Number(ingredient.carbs * ingredientQuantity);
+              totalProteins += Number(ingredient.protein * ingredientQuantity);
+              totalPrice += Number(ingredient.price * ingredientQuantity);
               totalQuantity += ingredientQuantity;
             }
           }
           );
-          totalFats += Number(totalFats*componentQuantity)
-          totalCarbs += Number(totalCarbs*componentQuantity)
-          totalProteins += Number(totalProteins*componentQuantity)
-          totalPrice += Number(totalPrice*componentQuantity)
-          totalCalories = Number((totalFats*9)+(totalCarbs*4)+(totalProteins*4))
-
+          totalFats += Number(totalFats * componentQuantity)
+          totalCarbs += Number(totalCarbs * componentQuantity)
+          totalProteins += Number(totalProteins * componentQuantity)
+          totalPrice += Number(totalPrice * componentQuantity)
+          totalCalories =
+            Number(
+              Number((totalFats * 9)) +
+              Number((totalCarbs * 4)) +
+              Number((totalProteins * 4))
+            )
         }
       });
 
@@ -221,11 +225,11 @@ async function processMeals(
         id: meal.id,
         name: meal.name,
         description: meal.description || null,
-        price: totalPrice.toFixed(3),
-        protein: (totalProteins).toFixed(3),
-        fats: (totalFats).toFixed(3),
-        carbs: (totalCarbs).toFixed(3),
-        calories: totalCalories.toFixed(3),
+        price: Number(totalPrice.toFixed(3)),
+        protein: Number((totalProteins).toFixed(3)),
+        fats: Number((totalFats).toFixed(3)),
+        carbs: Number((totalCarbs).toFixed(3)),
+        calories: Number(totalCalories.toFixed(3)),
         unit: meal.unit,
         created_at: meal.created_at,
         updated_at: meal.updated_at,
