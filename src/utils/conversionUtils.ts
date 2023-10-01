@@ -9,3 +9,10 @@ export function jsonToCsv(jsonData) {
 
   return [header.join(','), ...csvData].join('\n');
 }
+
+// Date - ISO String (without Milliseconds)
+export function getISOString() {
+  const date = new Date();
+  const isoString = date.toISOString().slice(0, 16) + 'Z';
+  return isoString;
+}
