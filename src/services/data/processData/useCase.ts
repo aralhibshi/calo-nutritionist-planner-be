@@ -258,10 +258,10 @@ async function processMeals(
         grams: Number(totalQuantity.toFixed(3)),
         unit: meal.unit,
         price: Number(totalPrice.toFixed(3)),
-        // created_at: meal.created_at,
-        // updated_at: meal.updated_at,
         ingredients,
         components,
+        // created_at: meal.created_at,
+        // updated_at: meal.updated_at,
       };
     });
 
@@ -307,7 +307,12 @@ async function processComponents(
       totalQuantity += Number(componentIngredient.ingredient_quantity);
     });
     totalCalories +=
-    ((totalFats * 9) + (totalCarbs * 4) + (totalProteins * 4));;
+    ((totalFats * 9) + (totalCarbs * 4) + (totalProteins * 4));
+
+    // Component Names
+    const ingredients = component.components_ingredients
+    .map((componentIngredient: any) => componentIngredient.ingredient.name)
+    .join(', ');
     
     return  {
         // id: componentData.id,
@@ -320,6 +325,7 @@ async function processComponents(
         fats: Number((totalFats/totalQuantity).toFixed(3)),
         unit: component.unit,
         price: Number((totalPrice/totalQuantity).toFixed(3)),
+        ingredients
         // created_at: componentData.created_at,
         // updated_at: componentData.updated_at,
       }
