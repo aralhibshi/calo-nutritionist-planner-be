@@ -288,31 +288,38 @@ async function processComponents(
       let totalCarbs = 0;
       let totalFats = 0;
       let totalPrice = 0;
+      let totalQuantity = 0;
 
 
     component.components_ingredients.forEach((componentIngredient: any) => {
-      const ingredient = componentIngredient.ingredient
-      console.log(ingredient)
-
-      totalProteins += Number(ingredient.protein);
-      totalCarbs += Number(ingredient.carbs);
-      totalFats += Number(ingredient.fats);
-      totalPrice += Number(ingredient.price);
+      totalFats += Number(
+        componentIngredient.ingredient.fats * componentIngredient.ingredient_quantity
+      );
+      totalCarbs += Number(
+        componentIngredient.ingredient.carbs * componentIngredient.ingredient_quantity
+      );
+      totalProteins += Number(
+        componentIngredient.ingredient.protein * componentIngredient.ingredient_quantity
+      );
+      totalPrice += Number(
+        componentIngredient.ingredient.price * componentIngredient.ingredient_quantity
+      );
+      totalQuantity += Number(componentIngredient.ingredient_quantity);
     });
-
-    totalCalories = (totalProteins * 4) + (totalCarbs * 4) + (totalFats * 9);
+    totalCalories +=
+    ((totalFats * 9) + (totalCarbs * 4) + (totalProteins * 4));;
     
     return  {
         // id: componentData.id,
         name: component.name,
         category: component.category,
         description: component.description || null,
-        calories: Number(totalCalories.toFixed(3)),
-        protein: Number(totalProteins.toFixed(3)),
-        carbs: Number(totalCarbs.toFixed(3)),
-        fats: Number(totalFats.toFixed(3)),
+        calories: Number((totalCalories/totalQuantity).toFixed(3)),
+        protein: Number((totalProteins/totalQuantity).toFixed(3)),
+        carbs: Number((totalCarbs/totalQuantity).toFixed(3)),
+        fats: Number((totalFats/totalQuantity).toFixed(3)),
         unit: component.unit,
-        price: Number(totalPrice.toFixed(3)),
+        price: Number((totalPrice/totalQuantity).toFixed(3)),
         // created_at: componentData.created_at,
         // updated_at: componentData.updated_at,
       }
