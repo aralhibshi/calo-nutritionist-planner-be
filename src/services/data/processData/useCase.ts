@@ -204,24 +204,36 @@ async function processMeals(
 
       meal.meals_components.forEach((mealComponent: any) => {
         const component = mealComponent.component;
-        const componentQuantity = Number(mealComponent.component_quantity);
+        const quantity = Number(mealComponent.component_quantity);
 
         if (component && component.components_ingredients) {
           component.components_ingredients.forEach((el: any) => {
             const ingredient = el.ingredient;
             if (ingredient) {
-              const ingredientQuantity = Number(el.ingredient_quantity);
-              totalProteins += ingredient.protein * ingredientQuantity * componentQuantity;
-              totalCarbs += ingredient.carbs * ingredientQuantity * componentQuantity;
-              totalFats += ingredient.fats * ingredientQuantity * componentQuantity;
-              totalPrice += ingredient.price * ingredientQuantity * componentQuantity;
-              totalQuantity += ingredientQuantity * componentQuantity;
+              totalFats += Number(el.ingredient.fats * el.ingredient_quantity);
+              totalCarbs += Number(el.ingredient.carbs * el.ingredient_quantity);
+              totalProteins += Number(el.ingredient.protein * el.ingredient_quantity);
+              totalPrice += Number(el.ingredient.price * el.ingredient_quantity);
+
+              totalQuantity += Number(el.ingredient_quantity);
             }
           });
+          totalProteins /= totalQuantity
+          totalCarbs /= totalQuantity
+          totalFats /= totalQuantity
+          totalPrice /= totalQuantity
+
+          totalProteins += Number(
+            (totalProteins * quantity).toFixed(3)
+          );
+          totalCarbs += Number((totalCarbs * quantity).toFixed(3));
+          totalFats += Number((totalFats * quantity).toFixed(3));
+          totalPrice += Number((totalPrice * quantity).toFixed(3));
+
+          totalCalories =
+          (totalFats * 9 + totalCarbs * 4 + totalProteins * 4)
         }
       });
-
-      totalCalories = (totalProteins * 4) + (totalCarbs * 4) + (totalFats * 9);
       
       // Ingredient Names
       const ingredients = meal.meals_components
@@ -276,6 +288,7 @@ async function processComponents(
       let totalCarbs = 0;
       let totalFats = 0;
       let totalPrice = 0;
+
 
     component.components_ingredients.forEach((componentIngredient: any) => {
       const ingredient = componentIngredient.ingredient
