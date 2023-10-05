@@ -288,31 +288,29 @@ async function processComponents(
 ): Promise<any> {
   try {
     const processedComponents: any[] = componentsData.map((component: any) => {
-      let totalCalories = 0;
-      let totalProteins = 0;
-      let totalCarbs = 0;
-      let totalFats = 0;
-      let totalPrice = 0;
-      let totalQuantity = 0;
+      let componentFats = 0;
+      let componentCarbs = 0;
+      let componentProtein = 0;
+      let componentPrice = 0;
+      let componentQuantity = 0;
+      let componentCalories = 0
+      let ingredientAmount = 0
 
-
-    component.components_ingredients.forEach((componentIngredient: any) => {
-      totalFats += Number(
-        componentIngredient.ingredient.fats * componentIngredient.ingredient_quantity
-      );
-      totalCarbs += Number(
-        componentIngredient.ingredient.carbs * componentIngredient.ingredient_quantity
-      );
-      totalProteins += Number(
-        componentIngredient.ingredient.protein * componentIngredient.ingredient_quantity
-      );
-      totalPrice += Number(
-        componentIngredient.ingredient.price * componentIngredient.ingredient_quantity
-      );
-      totalQuantity += Number(componentIngredient.ingredient_quantity);
+    component.components_ingredients.forEach((el: any) => {
+      componentFats += el.ingredient.fats * el.ingredient_quantity;
+      componentCarbs += el.ingredient.carbs * el.ingredient_quantity;
+      componentProtein += el.ingredient.protein * el.ingredient_quantity;
+      componentPrice += el.ingredient.price * el.ingredient_quantity;
+      componentQuantity += el.ingredient_quantity;
+      ingredientAmount++
     });
-    totalCalories +=
-    ((totalFats * 9) + (totalCarbs * 4) + (totalProteins * 4));
+
+    componentFats /= componentQuantity;
+    componentCarbs /= componentQuantity;
+    componentProtein /= componentQuantity;
+    componentPrice /= componentQuantity;
+
+    componentCalories = (componentProtein * 4 + componentCarbs * 4 + componentFats * 9);
 
     // Component Names
     const ingredients = component.components_ingredients
@@ -321,13 +319,13 @@ async function processComponents(
     
     return  {
         name: component.name,
-        calories: Number((totalCalories/totalQuantity).toFixed(3)),
-        protein: Number((totalProteins/totalQuantity).toFixed(3)),
-        carbs: Number((totalCarbs/totalQuantity).toFixed(3)),
-        fats: Number((totalFats/totalQuantity).toFixed(3)),
+        calories: Number((componentCalories).toFixed(3)),
+        protein: Number((componentProtein).toFixed(3)),
+        carbs: Number((componentCarbs).toFixed(3)),
+        fats: Number((componentFats).toFixed(3)),
         unit: component.unit,
-        price: Number((totalPrice/totalQuantity).toFixed(3)),
-        ingredients,
+        price: Number((componentPrice).toFixed(3)),
+        ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
         category: component.category,
         description: component.description || null
       }
@@ -356,14 +354,14 @@ async function processIngredients(
 
       return {
         name: ingredient.name,
-        category: ingredient.category,
-        description: ingredient.description || null,
         calories: Number(totalCalories.toFixed(3)),
         protein: Number(ingredient.protein),
         carbs: Number(ingredient.carbs),
         fats: Number(ingredient.fats),
         unit: ingredient.unit,
         price: Number(ingredient.price),
+        category: ingredient.category,
+        description: ingredient.description || null
       }
   });
   return {
