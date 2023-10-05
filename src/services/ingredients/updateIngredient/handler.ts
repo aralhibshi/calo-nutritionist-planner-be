@@ -31,6 +31,7 @@ export default middyfy(async (
         'Fats & Oils',
         'Fruits',
         'Grains & Cereals',
+        'Nuts & Seeds',
         'Proteins',
         'Vegetables'
       )
