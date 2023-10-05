@@ -5,9 +5,12 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { capitalizeFirstLetter } from 'src/utils/stringUtils';
 import { jsonToCsv } from 'src/utils/conversionUtils';
+import { getISOString } from 'src/utils/conversionUtils';
 
 // Presigned Put URL
 async function createPresignedPutUrlWithClient(
+  entity: string,
+  user_id: string,
   bucket: string,
   key: string
 ): Promise<string> {
@@ -18,7 +21,12 @@ async function createPresignedPutUrlWithClient(
 
     const command = new PutObjectCommand({
       Bucket: bucket,
-      Key: key
+      Key: key,
+      Metadata: {
+        'x-amz-meta-entity': capitalizeFirstLetter(entity),
+        'x-amz-meta-user': user_id,
+        'x-amz-meta-date-iso': new Date().toISOString()
+      }
     });
 
     const url = await getSignedUrl(client, command, { expiresIn: 120 });
@@ -36,7 +44,8 @@ async function createPresignedGetUrlWithClient(
   entity: string,
 ): Promise<string> {
   try {
-    const capitalizedEntity = capitalizeFirstLetter(entity)
+    const capitalizedEntity = capitalizeFirstLetter(entity);
+    const date = getISOString();
 
     const client = new S3Client({
       region: 'us-east-1'
@@ -46,7 +55,7 @@ async function createPresignedGetUrlWithClient(
       Bucket: bucket,
       Key: key,
       ResponseContentType: 'text/csv',
-      ResponseContentDisposition: `attachment; filename=${capitalizedEntity}.csv`,
+      ResponseContentDisposition: `attachment; filename=${capitalizedEntity}-${date}.csv`,
       ResponseCacheControl: 'No-cache'
     });
 
@@ -65,10 +74,11 @@ export async function createUrls(
 ) {
   try {
     const bucket = process.env.BUCKET_NAME!;
-    const date = new Date().toISOString();
+    const date = getISOString();
+  
     const objectKey = `${entity}/${user_id}_${date}.csv`;
 
-    const putUrl = await createPresignedPutUrlWithClient(bucket, objectKey);
+    const putUrl = await createPresignedPutUrlWithClient(entity, user_id, bucket, objectKey);
     const getUrl = await createPresignedGetUrlWithClient(bucket, objectKey, entity);
 
     return { putUrl, getUrl };
@@ -140,7 +150,8 @@ export async function fetchData(
     } else if (entity === 'components') {
       return await processComponents(responseData.data.components);
     } else if (entity === 'ingredients') {
-      return await responseData;
+      console.log(responseData.data.ingredients);
+      return await processIngredients(responseData.data.ingredients);
     }
   } catch (err) {
     console.log('Error fetching data', err)
@@ -184,44 +195,78 @@ async function processMeals(
 ): Promise<any> {
   try {
     const processedMeals: any[] = mealsData.map((meal: any) => {
-      let totalFats = 0;
-      let totalCarbs = 0;
-      let totalProteins = 0;
-      let totalCalories = 0;
-      let totalPrice = 0;
-      let totalQuantity = 0;
+      let mealFats = 0;
+      let mealCarbs = 0;
+      let mealProteins = 0;
+      let mealCalories = 0;
+      let mealPrice = 0;
+      let mealGrams = 0;
+      let ingredientAmount = 0
 
       meal.meals_components.forEach((mealComponent: any) => {
+        let componentFats = 0;
+        let componentCarbs = 0;
+        let componentProtein = 0;
+        let componentPrice = 0;
+        let componentQuantity = 0;
+
         const component = mealComponent.component;
+        const quantity = Number(mealComponent.component_quantity);
+
         if (component && component.components_ingredients) {
           component.components_ingredients.forEach((el: any) => {
             const ingredient = el.ingredient;
             if (ingredient) {
-              const ingredientQuantity = Number(el.ingredient_quantity);
-              totalFats += Number(ingredient.fats) * ingredientQuantity;
-              totalCarbs += Number(ingredient.carbs) * ingredientQuantity;
-              totalProteins += Number(ingredient.protein) * ingredientQuantity;
-              totalCalories +=
-                (Number(ingredient.fats) + Number(ingredient.carbs) + Number(ingredient.protein)) * ingredientQuantity * 9;
-              totalPrice += Number(ingredient.price) * ingredientQuantity;
-              totalQuantity += ingredientQuantity;
+              componentFats += Number(el.ingredient.fats * el.ingredient_quantity);
+              componentCarbs += Number(el.ingredient.carbs * el.ingredient_quantity);
+              componentProtein += Number(el.ingredient.protein * el.ingredient_quantity);
+              componentPrice += Number(el.ingredient.price * el.ingredient_quantity);
+              componentQuantity += Number(el.ingredient_quantity);
+              ingredientAmount ++
             }
           });
+
+          componentFats /= componentQuantity;
+          componentCarbs /= componentQuantity;
+          componentProtein /= componentQuantity;
+          componentPrice /= componentQuantity;
+
+          mealProteins += componentProtein * quantity;
+          mealCarbs += componentCarbs * quantity;
+          mealFats += componentFats * quantity;
+          mealPrice += componentPrice * quantity;
+          mealGrams += quantity
+
+          mealCalories = mealFats * 9 + mealCarbs * 4 + mealProteins * 4;
         }
+        // return ingredientAmount
       });
 
+      // Component Names
+      const components = meal.meals_components
+        .map((mealComponent: any) => mealComponent.component.name)
+          .join(', ');
+
+      // Ingredient Names
+      const ingredients = meal.meals_components
+      .map((mealComponent: any) => mealComponent.component.components_ingredients.map((el: any) => el.ingredient.name)
+        .join(', '))
+          .join(', ');
+
+      // Number of Components & Ingredients
+      const componentAmount  = meal.meals_components.length
+      
       return {
-        id: meal.id,
         name: meal.name,
-        description: meal.description || null,
-        price: totalPrice.toFixed(3),
-        protein: (totalProteins / totalQuantity).toFixed(3),
-        fats: (totalFats / totalQuantity).toFixed(3),
-        carbs: (totalCarbs / totalQuantity).toFixed(3),
-        calories: totalCalories.toFixed(3),
-        unit: meal.unit,
-        created_at: meal.created_at,
-        updated_at: meal.updated_at,
+        calories: Number(mealCalories.toFixed(3)),
+        protein: Number(mealProteins.toFixed(3)),
+        carbs: Number(mealCarbs.toFixed(3)),
+        fats: Number(mealFats.toFixed(3)),
+        grams: Number(mealGrams.toFixed(3)),
+        price: Number(mealPrice.toFixed(3)),
+        components: 'Total: ' + componentAmount + ' - ' + components,
+        ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
+        description: meal.description || null
       };
     });
 
@@ -239,61 +284,93 @@ async function processMeals(
 
 // Process Components
 async function processComponents(
-  componentData: any
+  componentsData: any
 ): Promise<any> {
   try {
-    let totalFats = 0;
-    let totalCarbs = 0;
-    let totalProteins = 0;
-    let totalCalories = 0;
-    let totalPrice = 0;
-    let totalQuantity = 0;
+    const processedComponents: any[] = componentsData.map((component: any) => {
+      let componentFats = 0;
+      let componentCarbs = 0;
+      let componentProtein = 0;
+      let componentPrice = 0;
+      let componentQuantity = 0;
+      let componentCalories = 0
+      let ingredientAmount = 0
 
-    console.log(componentData);
-
-    componentData.components_ingredients.forEach((ingredient: any) => {
-      const ingredientQuantity = Number(ingredient.ingredient_quantity);
-      const ingredientFats = Number(ingredient.ingredient.fats);
-      const ingredientCarbs = Number(ingredient.ingredient.carbs);
-      const ingredientProtein = Number(ingredient.ingredient.protein);
-      const ingredientPrice = Number(ingredient.ingredient.price);
-
-      totalFats += ingredientFats * ingredientQuantity;
-      totalCarbs += ingredientCarbs * ingredientQuantity;
-      totalProteins += ingredientProtein * ingredientQuantity;
-      totalCalories +=
-        (ingredientFats + ingredientCarbs + ingredientProtein) *
-        ingredientQuantity *
-        9;
-      totalPrice += ingredientPrice * ingredientQuantity;
-      totalQuantity += ingredientQuantity;
+    component.components_ingredients.forEach((el: any) => {
+      componentFats += el.ingredient.fats * el.ingredient_quantity;
+      componentCarbs += el.ingredient.carbs * el.ingredient_quantity;
+      componentProtein += el.ingredient.protein * el.ingredient_quantity;
+      componentPrice += el.ingredient.price * el.ingredient_quantity;
+      componentQuantity += el.ingredient_quantity;
+      ingredientAmount++
     });
 
-    const processedComponents = [
-      {
-        id: componentData.id,
-        name: componentData.name,
-        category: componentData.category,
-        description: componentData.description || null,
-        price: totalPrice.toFixed(3),
-        protein: (totalProteins / totalQuantity).toFixed(3),
-        fats: (totalFats / totalQuantity).toFixed(3),
-        carbs: (totalCarbs / totalQuantity).toFixed(3),
-        calories: totalCalories.toFixed(3),
-        unit: componentData.unit,
-        created_at: componentData.created_at,
-        updated_at: componentData.updated_at,
-      },
-    ];
+    componentFats /= componentQuantity;
+    componentCarbs /= componentQuantity;
+    componentProtein /= componentQuantity;
+    componentPrice /= componentQuantity;
 
-    console.log(processedComponents);
-    return {
-      data: {
-        components: processedComponents,
-      },
-    };
+    componentCalories = (componentProtein * 4 + componentCarbs * 4 + componentFats * 9);
+
+    // Component Names
+    const ingredients = component.components_ingredients
+    .map((componentIngredient: any) => componentIngredient.ingredient.name)
+    .join(', ');
+    
+    return  {
+        name: component.name,
+        calories: Number((componentCalories).toFixed(3)),
+        protein: Number((componentProtein).toFixed(3)),
+        carbs: Number((componentCarbs).toFixed(3)),
+        fats: Number((componentFats).toFixed(3)),
+        unit: component.unit,
+        price: Number((componentPrice).toFixed(3)),
+        ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
+        category: component.category,
+        description: component.description || null
+      }
+  });
+  console.log('Processed Components', processedComponents);
+  return {
+    data: {
+      components: processedComponents
+    }
+  };
   } catch (err) {
     console.log('Error processing component', err);
+    throw err;
+  }
+}
+
+// Process Ingredients
+async function processIngredients(
+  ingredientsData: any
+): Promise<any> {
+  try {
+    console.log(ingredientsData);
+
+    const processedIngredients: any[] = ingredientsData.map((ingredient: any) => {
+      const totalCalories = (ingredient.protein * 4) + (ingredient.carbs * 4) + (ingredient.fats * 9);
+
+      return {
+        name: ingredient.name,
+        calories: Number(totalCalories.toFixed(3)),
+        protein: Number(ingredient.protein),
+        carbs: Number(ingredient.carbs),
+        fats: Number(ingredient.fats),
+        unit: ingredient.unit,
+        price: Number(ingredient.price),
+        category: ingredient.category,
+        description: ingredient.description || null
+      }
+  });
+  return {
+    data: {
+      ingredients: processedIngredients
+    }
+  };
+  } catch (err) {
+    console.log('Error proccessing ingredients', err);
     throw err;
   }
 }
