@@ -20,7 +20,18 @@ export default middyfy(async (
       .min(3)
       .required(),
     category: Joi
-      .string(),
+      .string()
+      .valid(
+        'Condiments & Sauces',
+        'Dairy & Alternatives',
+        'Fats & Oils',
+        'Fruits',
+        'Grains & Cereals',
+        'Nuts & Seeds',
+        'Proteins',
+        'Vegetables'
+      )
+      .required(),
     description: Joi
       .string(),
     unit: Joi

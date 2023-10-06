@@ -257,16 +257,16 @@ async function processMeals(
       const componentAmount  = meal.meals_components.length
       
       return {
-        name: meal.name,
-        calories: Number(mealCalories.toFixed(3)),
-        protein: Number(mealProteins.toFixed(3)),
-        carbs: Number(mealCarbs.toFixed(3)),
-        fats: Number(mealFats.toFixed(3)),
-        grams: Number(mealGrams.toFixed(3)),
-        price: Number(mealPrice.toFixed(3)),
-        components: 'Total: ' + componentAmount + ' - ' + components,
-        ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
-        description: meal.description || null
+        Name: meal.name,
+        Calories: Number(mealCalories.toFixed(3)),
+        Protein: Number(mealProteins.toFixed(3)),
+        Carbs: Number(mealCarbs.toFixed(3)),
+        Fats: Number(mealFats.toFixed(3)),
+        Grams: Number(mealGrams.toFixed(3)),
+        Price: Number(mealPrice.toFixed(3)),
+        Components: 'Total: ' + componentAmount + ' - ' + components,
+        Ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
+        Description: meal.description || null
       };
     });
 
@@ -318,16 +318,16 @@ async function processComponents(
     .join(', ');
     
     return  {
-        name: component.name,
-        calories: Number((componentCalories).toFixed(3)),
-        protein: Number((componentProtein).toFixed(3)),
-        carbs: Number((componentCarbs).toFixed(3)),
-        fats: Number((componentFats).toFixed(3)),
-        unit: component.unit,
-        price: Number((componentPrice).toFixed(3)),
-        ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
-        category: component.category,
-        description: component.description || null
+        Name: component.name,
+        Calories: Number((componentCalories).toFixed(3)),
+        Protein: Number((componentProtein).toFixed(3)),
+        Carbs: Number((componentCarbs).toFixed(3)),
+        Fats: Number((componentFats).toFixed(3)),
+        Unit: component.unit,
+        Price: Number((componentPrice).toFixed(3)),
+        Ingredients: 'Total: ' + ingredientAmount + ' - ' + ingredients,
+        Category: component.category,
+        Description: component.description || null
       }
   });
   console.log('Processed Components', processedComponents);
@@ -353,15 +353,15 @@ async function processIngredients(
       const totalCalories = (ingredient.protein * 4) + (ingredient.carbs * 4) + (ingredient.fats * 9);
 
       return {
-        name: ingredient.name,
-        calories: Number(totalCalories.toFixed(3)),
-        protein: Number(ingredient.protein),
-        carbs: Number(ingredient.carbs),
-        fats: Number(ingredient.fats),
-        unit: ingredient.unit,
-        price: Number(ingredient.price),
-        category: ingredient.category,
-        description: ingredient.description || null
+        Name: ingredient.name,
+        Calories: Number(totalCalories.toFixed(3)),
+        Protein: Number(ingredient.protein),
+        Carbs: Number(ingredient.carbs),
+        Fats: Number(ingredient.fats),
+        Unit: ingredient.unit,
+        Price: Number(ingredient.price),
+        Category: ingredient.category,
+        Description: ingredient.description || null
       }
   });
   return {
