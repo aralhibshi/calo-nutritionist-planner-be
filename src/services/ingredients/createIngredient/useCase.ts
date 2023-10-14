@@ -1,18 +1,15 @@
-import { IIngredient } from '@lib/interfaces';
-import IngredientRepository from '@lib/repositories/ingredientRepository';
-import { capitalizeFirstLetter } from 'src/utils/stringUtils';
+import { IIngredient } from "@lib/interfaces";
+import { IngredientFactory } from "@lib/factories/IngredientFactory";
+import { IngredientMapper } from "@lib/mappers/IngredientMapper";
+import IngredientRepository from "@lib/repositories/ingredientRepository";
 
-export async function createIngredient(
-  ingredientData: IIngredient
-): Promise<IIngredient> {
+export async function createIngredient(ingredientData: IIngredient): Promise<IIngredient> {
+  const ingredient = IngredientMapper.toDomain(ingredientData);
+  const ingredientInstance = IngredientFactory.create(ingredient);
   const ingredientRepo = IngredientRepository.getInstance();
 
-  const data: IIngredient = {
-    ...ingredientData,
-    name: capitalizeFirstLetter(ingredientData.name)
-  }
+  const result = await ingredientRepo.create(ingredientInstance);
+  const mappedResult = IngredientMapper.toDTO(result);
 
-  // Repo - Create Ingredient
-  const result = await ingredientRepo.create(data);
-  return result;
+  return mappedResult;
 }
